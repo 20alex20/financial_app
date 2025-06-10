@@ -35,7 +35,7 @@ private val DarkColorScheme = LightColorScheme
 // TODO: Заменить на инициализацию через darkColorScheme, когда будет задание сделать темную тему
 
 @Composable
-fun Financial_appTheme(
+fun FinancialAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
