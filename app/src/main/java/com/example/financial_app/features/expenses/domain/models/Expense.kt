@@ -1,9 +1,9 @@
 package com.example.financial_app.features.expenses.domain.models
 
 data class Expense(
-    val categoryId: Int,
+    val id: Int,
     val categoryName: String,
+    val categoryEmoji: String,
     val amount: String,
-    val emoji: String?,
     val comment: String?
 )

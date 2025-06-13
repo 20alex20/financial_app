@@ -1,6 +1,5 @@
 package com.example.financial_app.features.navigation.pres
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
@@ -28,9 +27,9 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.financial_app.features.check.pres.Check
 import com.example.financial_app.features.expenses.pres.Expenses
-import com.example.financial_app.features.navigation.data.Check
-import com.example.financial_app.features.navigation.data.Income
+import com.example.financial_app.features.income.pres.Income
 import com.example.financial_app.features.navigation.data.Items
 import com.example.financial_app.features.navigation.data.NavRoutes
 import com.example.financial_app.features.navigation.data.Settings
@@ -39,8 +38,7 @@ import com.example.financial_app.features.navigation.data.navBarItems
 @Composable
 fun NavGraph(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-
-    Column(modifier = modifier.background(MaterialTheme.colorScheme.surface)) {
+    Column(modifier = modifier) {
         NavHost(
             navController,
             startDestination = NavRoutes.Expenses.route,

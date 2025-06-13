@@ -7,5 +7,10 @@
     <string name="settings">Настройки</string>
     <string name="add_button">Добавить</string>
     <string name="expenses_today">Расходы сегодня</string>
+    <string name="income_today">Доходы сегодня</string>
+    <string name="my_check">Мой счет</string>
     <string name="total">Всего</string>
+    <string name="balance">Баланс</string>
+    <string name="currency">Валюта</string>
+    <string name="money_bag">💰</string>
 </resources>

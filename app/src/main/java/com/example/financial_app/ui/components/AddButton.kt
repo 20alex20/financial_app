@@ -34,7 +34,9 @@ fun AddButton(
             border = BorderStroke(0.dp, MaterialTheme.colorScheme.primary),
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier.fillMaxSize(),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary)
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
             Image(
                 painter = painterResource(R.drawable.add_button),

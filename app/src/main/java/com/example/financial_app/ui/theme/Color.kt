@@ -18,7 +18,8 @@ val White = Color(0xFFFEF7FF)
 val Black = Color(0xFF1D1B20)
 
 enum class TrailColor(val color: Color) {
-    SwitchBackground(Color(0xFFE6E0E9)),
-    SwitchPoint(DarkGray),
-    Arrow(Color(0x4D3C3C43))
+    LIGHT_ARROW(Color(0x4D3C3C43)),
+    DARK_ARROW(DarkGray),
+    SWITCH_BACKGROUND(Color(0xFFE6E0E9)),
+    SWITCH(DarkGray)
 }

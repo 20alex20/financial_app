@@ -8,7 +8,7 @@ import com.example.financial_app.features.expenses.data.ExpensesRepo
 
 class ExpensesViewModel : ViewModel() {
     private val _balance = mutableStateOf("0 ₽")
-    val balance : State<String> = _balance
+    val balance: State<String> = _balance
 
     private val _expenses = mutableStateOf(listOf<Expense>())
     val expenses: State<List<Expense>> = _expenses

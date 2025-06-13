@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,55 +36,71 @@ sealed class Trail {
     data class Custom(val customTrail: @Composable () -> Unit) : Trail()
 }
 
-data class Lead(val emoji: String?)
+enum class ListItemHeight(val value: Dp) {
+    HIGH(70.dp), LOW(56.dp)
+}
+
+enum class ListItemColorScheme {
+    SURFACE, PRIMARY_CONTAINER
+}
 
 @Composable
 fun ListItem(
     content: String,
     modifier: Modifier = Modifier,
-    height: Dp = 70.dp,
-    color: Color = MaterialTheme.colorScheme.surface,
+    height: ListItemHeight = ListItemHeight.HIGH,
+    colorScheme: ListItemColorScheme = ListItemColorScheme.SURFACE,
     comment: String? = null,
     rightText: String? = null,
-    lead: Lead? = null,
-    trail: Trail? = null
+    additionalRightText: String? = null,
+    emoji: String? = null,
+    trail: Trail? = null,
+    dividerEnabled: Boolean = true,
+    paddingValues: PaddingValues = PaddingValues(16.dp, 0.dp)
 ) {
-    val boxModifier = modifier
-        .fillMaxWidth()
-        .height(height)
-        .background(color)
+    val colors = getColorScheme(colorScheme)
+
     Box(
         contentAlignment = Alignment.BottomCenter,
-        modifier = when (trail) {
-            is Trail.LightArrow -> boxModifier.clickable { trail.onClick }
-            is Trail.DarkArrow -> boxModifier.clickable { trail.onClick }
-            else -> boxModifier
-        }
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height.value)
+            .background(colors.background)
+
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp, 0.dp)
+            modifier = when (trail) {
+                is Trail.LightArrow -> Modifier
+                    .fillMaxSize()
+                    .clickable { trail.onClick }
+                    .padding(paddingValues)
+
+                is Trail.DarkArrow -> Modifier
+                    .fillMaxSize()
+                    .clickable { trail.onClick }
+                    .padding(paddingValues)
+
+                else -> Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            }
         ) {
-            if (lead != null) Box(
+            if (emoji != null) Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.inverseSurface)
+                    .background(colors.emojiBackground)
             ) {
-                if (lead.emoji != null) Text(
-                    text = lead.emoji,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                else Text(
-                    text = content.split(" ")
-                        .slice(0..1)
-                        .joinToString("") { it[0].uppercase() },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                Text(
+                    text = emoji,
+                    style = when (emoji.matches(Regex("^[0-9a-zA-Zа-яА-Я]*$"))) {
+                        true -> MaterialTheme.typography.bodySmall
+                        false -> MaterialTheme.typography.bodyLarge
+                    },
+                    color = colors.emoji
                 )
             }
 
@@ -96,7 +113,7 @@ fun ListItem(
                 Text(
                     text = content,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = colors.content,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth()
@@ -104,19 +121,30 @@ fun ListItem(
                 if (comment != null) Text(
                     text = comment,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = colors.comment,
                     softWrap = false,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            if (rightText != null) Text(
-                text = rightText,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                softWrap = false
-            )
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                if (rightText != null) Text(
+                    text = rightText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colors.rightText,
+                    softWrap = false
+                )
+                if (additionalRightText != null) Text(
+                    text = additionalRightText,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colors.rightText,
+                    softWrap = false
+                )
+            }
 
             when (trail) {
                 null -> {}
@@ -124,14 +152,14 @@ fun ListItem(
                 is Trail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
                     contentDescription = content,
-                    tint = TrailColor.Arrow.color,
+                    tint = TrailColor.LIGHT_ARROW.color,
                     modifier = Modifier.size(24.dp)
                 )
 
                 is Trail.DarkArrow -> Icon(
                     painter = painterResource(R.drawable.dark_arrow),
                     contentDescription = content,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = TrailColor.DARK_ARROW.color,
                     modifier = Modifier.size(24.dp)
                 )
 
@@ -139,11 +167,42 @@ fun ListItem(
             }
         }
 
-        HorizontalDivider(
+        if (dividerEnabled) HorizontalDivider(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp),
             color = MaterialTheme.colorScheme.outlineVariant
         )
     }
+}
+
+internal data class ColorScheme(
+    val background: Color,
+    val emoji: Color,
+    val emojiBackground: Color,
+    val content: Color,
+    val comment: Color,
+    val rightText: Color
+)
+
+@Composable
+internal fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
+    if (colorSchemeType == ListItemColorScheme.SURFACE)
+        return ColorScheme(
+            background = MaterialTheme.colorScheme.surface,
+            emoji = MaterialTheme.colorScheme.onSurface,
+            emojiBackground = MaterialTheme.colorScheme.inverseSurface,
+            content = MaterialTheme.colorScheme.onSurface,
+            comment = MaterialTheme.colorScheme.onSurfaceVariant,
+            rightText = MaterialTheme.colorScheme.onSurface
+        )
+    else
+        return ColorScheme(
+            background = MaterialTheme.colorScheme.primaryContainer,
+            emoji = MaterialTheme.colorScheme.onPrimaryContainer,
+            emojiBackground = MaterialTheme.colorScheme.inversePrimary,
+            content = MaterialTheme.colorScheme.onPrimaryContainer,
+            comment = MaterialTheme.colorScheme.onPrimary,
+            rightText = MaterialTheme.colorScheme.onPrimaryContainer
+        )
 }

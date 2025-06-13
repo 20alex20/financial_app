@@ -1,24 +1,24 @@
-package com.example.financial_app.features.expenses.data
+package com.example.financial_app.features.income.data
 
 import com.example.financial_app.common.code.getStringAmount
 import com.example.financial_app.common.models.Currency
-import com.example.financial_app.features.expenses.domain.models.Expense
-import com.example.financial_app.features.expenses.domain.models.RepoExpense
-import com.example.financial_app.features.expenses.domain.repo.ExpensesRepoLoader
+import com.example.financial_app.features.income.domain.models.Income
+import com.example.financial_app.features.income.domain.models.RepoIncome
+import com.example.financial_app.features.income.domain.repo.IncomeRepoLoader
 
-object ExpensesRepo {
+object IncomeRepo {
     private var loaded: Boolean = false
-    private val loader: ExpensesRepoLoader = ExpensesRepoLoader()
+    private val loader: IncomeRepoLoader = IncomeRepoLoader()
 
     private var balance: Double = 0.0
     private var currency: Currency = Currency.RUBLE
-    private var expenses: List<RepoExpense> = listOf()
+    private var income: List<RepoIncome> = listOf()
 
     private fun load() {
-        val data = loader.loadExpensesData()
+        val data = loader.loadIncomeData()
         balance = data.balance
         currency = data.currency
-        expenses = data.expenses
+        income = data.income
         loaded = true
     }
 
@@ -28,14 +28,13 @@ object ExpensesRepo {
         return getStringAmount(balance, currency)
     }
 
-    fun getExpenses(): List<Expense> {
+    fun getIncome(): List<Income> {
         if (!loaded)
             load()
-        return expenses.map {
-            Expense(
+        return income.map {
+            Income(
                 it.id,
                 it.categoryName,
-                it.categoryEmoji,
                 getStringAmount(it.amount, currency),
                 it.comment
             )
