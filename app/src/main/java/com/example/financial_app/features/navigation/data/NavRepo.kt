@@ -47,10 +47,6 @@ fun navBarItems(): List<BarItem> {
     )
 }
 
-@Composable
-fun Expenses() {
-    Text("Expenses Page", fontSize = 30.sp)
-}
 
 @Composable
 fun Income() {

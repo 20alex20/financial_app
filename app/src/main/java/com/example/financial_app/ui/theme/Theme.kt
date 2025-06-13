@@ -32,7 +32,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = LightColorScheme
-// TODO: Заменить на инициализацию через darkColorScheme, когда будет задание сделать темную тему
+// Заменить на инициализацию через darkColorScheme, когда будет задание сделать темную тему
 
 @Composable
 fun FinancialAppTheme(

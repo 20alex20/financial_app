@@ -2,6 +2,7 @@ package com.example.financial_app.features.navigation.pres
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
@@ -27,8 +28,8 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.financial_app.features.expenses.pres.Expenses
 import com.example.financial_app.features.navigation.data.Check
-import com.example.financial_app.features.navigation.data.Expenses
 import com.example.financial_app.features.navigation.data.Income
 import com.example.financial_app.features.navigation.data.Items
 import com.example.financial_app.features.navigation.data.NavRoutes
@@ -62,6 +63,7 @@ fun NavGraph(modifier: Modifier = Modifier) {
 fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        windowInsets = WindowInsets(8.dp, 0.dp, 8.dp, 0.dp),
         modifier = modifier
     ) {
         val backStackEntry by navController.currentBackStackEntryAsState()
@@ -84,21 +86,20 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
                     )
                 },
                 label = {
-                    var offset by remember { mutableStateOf(0) }
-
                     val textMeasurer = rememberTextMeasurer()
                     val textWidth = textMeasurer.measure(
                         text = navItem.title,
                         style = MaterialTheme.typography.labelMedium
                     ).size.width
 
+                    var offset by remember { mutableStateOf(0) }
                     Text(
                         text = navItem.title,
                         style = MaterialTheme.typography.labelMedium,
                         softWrap = false,
                         overflow = TextOverflow.Visible,
                         modifier = Modifier
-                            .offset({ IntOffset(offset, 0) })
+                            .offset { IntOffset(offset, 0) }
                             .onGloballyPositioned { coordinates ->
                                 val realWidth = coordinates.size.width
                                 if (realWidth < textWidth)
