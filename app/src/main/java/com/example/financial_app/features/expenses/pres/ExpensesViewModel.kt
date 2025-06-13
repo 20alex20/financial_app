@@ -13,11 +13,11 @@ class ExpensesViewModel : ViewModel() {
     private val _expenses = mutableStateOf(listOf<Expense>())
     val expenses: State<List<Expense>> = _expenses
 
-    fun loadBalance() {
+    private fun loadBalance() {
         _balance.value = ExpensesRepo.getBalance()
     }
 
-    fun loadExpenses() {
+    private fun loadExpenses() {
         _expenses.value = ExpensesRepo.getExpenses()
     }
 

@@ -17,6 +17,7 @@ class SettingsViewModel : ViewModel() {
     }
 
     fun createSwitchesChecked(size: Int) {
-        _switchesChecked.value = List(size) { false }
+        if (_switchesChecked.value.isEmpty())
+            _switchesChecked.value = List(size) { false }
     }
 }

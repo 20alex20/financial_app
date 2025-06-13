@@ -13,11 +13,11 @@ class IncomeViewModel : ViewModel() {
     private val _income = mutableStateOf(listOf<Income>())
     val income: State<List<Income>> = _income
 
-    fun loadBalance() {
+    private fun loadBalance() {
         _balance.value = IncomeRepo.getBalance()
     }
 
-    fun loadincome() {
+    private fun loadincome() {
         _income.value = IncomeRepo.getIncome()
     }
 

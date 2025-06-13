@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -27,10 +28,10 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.financial_app.features.categories.pres.Categories
 import com.example.financial_app.features.check.pres.Check
 import com.example.financial_app.features.expenses.pres.Expenses
 import com.example.financial_app.features.income.pres.Income
-import com.example.financial_app.features.navigation.data.Items
 import com.example.financial_app.features.navigation.data.NavRoutes
 import com.example.financial_app.features.navigation.data.navBarItems
 import com.example.financial_app.features.settings.pres.Settings
@@ -47,7 +48,7 @@ fun NavGraph(modifier: Modifier = Modifier) {
             composable(NavRoutes.Expenses.route) { Expenses() }
             composable(NavRoutes.Income.route) { Income() }
             composable(NavRoutes.Check.route) { Check() }
-            composable(NavRoutes.Items.route) { Items() }
+            composable(NavRoutes.Categories.route) { Categories() }
             composable(NavRoutes.Settings.route) { Settings() }
         }
         BottomNavigationBar(
@@ -80,7 +81,8 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
                 icon = {
                     Icon(
                         painter = navItem.image,
-                        contentDescription = navItem.title
+                        contentDescription = navItem.title,
+                        modifier = Modifier.size(24.dp)
                     )
                 },
                 label = {

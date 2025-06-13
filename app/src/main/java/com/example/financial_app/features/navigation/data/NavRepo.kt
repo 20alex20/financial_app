@@ -1,10 +1,8 @@
 package com.example.financial_app.features.navigation.data
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.sp
 import com.example.financial_app.R
 import com.example.financial_app.features.navigation.domain.models.BarItem
 
@@ -12,7 +10,7 @@ enum class NavRoutes(val route: String) {
     Expenses("expenses"),
     Income("income"),
     Check("check"),
-    Items("items"),
+    Categories("categories"),
     Settings("settings")
 }
 
@@ -35,9 +33,9 @@ fun navBarItems(): List<BarItem> {
             route = "check"
         ),
         BarItem(
-            title = stringResource(R.string.items),
-            image = painterResource(R.drawable.items),
-            route = "items"
+            title = stringResource(R.string.categories),
+            image = painterResource(R.drawable.categories),
+            route = "categories"
         ),
         BarItem(
             title = stringResource(R.string.settings),
@@ -45,9 +43,4 @@ fun navBarItems(): List<BarItem> {
             route = "settings"
         ),
     )
-}
-
-@Composable
-fun Items() {
-    Text("Items Page", fontSize = 30.sp)
 }

@@ -12,11 +12,11 @@ class CheckViewModel : ViewModel() {
     private val _currency = mutableStateOf("₽")
     val currency: State<String> = _currency
 
-    fun loadBalance() {
+    private fun loadBalance() {
         _balance.value = CheckRepo.getBalance()
     }
 
-    fun loadCurrency() {
+    private fun loadCurrency() {
         _currency.value = CheckRepo.getCurrency()
     }
 
