@@ -32,8 +32,8 @@ import com.example.financial_app.features.expenses.pres.Expenses
 import com.example.financial_app.features.income.pres.Income
 import com.example.financial_app.features.navigation.data.Items
 import com.example.financial_app.features.navigation.data.NavRoutes
-import com.example.financial_app.features.navigation.data.Settings
 import com.example.financial_app.features.navigation.data.navBarItems
+import com.example.financial_app.features.settings.pres.Settings
 
 @Composable
 fun NavGraph(modifier: Modifier = Modifier) {

@@ -13,4 +13,12 @@
     <string name="balance">Баланс</string>
     <string name="currency">Валюта</string>
     <string name="money_bag">💰</string>
+    <string name="dark_theme">Тёмная тема</string>
+    <string name="main_color">Основной цвет</string>
+    <string name="sounds">Звуки</string>
+    <string name="haptics">Хаптики</string>
+    <string name="code_password">Код пароль</string>
+    <string name="synchronization">Cинхронизация</string>
+    <string name="language">Язык</string>
+    <string name="about_program">О программе</string>
 </resources>

@@ -51,8 +51,3 @@ fun navBarItems(): List<BarItem> {
 fun Items() {
     Text("Items Page", fontSize = 30.sp)
 }
-
-@Composable
-fun Settings() {
-    Text("Settings Page", fontSize = 30.sp)
-}

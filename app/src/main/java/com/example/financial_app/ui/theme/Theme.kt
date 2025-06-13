@@ -30,6 +30,7 @@ private val LightColorScheme = lightColorScheme(
     surfaceContainerLowest = RealWhite,
     surfaceContainerLow = LightestGray,
     surfaceContainer = LightGray,
+    surfaceContainerHigh = AdditionalGray,
 
     outline = DarkGray,
     outlineVariant = Gray
