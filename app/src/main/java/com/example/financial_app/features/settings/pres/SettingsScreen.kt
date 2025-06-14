@@ -33,7 +33,7 @@ fun Settings(vm: SettingsViewModel = viewModel()) {
             itemsIndexed(settings) { index, setting ->
                 ListItem(
                     setting.name,
-                    trail = if (!setting.withSwitch) Trail.LightArrow(onClick = setting.onClick)
+                    trail = if (!setting.withSwitch) Trail.DarkArrow(onClick = setting.onClick)
                     else Trail.Custom {
                         Switch(
                             checked = vm.switchesChecked.value[index],

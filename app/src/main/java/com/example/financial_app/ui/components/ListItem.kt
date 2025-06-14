@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.financial_app.R
-import com.example.financial_app.ui.theme.TrailColor
+import com.example.financial_app.ui.theme.ArrowColor
 
 sealed class Trail {
     data class LightArrow(val onClick: () -> Unit) : Trail()
@@ -130,6 +131,7 @@ fun ListItem(
 
             Column(
                 verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.End,
                 modifier = Modifier.fillMaxHeight()
             ) {
                 if (rightText != null) Text(
@@ -152,14 +154,14 @@ fun ListItem(
                 is Trail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
                     contentDescription = content,
-                    tint = TrailColor.LIGHT_ARROW.color,
+                    tint = ArrowColor.LIGHT.color,
                     modifier = Modifier.size(24.dp)
                 )
 
                 is Trail.DarkArrow -> Icon(
                     painter = painterResource(R.drawable.dark_arrow),
                     contentDescription = content,
-                    tint = TrailColor.DARK_ARROW.color,
+                    tint = ArrowColor.DARK.color,
                     modifier = Modifier.size(24.dp)
                 )
 
