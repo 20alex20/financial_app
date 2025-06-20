@@ -18,7 +18,4 @@ val RealWhite = Color(0xFFFFFFFF)
 val White = Color(0xFFFEF7FF)
 val Black = Color(0xFF1D1B20)
 
-enum class ArrowColor(val color: Color) {
-    LIGHT(Color(0x4D3C3C43)),
-    DARK(DarkGray)
-}
+val LightArrowColor = Color(0x4D3C3C43)

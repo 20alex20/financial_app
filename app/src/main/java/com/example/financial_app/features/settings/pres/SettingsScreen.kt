@@ -16,6 +16,7 @@ import com.example.financial_app.R
 import com.example.financial_app.features.settings.data.SettingsRepo
 import com.example.financial_app.ui.components.Header
 import com.example.financial_app.ui.components.ListItem
+import com.example.financial_app.ui.components.ListItemHeight
 import com.example.financial_app.ui.components.Trail
 
 @Composable
@@ -33,6 +34,7 @@ fun Settings(vm: SettingsViewModel = viewModel()) {
             itemsIndexed(settings) { index, setting ->
                 ListItem(
                     setting.name,
+                    height = ListItemHeight.LOW,
                     trail = if (!setting.withSwitch) Trail.DarkArrow(onClick = setting.onClick)
                     else Trail.Custom {
                         Switch(

@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.financial_app.R
-import com.example.financial_app.ui.theme.ArrowColor
+import com.example.financial_app.ui.theme.LightArrowColor
 
 sealed class Trail {
     data class LightArrow(val onClick: () -> Unit) : Trail()
@@ -153,14 +153,14 @@ fun ListItem(
                 is Trail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
                     contentDescription = content,
-                    tint = ArrowColor.LIGHT.color,
+                    tint = LightArrowColor,
                     modifier = Modifier.size(24.dp)
                 )
 
                 is Trail.DarkArrow -> Icon(
                     painter = painterResource(R.drawable.dark_arrow),
                     contentDescription = content,
-                    tint = ArrowColor.DARK.color,
+                    tint = colors.darkArrow,
                     modifier = Modifier.size(24.dp)
                 )
 
@@ -183,7 +183,8 @@ internal data class ColorScheme(
     val emojiBackground: Color,
     val content: Color,
     val comment: Color,
-    val rightText: Color
+    val rightText: Color,
+    val darkArrow: Color
 )
 
 @Composable
@@ -195,7 +196,8 @@ internal fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
             emojiBackground = MaterialTheme.colorScheme.inverseSurface,
             content = MaterialTheme.colorScheme.onSurface,
             comment = MaterialTheme.colorScheme.onSurfaceVariant,
-            rightText = MaterialTheme.colorScheme.onSurface
+            rightText = MaterialTheme.colorScheme.onSurface,
+            darkArrow = MaterialTheme.colorScheme.onSurfaceVariant
         )
     else
         return ColorScheme(
@@ -204,6 +206,7 @@ internal fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
             emojiBackground = MaterialTheme.colorScheme.inversePrimary,
             content = MaterialTheme.colorScheme.onPrimaryContainer,
             comment = MaterialTheme.colorScheme.onPrimary,
-            rightText = MaterialTheme.colorScheme.onPrimaryContainer
+            rightText = MaterialTheme.colorScheme.onPrimaryContainer,
+            darkArrow = MaterialTheme.colorScheme.onPrimary
         )
 }
