@@ -6,14 +6,6 @@ import androidx.compose.ui.res.stringResource
 import com.example.financial_app.R
 import com.example.financial_app.features.navigation.domain.models.BarItem
 
-enum class NavRoutes(val route: String) {
-    Expenses("expenses"),
-    Income("income"),
-    Check("check"),
-    Categories("categories"),
-    Settings("settings")
-}
-
 @Composable
 fun navBarItems(): List<BarItem> {
     return listOf(

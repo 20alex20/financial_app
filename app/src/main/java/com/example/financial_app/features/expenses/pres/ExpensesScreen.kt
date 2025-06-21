@@ -16,13 +16,15 @@ import com.example.financial_app.ui.components.Header
 import com.example.financial_app.ui.components.HeaderButton
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavController
+import com.example.financial_app.features.navigation.data.NavRoutes
 import com.example.financial_app.ui.components.ListItem
 import com.example.financial_app.ui.components.ListItemColorScheme
 import com.example.financial_app.ui.components.ListItemHeight
 import com.example.financial_app.ui.components.Trail
 
 @Composable
-fun Expenses(vm: ExpensesViewModel = viewModel()) {
+fun ExpensesScreen(navController: NavController, vm: ExpensesViewModel = viewModel()) {
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier.fillMaxSize()
@@ -30,7 +32,15 @@ fun Expenses(vm: ExpensesViewModel = viewModel()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
                 stringResource(R.string.expenses_today),
-                rightButton = HeaderButton(painterResource(R.drawable.history), onClick = { })
+                rightButton = HeaderButton(
+                    painterResource(R.drawable.history),
+                    onClick = {
+                        navController.navigate(NavRoutes.History.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
             )
             ListItem(
                 stringResource(R.string.total),

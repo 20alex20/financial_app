@@ -74,12 +74,12 @@ fun ListItem(
             modifier = when (trail) {
                 is Trail.LightArrow -> Modifier
                     .fillMaxSize()
-                    .clickable { trail.onClick }
+                    .clickable { trail.onClick() }
                     .padding(paddingValues)
 
                 is Trail.DarkArrow -> Modifier
                     .fillMaxSize()
-                    .clickable { trail.onClick }
+                    .clickable { trail.onClick() }
                     .padding(paddingValues)
 
                 else -> Modifier

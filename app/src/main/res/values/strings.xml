@@ -8,6 +8,7 @@
     <string name="add_button">Добавить</string>
     <string name="expenses_today">Расходы сегодня</string>
     <string name="income_today">Доходы сегодня</string>
+    <string name="my_history">Моя история</string>
     <string name="my_check">Мой счет</string>
     <string name="my_categories">Мои статьи</string>
     <string name="total">Всего</string>
@@ -24,4 +25,7 @@
     <string name="synchronization">Cинхронизация</string>
     <string name="language">Язык</string>
     <string name="about_program">О программе</string>
+    <string name="start">Начало</string>
+    <string name="end">Конец</string>
+    <string name="sum">Сумма</string>
 </resources>

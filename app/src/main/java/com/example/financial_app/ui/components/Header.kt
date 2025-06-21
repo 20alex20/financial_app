@@ -75,7 +75,7 @@ fun IconButton(
                     radius = 32.dp,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
-            ) { button.onClick }
+            ) { button.onClick() }
         }
     ) {
         if (button != null) Icon(

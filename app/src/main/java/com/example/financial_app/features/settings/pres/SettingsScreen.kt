@@ -20,7 +20,7 @@ import com.example.financial_app.ui.components.ListItemHeight
 import com.example.financial_app.ui.components.Trail
 
 @Composable
-fun Settings(vm: SettingsViewModel = viewModel()) {
+fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
     Column(modifier = Modifier.fillMaxSize()) {
         Header(stringResource(R.string.settings))
 
