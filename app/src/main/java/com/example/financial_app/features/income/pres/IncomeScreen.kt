@@ -22,7 +22,7 @@ import com.example.financial_app.ui.components.ListItemHeight
 import com.example.financial_app.ui.components.Trail
 
 @Composable
-fun Income(vm: IncomeViewModel = viewModel()) {
+fun IncomeScreen(vm: IncomeViewModel = viewModel()) {
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier.fillMaxSize()

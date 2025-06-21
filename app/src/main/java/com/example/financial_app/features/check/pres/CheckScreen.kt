@@ -19,7 +19,7 @@ import com.example.financial_app.ui.components.ListItemHeight
 import com.example.financial_app.ui.components.Trail
 
 @Composable
-fun Check(vm: CheckViewModel = viewModel()) {
+fun CheckScreen(vm: CheckViewModel = viewModel()) {
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier.fillMaxSize()

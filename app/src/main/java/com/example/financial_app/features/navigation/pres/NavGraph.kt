@@ -28,13 +28,14 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.example.financial_app.features.categories.pres.Categories
-import com.example.financial_app.features.check.pres.Check
-import com.example.financial_app.features.expenses.pres.Expenses
-import com.example.financial_app.features.income.pres.Income
+import com.example.financial_app.features.categories.pres.CategoriesScreen
+import com.example.financial_app.features.check.pres.CheckScreen
+import com.example.financial_app.features.expenses.pres.ExpensesScreen
+import com.example.financial_app.features.history.pres.HistoryScreen
+import com.example.financial_app.features.income.pres.IncomeScreen
 import com.example.financial_app.features.navigation.data.NavRoutes
 import com.example.financial_app.features.navigation.data.navBarItems
-import com.example.financial_app.features.settings.pres.Settings
+import com.example.financial_app.features.settings.pres.SettingsScreen
 
 @Composable
 fun NavGraph(modifier: Modifier = Modifier) {
@@ -45,11 +46,16 @@ fun NavGraph(modifier: Modifier = Modifier) {
             startDestination = NavRoutes.Expenses.route,
             modifier = Modifier.weight(1f)
         ) {
-            composable(NavRoutes.Expenses.route) { Expenses() }
-            composable(NavRoutes.Income.route) { Income() }
-            composable(NavRoutes.Check.route) { Check() }
-            composable(NavRoutes.Categories.route) { Categories() }
-            composable(NavRoutes.Settings.route) { Settings() }
+            composable(NavRoutes.Expenses.route) { 
+                ExpensesScreen(navController = navController) 
+            }
+            composable(NavRoutes.History.route) {
+                HistoryScreen(navController = navController)
+            }
+            composable(NavRoutes.Income.route) { IncomeScreen() }
+            composable(NavRoutes.Check.route) { CheckScreen() }
+            composable(NavRoutes.Categories.route) { CategoriesScreen() }
+            composable(NavRoutes.Settings.route) { SettingsScreen() }
         }
         BottomNavigationBar(
             navController,
@@ -70,7 +76,7 @@ fun BottomNavigationBar(navController: NavController, modifier: Modifier = Modif
 
         navBarItems().forEach { navItem ->
             NavigationBarItem(
-                selected = currentRoute == navItem.route,
+                selected = currentRoute?.startsWith(navItem.route) == true,
                 onClick = {
                     navController.navigate(navItem.route) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }

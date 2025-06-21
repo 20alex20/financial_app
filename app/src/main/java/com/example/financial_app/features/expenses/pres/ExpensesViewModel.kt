@@ -1,28 +1,67 @@
 package com.example.financial_app.features.expenses.pres
 
+import android.app.Application
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import com.example.financial_app.features.expenses.domain.models.Expense
+import androidx.lifecycle.AndroidViewModel
 import androidx.compose.runtime.State
+import androidx.lifecycle.viewModelScope
+import com.example.financial_app.common.code.getStringAmount
 import com.example.financial_app.features.expenses.data.ExpensesRepo
+import com.example.financial_app.features.expenses.pres.models.ExpenseUiModel
+import kotlinx.coroutines.launch
 
-class ExpensesViewModel : ViewModel() {
-    private val _balance = mutableStateOf("0 ₽")
-    val balance: State<String> = _balance
+class ExpensesViewModel(application: Application) : AndroidViewModel(application) {
+    private val expensesRepo = ExpensesRepo(application)
 
-    private val _expenses = mutableStateOf(listOf<Expense>())
-    val expenses: State<List<Expense>> = _expenses
+    private val _totalSpent = mutableStateOf("0 ₽")
+    val totalSpent: State<String> = _totalSpent
 
-    private fun loadBalance() {
-        _balance.value = ExpensesRepo.getBalance()
+    private val _expenses = mutableStateOf(listOf<ExpenseUiModel>())
+    val expenses: State<List<ExpenseUiModel>> = _expenses
+
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
+    private fun loadTotalSpent() {
+        viewModelScope.launch {
+            try {
+                val total = expensesRepo.getTotalSpent()
+                _totalSpent.value = getStringAmount(total, expensesRepo.getCurrentCurrency())
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
     }
 
     private fun loadExpenses() {
-        _expenses.value = ExpensesRepo.getExpenses()
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val currency = expensesRepo.getCurrentCurrency()
+                val domainExpenses = expensesRepo.getExpenses()
+                _expenses.value = domainExpenses.map { expense ->
+                    ExpenseUiModel(
+                        id = expense.id,
+                        categoryName = expense.categoryName,
+                        categoryEmoji = expense.categoryEmoji,
+                        amount = getStringAmount(expense.amount, currency),
+                        comment = expense.comment
+                    )
+                }
+            } catch (e: Exception) {
+                // Handle error
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun refresh() {
+        loadTotalSpent()
+        loadExpenses()
     }
 
     init {
-        loadBalance()
-        loadExpenses()
+        refresh()
     }
 }

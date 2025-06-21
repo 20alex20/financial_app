@@ -35,7 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Categories(vm: CategoriesViewModel = viewModel()) {
+fun CategoriesScreen(vm: CategoriesViewModel = viewModel()) {
     Column(modifier = Modifier.fillMaxSize()) {
         Header(stringResource(R.string.my_categories))
 
