@@ -1,7 +1,7 @@
-package com.example.financial_app.features.expenses.data.network
+package com.example.financial_app.features.network.domain.api
 
-import com.example.financial_app.features.expenses.data.network.models.AccountResponse
-import com.example.financial_app.features.expenses.data.network.models.TransactionResponse
+import com.example.financial_app.features.network.domain.models.AccountResponse
+import com.example.financial_app.features.network.domain.models.TransactionResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

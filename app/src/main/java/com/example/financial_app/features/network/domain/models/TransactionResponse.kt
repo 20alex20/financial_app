@@ -1,4 +1,4 @@
-package com.example.financial_app.features.expenses.data.network.models
+package com.example.financial_app.features.network.domain.models
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

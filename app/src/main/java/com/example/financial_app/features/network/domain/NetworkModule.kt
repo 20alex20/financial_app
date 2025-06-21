@@ -1,4 +1,4 @@
-package com.example.financial_app.features.expenses.data.network
+package com.example.financial_app.features.network.domain
 
 import android.content.Context
 import com.example.financial_app.R
@@ -15,7 +15,7 @@ import java.io.InputStreamReader
 object NetworkModule {
     private const val BASE_URL = "https://shmr-finance.ru/api/v1/"
 
-    fun provideFinanceApi(context: Context): FinanceApi {
+    fun <T> provideApi(context: Context, apiClass: Class<T>): T {
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
@@ -33,7 +33,7 @@ object NetworkModule {
             .client(client)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
-            .create(FinanceApi::class.java)
+            .create(apiClass)
     }
 
     private fun createAuthInterceptor(apiKey: String) = Interceptor { chain ->
@@ -48,4 +48,4 @@ object NetworkModule {
         val reader = BufferedReader(InputStreamReader(inputStream))
         return reader.readLine().trim()
     }
-}
+} 

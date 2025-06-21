@@ -1,17 +1,21 @@
 package com.example.financial_app.features.expenses.data
 
 import android.content.Context
+import com.example.financial_app.R
 import com.example.financial_app.common.models.Currency
-import com.example.financial_app.features.expenses.data.network.NetworkModule
 import com.example.financial_app.features.expenses.domain.models.Expense
+import com.example.financial_app.features.expenses.domain.usecase.ShowErrorUseCase
+import com.example.financial_app.features.network.domain.NetworkModule
+import com.example.financial_app.features.network.domain.api.FinanceApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class ExpensesRepo(context: Context) {
-    private val api = NetworkModule.provideFinanceApi(context)
+class ExpensesRepo(private val context: Context) {
+    private val api = NetworkModule.provideApi(context, FinanceApi::class.java)
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val showError = ShowErrorUseCase(context)
 
     private var cachedExpenses: List<Expense>? = null
     private var lastLoadDate: LocalDate? = null
@@ -29,8 +33,8 @@ class ExpensesRepo(context: Context) {
     private suspend fun loadExpensesFromNetwork(): List<Expense> {
         try {
             val accounts = api.getAccounts()
-            
             val firstAccount = accounts.firstOrNull() ?: return emptyList()
+
             currentCurrency = parseCurrency(firstAccount.currency)
             
             val today = LocalDate.now().format(dateFormatter)
@@ -55,6 +59,7 @@ class ExpensesRepo(context: Context) {
                     lastLoadDate = LocalDate.now()
                 }
         } catch (e: Exception) {
+            showError(context.getString(R.string.error_loading_data))
             throw e
         }
     }
