@@ -36,7 +36,7 @@ fun Expenses(vm: ExpensesViewModel = viewModel()) {
                 stringResource(R.string.total),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
-                rightText = vm.balance.value,
+                rightText = vm.totalSpent.value,
             )
             LazyColumn(
                 modifier = Modifier
