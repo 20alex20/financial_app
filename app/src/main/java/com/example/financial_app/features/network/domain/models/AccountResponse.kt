@@ -12,4 +12,4 @@ data class AccountResponse(
     @Json(name = "currency") val currency: String,
     @Json(name = "createdAt") val createdAt: String,
     @Json(name = "updatedAt") val updatedAt: String
-) 
+)
