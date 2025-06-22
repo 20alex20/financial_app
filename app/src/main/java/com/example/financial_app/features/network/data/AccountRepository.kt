@@ -4,22 +4,17 @@ import android.content.Context
 import com.example.financial_app.features.network.domain.NetworkAdapter
 import com.example.financial_app.features.network.domain.api.FinanceApi
 import com.example.financial_app.features.network.domain.models.AccountResponse
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class AccountRepository(context: Context) {
     private val api = NetworkAdapter.provideApi(context, FinanceApi::class.java)
-    
+    private val mutex = Mutex()
+
     private var cachedAccount: AccountResponse? = null
 
-    suspend fun getAccount(): AccountResponse = withContext(Dispatchers.IO) {
-        cachedAccount ?: api.getAccounts().firstOrNull()?.also { account -> 
-            cachedAccount = account
-        } ?: throw NoSuchElementException("No accounts found")
-    }
-
-    suspend fun refreshAccount(): AccountResponse = withContext(Dispatchers.IO) {
-        api.getAccounts().firstOrNull()?.also { account ->
+    suspend fun getAccount(): AccountResponse = mutex.withLock {
+        cachedAccount ?: api.getAccounts().firstOrNull()?.also { account ->
             cachedAccount = account
         } ?: throw NoSuchElementException("No accounts found")
     }

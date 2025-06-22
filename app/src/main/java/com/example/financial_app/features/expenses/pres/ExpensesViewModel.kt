@@ -19,9 +19,6 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
     private val _expenses = mutableStateOf(listOf<ExpenseUiModel>())
     val expenses: State<List<ExpenseUiModel>> = _expenses
 
-    private val _isLoading = mutableStateOf(false)
-    val isLoading: State<Boolean> = _isLoading
-
     private fun loadTotalSpent() {
         viewModelScope.launch {
             try {
@@ -35,7 +32,6 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
 
     private fun loadExpenses() {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
                 val currency = expensesRepo.getCurrentCurrency()
                 val domainExpenses = expensesRepo.getExpenses()
@@ -50,8 +46,6 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
                 }
             } catch (e: Exception) {
                 // Handle error
-            } finally {
-                _isLoading.value = false
             }
         }
     }
