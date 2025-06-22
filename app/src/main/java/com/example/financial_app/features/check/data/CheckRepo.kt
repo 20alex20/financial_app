@@ -1,7 +1,7 @@
 package com.example.financial_app.features.check.data
 
 import com.example.financial_app.common.code.getStringAmount
-import com.example.financial_app.common.models.Currency
+import com.example.financial_app.features.network.data.models.Currency
 import com.example.financial_app.features.check.domain.repo.CheckRepoLoader
 
 object CheckRepo {

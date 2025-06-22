@@ -1,6 +1,6 @@
 package com.example.financial_app.features.history.domain.repo
 
-import com.example.financial_app.common.models.Currency
+import com.example.financial_app.features.network.data.models.Currency
 import com.example.financial_app.features.history.domain.models.HistoryRepoData
 import com.example.financial_app.features.history.domain.models.RepoHistoryRecord
 

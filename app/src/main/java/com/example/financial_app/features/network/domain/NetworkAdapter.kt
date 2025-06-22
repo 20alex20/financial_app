@@ -12,7 +12,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-object NetworkModule {
+object NetworkAdapter {
     private const val BASE_URL = "https://shmr-finance.ru/api/v1/"
 
     fun <T> provideApi(context: Context, apiClass: Class<T>): T {
@@ -48,4 +48,4 @@ object NetworkModule {
         val reader = BufferedReader(InputStreamReader(inputStream))
         return reader.readLine().trim()
     }
-} 
+}

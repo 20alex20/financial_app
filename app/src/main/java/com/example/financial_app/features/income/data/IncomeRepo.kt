@@ -1,7 +1,7 @@
 package com.example.financial_app.features.income.data
 
 import com.example.financial_app.common.code.getStringAmount
-import com.example.financial_app.common.models.Currency
+import com.example.financial_app.features.network.data.models.Currency
 import com.example.financial_app.features.income.domain.models.Income
 import com.example.financial_app.features.income.domain.models.RepoIncome
 import com.example.financial_app.features.income.domain.repo.IncomeRepoLoader

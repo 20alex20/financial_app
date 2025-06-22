@@ -1,7 +1,7 @@
 package com.example.financial_app.features.history.data
 
 import com.example.financial_app.common.code.getStringAmount
-import com.example.financial_app.common.models.Currency
+import com.example.financial_app.features.network.data.models.Currency
 import com.example.financial_app.features.history.domain.models.HistoryRecord
 import com.example.financial_app.features.history.domain.models.RepoHistoryRecord
 import com.example.financial_app.features.history.domain.repo.HistoryRepoLoader

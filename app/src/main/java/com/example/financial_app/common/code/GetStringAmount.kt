@@ -1,6 +1,6 @@
 package com.example.financial_app.common.code
 
-import com.example.financial_app.common.models.Currency
+import com.example.financial_app.features.network.data.models.Currency
 import kotlin.math.roundToInt
 
 fun getStringAmount(value: Double, currency: Currency): String {
