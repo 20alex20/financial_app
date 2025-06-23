@@ -46,14 +46,13 @@ fun NavGraph(modifier: Modifier = Modifier) {
             startDestination = NavRoutes.Expenses.route,
             modifier = Modifier.weight(1f)
         ) {
-            composable(NavRoutes.Expenses.route) { 
-                ExpensesScreen(navController = navController) 
+            composable(NavRoutes.Expenses.route) { ExpensesScreen(navController) }
+            composable(NavRoutes.Income.route) { IncomeScreen(navController) }
+            composable(NavRoutes.Expenses.route + "/" + NavRoutes.History.route) {
+                HistoryScreen(NavRoutes.Expenses.route, navController)
             }
-            composable(NavRoutes.Income.route) {
-                IncomeScreen(navController = navController)
-            }
-            composable(NavRoutes.History.route) {
-                HistoryScreen(navController = navController)
+            composable(NavRoutes.Income.route + "/" + NavRoutes.History.route) {
+                HistoryScreen(NavRoutes.Income.route, navController)
             }
             composable(NavRoutes.Check.route) { CheckScreen() }
             composable(NavRoutes.Categories.route) { CategoriesScreen() }

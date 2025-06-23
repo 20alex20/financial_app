@@ -13,29 +13,19 @@ import kotlinx.coroutines.launch
 class IncomeViewModel(application: Application) : AndroidViewModel(application) {
     private val incomeRepo = IncomeRepo(application)
 
-    private val _totalSpent = mutableStateOf("0 ₽")
-    val totalSpent: State<String> = _totalSpent
+    private val _total = mutableStateOf("0 ₽")
+    val total: State<String> = _total
 
     private val _income = mutableStateOf(listOf<IncomeUiModel>())
     val income: State<List<IncomeUiModel>> = _income
 
-    private fun loadTotalSpent() {
+    private fun loadIncomeAndTotal() {
         viewModelScope.launch {
             try {
-                val total = incomeRepo.getTotalSpent()
-                _totalSpent.value = getStringAmount(total, incomeRepo.getCurrentCurrency())
-            } catch (e: Exception) {
-                // Handle error
-            }
-        }
-    }
+                val currency = incomeRepo.getCurrency()
+                val repoIncome = incomeRepo.getIncome()
 
-    private fun loadIncome() {
-        viewModelScope.launch {
-            try {
-                val currency = incomeRepo.getCurrentCurrency()
-                val domainIncome = incomeRepo.getIncome()
-                _income.value = domainIncome.map { income ->
+                _income.value = repoIncome.map { income ->
                     IncomeUiModel(
                         id = income.id,
                         categoryName = income.categoryName,
@@ -44,6 +34,8 @@ class IncomeViewModel(application: Application) : AndroidViewModel(application) 
                         comment = income.comment
                     )
                 }
+
+                _total.value = getStringAmount(repoIncome.sumOf { it.amount }, currency)
             } catch (e: Exception) {
                 // Handle error
             }
@@ -51,8 +43,7 @@ class IncomeViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun refresh() {
-        loadTotalSpent()
-        loadIncome()
+        loadIncomeAndTotal()
     }
 
     init {

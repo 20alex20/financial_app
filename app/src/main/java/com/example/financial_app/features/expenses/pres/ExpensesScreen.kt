@@ -35,7 +35,9 @@ fun ExpensesScreen(navController: NavController, vm: ExpensesViewModel = viewMod
                 rightButton = HeaderButton(
                     painterResource(R.drawable.history),
                     onClick = {
-                        navController.navigate(NavRoutes.History.route) {
+                        navController.navigate(
+                            NavRoutes.Expenses.route + "/" + NavRoutes.History.route
+                        ) {
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -46,7 +48,7 @@ fun ExpensesScreen(navController: NavController, vm: ExpensesViewModel = viewMod
                 stringResource(R.string.total),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
-                rightText = vm.totalSpent.value,
+                rightText = vm.total.value,
             )
             LazyColumn(
                 modifier = Modifier

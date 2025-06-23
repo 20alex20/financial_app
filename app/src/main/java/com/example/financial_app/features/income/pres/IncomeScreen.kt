@@ -35,7 +35,9 @@ fun IncomeScreen(navController: NavController, vm: IncomeViewModel = viewModel()
                 rightButton = HeaderButton(
                     painterResource(R.drawable.history),
                     onClick = {
-                        navController.navigate(NavRoutes.History.route) {
+                        navController.navigate(
+                            NavRoutes.Income.route + "/" + NavRoutes.History.route
+                        ) {
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -46,7 +48,7 @@ fun IncomeScreen(navController: NavController, vm: IncomeViewModel = viewModel()
                 stringResource(R.string.total),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
-                rightText = vm.totalSpent.value,
+                rightText = vm.total.value,
             )
             LazyColumn(
                 modifier = Modifier

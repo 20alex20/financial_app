@@ -13,29 +13,19 @@ import kotlinx.coroutines.launch
 class ExpensesViewModel(application: Application) : AndroidViewModel(application) {
     private val expensesRepo = ExpensesRepo(application)
 
-    private val _totalSpent = mutableStateOf("0 ₽")
-    val totalSpent: State<String> = _totalSpent
+    private val _total = mutableStateOf("0 ₽")
+    val total: State<String> = _total
 
     private val _expenses = mutableStateOf(listOf<ExpenseUiModel>())
     val expenses: State<List<ExpenseUiModel>> = _expenses
 
-    private fun loadTotalSpent() {
+    private fun loadExpensesAndTotal() {
         viewModelScope.launch {
             try {
-                val total = expensesRepo.getTotalSpent()
-                _totalSpent.value = getStringAmount(total, expensesRepo.getCurrentCurrency())
-            } catch (e: Exception) {
-                // Handle error
-            }
-        }
-    }
+                val currency = expensesRepo.getCurrency()
+                val repoExpenses = expensesRepo.getExpenses()
 
-    private fun loadExpenses() {
-        viewModelScope.launch {
-            try {
-                val currency = expensesRepo.getCurrentCurrency()
-                val domainExpenses = expensesRepo.getExpenses()
-                _expenses.value = domainExpenses.map { expense ->
+                _expenses.value = repoExpenses.map { expense ->
                     ExpenseUiModel(
                         id = expense.id,
                         categoryName = expense.categoryName,
@@ -44,6 +34,8 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
                         comment = expense.comment
                     )
                 }
+
+                _total.value = getStringAmount(repoExpenses.sumOf { it.amount }, currency)
             } catch (e: Exception) {
                 // Handle error
             }
@@ -51,8 +43,7 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun refresh() {
-        loadTotalSpent()
-        loadExpenses()
+        loadExpensesAndTotal()
     }
 
     init {
