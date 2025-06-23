@@ -4,22 +4,35 @@ import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
+import com.example.financial_app.R
 import com.example.financial_app.common.code.getStringAmount
+import com.example.financial_app.common.models.Response
+import com.example.financial_app.common.usecase.ShowToastUseCase
 import com.example.financial_app.features.history.data.HistoryRepo
 import com.example.financial_app.features.history.pres.models.HistoryRecordUiModel
 import com.example.financial_app.features.navigation.data.NavRoutes
+import com.example.financial_app.features.network.data.models.Currency
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-class HistoryViewModel(application: Application, isIncome: Boolean) : ViewModel() {
+class HistoryViewModel(
+    application: Application,
+    isIncome: Boolean
+) : AndroidViewModel(application) {
     private val historyRepo = HistoryRepo(application, isIncome)
+    private val showToast = ShowToastUseCase(application)
+    private var loadJob: Job? = null
     private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     private val ruLocale = Locale("ru")
@@ -37,31 +50,43 @@ class HistoryViewModel(application: Application, isIncome: Boolean) : ViewModel(
     val history: State<List<HistoryRecordUiModel>> = _history
 
     private fun loadHistoryRecordsAndTotal() {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             try {
-                val currency = historyRepo.getCurrency()
-                val repoHistory = historyRepo.getHistory()
-                val today = LocalDate.now()
-
-                _history.value = repoHistory.map { record ->
-                    val dateTime = if (record.dateTime.toLocalDate() == today)
-                        record.dateTime.format(timeFormatter)
+                val currencyResponse = historyRepo.getCurrency()
+                val historyResponse = historyRepo.getHistory()
+                if (historyResponse is Response.Success) {
+                    val currency = if (currencyResponse is Response.Success)
+                        currencyResponse.data
                     else
-                        record.dateTime.format(dateFormatter)
+                        Currency.RUBLE
 
-                    HistoryRecordUiModel(
-                        id = record.id,
-                        categoryName = record.categoryName,
-                        categoryEmoji = record.categoryEmoji,
-                        dateTime = dateTime,
-                        amount = getStringAmount(record.amount, currency),
-                        comment = record.comment
+                    val today = LocalDate.now()
+                    _history.value = historyResponse.data.map { record ->
+                        val dateTime = if (record.dateTime.toLocalDate() == today)
+                            record.dateTime.format(timeFormatter)
+                        else
+                            record.dateTime.format(dateFormatter)
+
+                        HistoryRecordUiModel(
+                            id = record.id,
+                            categoryName = record.categoryName,
+                            categoryEmoji = record.categoryEmoji,
+                            dateTime = dateTime,
+                            amount = getStringAmount(record.amount, currency),
+                            comment = record.comment
+                        )
+                    }
+
+                    _total.value = getStringAmount(
+                        historyResponse.data.sumOf { it.amount },
+                        currency
                     )
+                } else {
+                    showToast(application.getString(R.string.error_data_loading))
                 }
-
-                _total.value = getStringAmount(repoHistory.sumOf { it.amount }, currency)
             } catch (e: Exception) {
-                // Handle error
+                showToast(application.getString(R.string.error_data_processing))
             }
         }
     }
@@ -90,6 +115,12 @@ class HistoryViewModel(application: Application, isIncome: Boolean) : ViewModel(
 
     init {
         refresh()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        loadJob?.cancel()
+        viewModelScope.cancel()
     }
 
     class Factory(

@@ -18,11 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.financial_app.features.navigation.pres.NavGraph
+import com.example.financial_app.features.network.domain.NetworkConnectionObserver
 import com.example.financial_app.ui.theme.FinancialAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        NetworkConnectionObserver.init(this)
 
         val splashScreen = installSplashScreen()
         splashScreen.setOnExitAnimationListener { splashViewProvider ->
@@ -62,5 +64,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        NetworkConnectionObserver.release()
     }
 }

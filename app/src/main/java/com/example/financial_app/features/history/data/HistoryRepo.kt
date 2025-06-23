@@ -1,8 +1,7 @@
 package com.example.financial_app.features.history.data
 
 import android.content.Context
-import com.example.financial_app.R
-import com.example.financial_app.common.usecase.ShowToastUseCase
+import com.example.financial_app.common.models.Response
 import com.example.financial_app.features.history.domain.models.HistoryRecord
 import com.example.financial_app.features.network.data.AccountRepository
 import com.example.financial_app.features.network.data.models.Currency
@@ -16,7 +15,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
-class HistoryRepo(private val context: Context, private val isIncome: Boolean) {
+class HistoryRepo(context: Context, private val isIncome: Boolean) {
     private val api = NetworkAdapter.provideApi(context, FinanceApi::class.java)
     private val accountRepository = AccountRepository(context)
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -25,22 +24,21 @@ class HistoryRepo(private val context: Context, private val isIncome: Boolean) {
         .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
         .appendPattern("'Z'")
         .toFormatter()
-    private val showError = ShowToastUseCase(context)
 
     private var cachedHistory: List<HistoryRecord>? = null
 
-    suspend fun getCurrency(): Currency = withContext(Dispatchers.IO) {
+    suspend fun getCurrency(): Response<Currency> = withContext(Dispatchers.IO) {
         try {
-            Currency.parseStr(accountRepository.getAccount().currency)
+            Response.Success(Currency.parseStr(accountRepository.getAccount().currency))
         } catch (e: Exception) {
-            Currency.RUBLE
+            Response.Failure(e)
         }
     }
 
-    suspend fun getHistory(): List<HistoryRecord> = withContext(Dispatchers.IO) {
+    suspend fun getHistory(): Response<List<HistoryRecord>> = withContext(Dispatchers.IO) {
         try {
             if (cachedHistory != null)
-                return@withContext cachedHistory ?: emptyList()
+                return@withContext Response.Success(cachedHistory ?: emptyList())
 
             val account = accountRepository.getAccount()
             val today = LocalDate.now()
@@ -51,26 +49,27 @@ class HistoryRepo(private val context: Context, private val isIncome: Boolean) {
                 endDate = today.format(dateFormatter)
             )
 
-            transactions
-                .filter { it.category.isIncome == isIncome }
-                .sortedByDescending { it.transactionDate }
-                .map { transaction ->
-                    HistoryRecord(
-                        id = transaction.id,
-                        categoryName = transaction.category.name,
-                        categoryEmoji = transaction.category.emoji,
-                        dateTime = LocalDateTime.parse(
-                            transaction.transactionDate,
-                            dateTimeFormatter
-                        ),
-                        amount = transaction.amount.toDouble(),
-                        comment = transaction.comment
-                    )
-                }
-                .also { cachedHistory = it }
+            Response.Success(
+                transactions
+                    .filter { it.category.isIncome == isIncome }
+                    .sortedByDescending { it.transactionDate }
+                    .map { transaction ->
+                        HistoryRecord(
+                            id = transaction.id,
+                            categoryName = transaction.category.name,
+                            categoryEmoji = transaction.category.emoji,
+                            dateTime = LocalDateTime.parse(
+                                transaction.transactionDate,
+                                dateTimeFormatter
+                            ),
+                            amount = transaction.amount.toDouble(),
+                            comment = transaction.comment
+                        )
+                    }
+                    .also { cachedHistory = it }
+            )
         } catch (e: Exception) {
-            showError(context.getString(R.string.error_loading_data))
-            emptyList()
+            Response.Failure(e)
         }
     }
 

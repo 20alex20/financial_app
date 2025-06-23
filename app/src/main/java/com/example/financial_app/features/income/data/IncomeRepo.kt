@@ -1,8 +1,7 @@
 package com.example.financial_app.features.income.data
 
 import android.content.Context
-import com.example.financial_app.R
-import com.example.financial_app.common.usecase.ShowToastUseCase
+import com.example.financial_app.common.models.Response
 import com.example.financial_app.features.network.data.models.Currency
 import com.example.financial_app.features.income.domain.models.Income
 import com.example.financial_app.features.network.data.AccountRepository
@@ -13,26 +12,25 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class IncomeRepo(private val context: Context) {
+class IncomeRepo(context: Context) {
     private val api = NetworkAdapter.provideApi(context, FinanceApi::class.java)
     private val accountRepository = AccountRepository(context)
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val showError = ShowToastUseCase(context)
 
     private var cachedIncome: List<Income>? = null
 
-    suspend fun getCurrency(): Currency = withContext(Dispatchers.IO) {
+    suspend fun getCurrency(): Response<Currency> = withContext(Dispatchers.IO) {
         try {
-            Currency.parseStr(accountRepository.getAccount().currency)
+            Response.Success(Currency.parseStr(accountRepository.getAccount().currency))
         } catch (e: Exception) {
-            Currency.RUBLE
+            Response.Failure(e)
         }
     }
 
-    suspend fun getIncome(): List<Income> = withContext(Dispatchers.IO) {
+    suspend fun getIncome(): Response<List<Income>> = withContext(Dispatchers.IO) {
         try {
             if (cachedIncome != null)
-                return@withContext cachedIncome ?: emptyList()
+                return@withContext Response.Success(cachedIncome ?: emptyList())
 
             val account = accountRepository.getAccount()
             val today = LocalDate.now().format(dateFormatter)
@@ -42,22 +40,23 @@ class IncomeRepo(private val context: Context) {
                 endDate = today
             )
 
-            transactions
-                .filter { it.category.isIncome }
-                .sortedByDescending { it.transactionDate }
-                .map { transaction ->
-                    Income(
-                        id = transaction.id,
-                        categoryName = transaction.category.name,
-                        categoryEmoji = transaction.category.emoji,
-                        amount = transaction.amount.toDouble(),
-                        comment = transaction.comment
-                    )
-                }
-                .also { cachedIncome = it }
+            Response.Success(
+                transactions
+                    .filter { it.category.isIncome }
+                    .sortedByDescending { it.transactionDate }
+                    .map { transaction ->
+                        Income(
+                            id = transaction.id,
+                            categoryName = transaction.category.name,
+                            categoryEmoji = transaction.category.emoji,
+                            amount = transaction.amount.toDouble(),
+                            comment = transaction.comment
+                        )
+                    }
+                    .also { cachedIncome = it }
+            )
         } catch (e: Exception) {
-            showError(context.getString(R.string.error_loading_data))
-            emptyList()
+            Response.Failure(e)
         }
     }
 
