@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -13,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.financial_app.R
+import com.example.financial_app.ui.components.Calendar
 import com.example.financial_app.ui.components.Header
 import com.example.financial_app.ui.components.HeaderButton
 import com.example.financial_app.ui.components.ListItem
@@ -28,6 +31,15 @@ fun HistoryScreen(
         factory = HistoryViewModel.Factory(LocalContext.current, parentRoute)
     )
 ) {
+    val showStartCalendar = remember { mutableStateOf(false) }
+    val showEndCalendar = remember { mutableStateOf(false) }
+    Calendar(showStartCalendar, vm.startDate, setNewDate = { newDate ->
+        vm.loadWithNewDates(newDate, vm.endDate.value)
+    })
+    Calendar(showEndCalendar, vm.endDate, setNewDate = { newDate ->
+        vm.loadWithNewDates(vm.startDate.value, newDate)
+    })
+
     Column(modifier = Modifier.fillMaxSize()) {
         Header(
             stringResource(R.string.my_history),
@@ -40,13 +52,15 @@ fun HistoryScreen(
             stringResource(R.string.start),
             height = ListItemHeight.LOW,
             colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
-            rightText = vm.startDateTime.value
+            rightText = vm.strStart.value,
+            trail = Trail.InvisibleButton(onClick = { showStartCalendar.value = true })
         )
         ListItem(
             stringResource(R.string.end),
             height = ListItemHeight.LOW,
             colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
-            rightText = vm.endDateTime.value
+            rightText = vm.strEnd.value,
+            trail = Trail.InvisibleButton(onClick = { showEndCalendar.value = true })
         )
         ListItem(
             stringResource(R.string.sum),

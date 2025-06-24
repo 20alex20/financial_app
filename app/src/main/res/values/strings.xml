@@ -31,4 +31,6 @@
     <string name="error_data_loading">Ошибка загрузки данных</string>
     <string name="error_data_processing">Ошибка обработки данных</string>
     <string name="error_no_internet">Соединение потеряно</string>
+    <string name="date_picker_ok">OK</string>
+    <string name="date_picker_cancel">Cancel</string>
 </resources>

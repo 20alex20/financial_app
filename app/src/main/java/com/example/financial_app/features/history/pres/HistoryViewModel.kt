@@ -36,11 +36,17 @@ class HistoryViewModel(
     private val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     private val ruLocale = Locale("ru")
 
-    private val _startDateTime = mutableStateOf("Январь 2025")
-    val startDateTime: State<String> = _startDateTime
+    private var _startDate = mutableStateOf(LocalDate.now().withDayOfMonth(1))
+    val startDate: State<LocalDate> = _startDate
 
-    private val _endDateTime = mutableStateOf("00:00")
-    val endDateTime: State<String> = _endDateTime
+    private val _strStart = mutableStateOf("Январь 2025")
+    val strStart: State<String> = _strStart
+
+    private var _endDate = mutableStateOf(LocalDate.now())
+    val endDate: State<LocalDate> = _endDate
+
+    private val _strEnd = mutableStateOf("00:00")
+    val strEnd: State<String> = _strEnd
 
     private val _total = mutableStateOf("0 ₽")
     val total: State<String> = _total
@@ -61,7 +67,8 @@ class HistoryViewModel(
                 else
                     Currency.RUBLE
 
-                historyRepo.getHistory().collect { response ->
+                historyRepo.clearCache()
+                historyRepo.getHistory(_startDate.value, _endDate.value).collect { response ->
                     when (response) {
                         is Response.Loading -> _loading.value = true
 
@@ -92,32 +99,50 @@ class HistoryViewModel(
                     }
                 }
             } catch (e: Exception) {
-                showToast(application.getString(R.string.error_data_processing))
+                // showToast(application.getString(R.string.error_data_processing))
             }
         }
         _loading.value = false
     }
 
-    private fun updateDateTime() {
-        val now = LocalDateTime.now()
+    private fun updateDates() {
+        val today = LocalDateTime.now()
+        if (_endDate.value != today.toLocalDate())
+            _strEnd.value = _endDate.value.format(dateFormatter)
+        else
+            _strEnd.value = today.format(timeFormatter)
 
-        _startDateTime.value = buildString {
-            append(now.month.getDisplayName(TextStyle.FULL, ruLocale).replaceFirstChar { symbol ->
-                if (symbol.isLowerCase())
-                    symbol.titlecase(ruLocale)
-                else
-                    symbol.toString()
-            })
-            append(" ")
-            append(now.year)
-        }
+        if (_startDate.value.dayOfMonth != 1)
+            _strStart.value = _startDate.value.format(dateFormatter)
+        else
+            _strStart.value = buildString {
+                append(
+                    _startDate.value.month
+                        .getDisplayName(TextStyle.FULL, ruLocale)
+                        .replaceFirstChar { symbol ->
+                            if (symbol.isLowerCase())
+                                symbol.titlecase(ruLocale)
+                            else
+                                symbol.toString()
+                        }
+                )
+                append(" ")
+                append(_startDate.value.year)
+            }
+    }
 
-        _endDateTime.value = now.format(timeFormatter)
+    fun loadWithNewDates(start: LocalDate, end: LocalDate) {
+        val today = LocalDate.now()
+        _endDate.value = if (end <= today) end else today
+        _startDate.value = if (start <= _endDate.value) start else _endDate.value
+
+        updateDates()
+        loadHistoryRecordsAndTotal()
     }
 
     fun refresh() {
-        loadHistoryRecordsAndTotal()
-        updateDateTime()
+        val today = LocalDate.now()
+        loadWithNewDates(today.withDayOfMonth(1), today)
     }
 
     init {

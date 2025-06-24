@@ -61,7 +61,7 @@ class IncomeViewModel(application: Application) : AndroidViewModel(application) 
                     }
                 }
             } catch (e: Exception) {
-                showToast(application.getString(R.string.error_data_processing))
+                // showToast(application.getString(R.string.error_data_processing))
             }
         }
         _loading.value = false

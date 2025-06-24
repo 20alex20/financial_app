@@ -38,16 +38,18 @@ class HistoryRepo(context: Context, private val isIncome: Boolean) {
             Response.Failure(Exception("Error loading account data"))
     }
 
-    fun getHistory(): Flow<Response<List<HistoryRecord>>> = repoTryCatchBlock {
+    fun getHistory(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<Response<List<HistoryRecord>>> = repoTryCatchBlock {
         if (cachedHistory != null)
             return@repoTryCatchBlock cachedHistory ?: emptyList()
 
         val account = accountRepo.getAccount() ?: throw Exception("Error loading account data")
-        val today = LocalDate.now()
         val transactions = api.getTransactions(
             accountId = account.id,
-            startDate = today.withDayOfMonth(1).format(dateFormatter),
-            endDate = today.format(dateFormatter)
+            startDate = startDate.format(dateFormatter),
+            endDate = endDate.format(dateFormatter)
         )
 
         transactions

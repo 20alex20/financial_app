@@ -33,6 +33,7 @@ import com.example.financial_app.ui.theme.LightArrowColor
 sealed class Trail {
     data class LightArrow(val onClick: () -> Unit) : Trail()
     data class DarkArrow(val onClick: () -> Unit) : Trail()
+    data class InvisibleButton(val onClick: () -> Unit) : Trail()
     data class Custom(val customTrail: @Composable () -> Unit) : Trail()
 }
 
@@ -78,6 +79,11 @@ fun ListItem(
                     .padding(paddingValues)
 
                 is Trail.DarkArrow -> Modifier
+                    .fillMaxSize()
+                    .clickable { trail.onClick() }
+                    .padding(paddingValues)
+
+                is Trail.InvisibleButton -> Modifier
                     .fillMaxSize()
                     .clickable { trail.onClick() }
                     .padding(paddingValues)
@@ -148,23 +154,20 @@ fun ListItem(
             }
 
             when (trail) {
-                null -> {}
-
                 is Trail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
                     contentDescription = content,
                     tint = LightArrowColor,
                     modifier = Modifier.size(24.dp)
                 )
-
                 is Trail.DarkArrow -> Icon(
                     painter = painterResource(R.drawable.dark_arrow),
                     contentDescription = content,
                     tint = colors.darkArrow,
                     modifier = Modifier.size(24.dp)
                 )
-
                 is Trail.Custom -> trail.customTrail()
+                else -> {}
             }
         }
 
