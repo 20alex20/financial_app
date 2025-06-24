@@ -7,7 +7,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.example.financial_app.R
-import com.example.financial_app.common.code.getStringAmount
 import com.example.financial_app.common.models.Response
 import com.example.financial_app.common.usecase.ShowToastUseCase
 import com.example.financial_app.features.income.data.IncomeRepo
@@ -25,38 +24,47 @@ class IncomeViewModel(application: Application) : AndroidViewModel(application) 
     private val _income = mutableStateOf(listOf<IncomeUiModel>())
     val income: State<List<IncomeUiModel>> = _income
 
+    private val _loading = mutableStateOf(false)
+    val loading: State<Boolean> = _loading
+
     private fun loadIncomeAndTotal() {
         viewModelScope.launch {
             try {
                 val currencyResponse = incomeRepo.getCurrency()
-                val incomeResponse = incomeRepo.getIncome()
-                if (incomeResponse is Response.Success) {
-                    val currency = if (currencyResponse is Response.Success)
-                        currencyResponse.data
-                    else
-                        Currency.RUBLE
+                val currency = if (currencyResponse is Response.Success)
+                    currencyResponse.data
+                else
+                    Currency.RUBLE
 
-                    _income.value = incomeResponse.data.map { income ->
-                        IncomeUiModel(
-                            id = income.id,
-                            categoryName = income.categoryName,
-                            categoryEmoji = income.categoryEmoji,
-                            amount = getStringAmount(income.amount, currency),
-                            comment = income.comment
-                        )
+                incomeRepo.getIncome().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+
+                        is Response.Success -> {
+                            _income.value = response.data.map { income ->
+                                IncomeUiModel(
+                                    id = income.id,
+                                    categoryName = income.categoryName,
+                                    categoryEmoji = income.categoryEmoji,
+                                    amount = currency.getStrAmount(income.amount),
+                                    comment = income.comment
+                                )
+                            }
+                            _total.value = currency.getStrAmount(response.data.sumOf { income ->
+                                income.amount
+                            })
+                        }
+
+                        is Response.Failure -> {
+                            showToast(application.getString(R.string.error_data_loading))
+                        }
                     }
-
-                    _total.value = getStringAmount(
-                        incomeResponse.data.sumOf { it.amount },
-                        currency
-                    )
-                } else {
-                    showToast(application.getString(R.string.error_data_loading))
                 }
             } catch (e: Exception) {
                 showToast(application.getString(R.string.error_data_processing))
             }
         }
+        _loading.value = false
     }
 
     fun refresh() {

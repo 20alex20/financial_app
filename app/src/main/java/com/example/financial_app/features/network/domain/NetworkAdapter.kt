@@ -14,15 +14,15 @@ import java.io.InputStreamReader
 
 object NetworkAdapter {
     private const val BASE_URL = "https://shmr-finance.ru/api/v1/"
+    private var apiKey: String? = null
 
     fun <T> provideApi(context: Context, apiClass: Class<T>): T {
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
 
-        val apiKey = readApiKey(context)
         val client = OkHttpClient.Builder()
-            .addInterceptor(createAuthInterceptor(apiKey))
+            .addInterceptor(createAuthInterceptor(apiKey ?: readApiKey(context)))
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
@@ -46,6 +46,6 @@ object NetworkAdapter {
     private fun readApiKey(context: Context): String {
         val inputStream = context.resources.openRawResource(R.raw.api_key)
         val reader = BufferedReader(InputStreamReader(inputStream))
-        return reader.readLine().trim()
+        return reader.readLine().trim().also { apiKey = it }
     }
 }

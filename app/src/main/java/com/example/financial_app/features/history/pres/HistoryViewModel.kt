@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.example.financial_app.R
-import com.example.financial_app.common.code.getStringAmount
 import com.example.financial_app.common.models.Response
 import com.example.financial_app.common.usecase.ShowToastUseCase
 import com.example.financial_app.features.history.data.HistoryRepo
@@ -49,46 +48,54 @@ class HistoryViewModel(
     private val _history = mutableStateOf(listOf<HistoryRecordUiModel>())
     val history: State<List<HistoryRecordUiModel>> = _history
 
+    private val _loading = mutableStateOf(false)
+    val loading: State<Boolean> = _loading
+
     private fun loadHistoryRecordsAndTotal() {
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             try {
                 val currencyResponse = historyRepo.getCurrency()
-                val historyResponse = historyRepo.getHistory()
-                if (historyResponse is Response.Success) {
-                    val currency = if (currencyResponse is Response.Success)
-                        currencyResponse.data
-                    else
-                        Currency.RUBLE
+                val currency = if (currencyResponse is Response.Success)
+                    currencyResponse.data
+                else
+                    Currency.RUBLE
 
-                    val today = LocalDate.now()
-                    _history.value = historyResponse.data.map { record ->
-                        val dateTime = if (record.dateTime.toLocalDate() == today)
-                            record.dateTime.format(timeFormatter)
-                        else
-                            record.dateTime.format(dateFormatter)
+                historyRepo.getHistory().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
 
-                        HistoryRecordUiModel(
-                            id = record.id,
-                            categoryName = record.categoryName,
-                            categoryEmoji = record.categoryEmoji,
-                            dateTime = dateTime,
-                            amount = getStringAmount(record.amount, currency),
-                            comment = record.comment
-                        )
+                        is Response.Success -> {
+                            val today = LocalDate.now()
+                            _history.value = response.data.map { record ->
+                                val dateTime = if (record.dateTime.toLocalDate() == today)
+                                    record.dateTime.format(timeFormatter)
+                                else
+                                    record.dateTime.format(dateFormatter)
+                                HistoryRecordUiModel(
+                                    id = record.id,
+                                    categoryName = record.categoryName,
+                                    categoryEmoji = record.categoryEmoji,
+                                    dateTime = dateTime,
+                                    amount = currency.getStrAmount(record.amount),
+                                    comment = record.comment
+                                )
+                            }
+                            _total.value = currency.getStrAmount(response.data.sumOf { record ->
+                                record.amount
+                            })
+                        }
+
+                        is Response.Failure -> {
+                            showToast(application.getString(R.string.error_data_loading))
+                        }
                     }
-
-                    _total.value = getStringAmount(
-                        historyResponse.data.sumOf { it.amount },
-                        currency
-                    )
-                } else {
-                    showToast(application.getString(R.string.error_data_loading))
                 }
             } catch (e: Exception) {
                 showToast(application.getString(R.string.error_data_processing))
             }
         }
+        _loading.value = false
     }
 
     private fun updateDateTime() {

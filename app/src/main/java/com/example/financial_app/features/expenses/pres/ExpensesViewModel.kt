@@ -7,7 +7,6 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.example.financial_app.R
-import com.example.financial_app.common.code.getStringAmount
 import com.example.financial_app.common.models.Response
 import com.example.financial_app.common.usecase.ShowToastUseCase
 import com.example.financial_app.features.expenses.data.ExpensesRepo
@@ -25,38 +24,47 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
     private val _expenses = mutableStateOf(listOf<ExpenseUiModel>())
     val expenses: State<List<ExpenseUiModel>> = _expenses
 
+    private val _loading = mutableStateOf(false)
+    val loading: State<Boolean> = _loading
+
     private fun loadExpensesAndTotal() {
         viewModelScope.launch {
             try {
                 val currencyResponse = expensesRepo.getCurrency()
-                val expensesResponse = expensesRepo.getExpenses()
-                if (expensesResponse is Response.Success) {
-                    val currency = if (currencyResponse is Response.Success)
-                        currencyResponse.data
-                    else
-                        Currency.RUBLE
+                val currency = if (currencyResponse is Response.Success)
+                    currencyResponse.data
+                else
+                    Currency.RUBLE
 
-                    _expenses.value = expensesResponse.data.map { expense ->
-                        ExpenseUiModel(
-                            id = expense.id,
-                            categoryName = expense.categoryName,
-                            categoryEmoji = expense.categoryEmoji,
-                            amount = getStringAmount(expense.amount, currency),
-                            comment = expense.comment
-                        )
+                expensesRepo.getExpenses().collect { response ->
+                    when (response) {
+                        is Response.Loading -> _loading.value = true
+
+                        is Response.Success -> {
+                            _expenses.value = response.data.map { expense ->
+                                ExpenseUiModel(
+                                    id = expense.id,
+                                    categoryName = expense.categoryName,
+                                    categoryEmoji = expense.categoryEmoji,
+                                    amount = currency.getStrAmount(expense.amount),
+                                    comment = expense.comment
+                                )
+                            }
+                            _total.value = currency.getStrAmount(response.data.sumOf { expense ->
+                                expense.amount
+                            })
+                        }
+
+                        is Response.Failure -> {
+                            showToast(application.getString(R.string.error_data_loading))
+                        }
                     }
-
-                    _total.value = getStringAmount(
-                        expensesResponse.data.sumOf { it.amount },
-                        currency
-                    )
-                } else {
-                    showToast(application.getString(R.string.error_data_loading))
                 }
             } catch (e: Exception) {
                 showToast(application.getString(R.string.error_data_processing))
             }
         }
+        _loading.value = false
     }
 
     fun refresh() {

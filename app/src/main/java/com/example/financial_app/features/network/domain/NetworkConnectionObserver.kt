@@ -8,9 +8,10 @@ import android.net.NetworkRequest
 import com.example.financial_app.R
 import com.example.financial_app.common.usecase.ShowToastUseCase
 
-class NetworkConnectionObserver(context: Context) {
-    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+class NetworkConnectionObserver private constructor(context: Context) {
     private val showToast = ShowToastUseCase(context)
+    private val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onLost(network: Network) {
             showToast(context.getString(R.string.error_no_internet))
@@ -24,21 +25,16 @@ class NetworkConnectionObserver(context: Context) {
         connectivityManager.registerNetworkCallback(request, networkCallback)
     }
 
-    fun unregister() {
-        connectivityManager.unregisterNetworkCallback(networkCallback)
-    }
+    fun unregister() = connectivityManager.unregisterNetworkCallback(networkCallback)
 
     companion object {
         @Volatile
         private var instance: NetworkConnectionObserver? = null
 
         fun init(context: Context) {
-            if (instance == null) {
-                synchronized(this) {
-                    if (instance == null) {
-                        instance = NetworkConnectionObserver(context.applicationContext)
-                    }
-                }
+            instance ?: synchronized(this) {
+                if (instance == null)
+                    instance = NetworkConnectionObserver(context.applicationContext)
             }
         }
 

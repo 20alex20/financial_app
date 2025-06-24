@@ -5,9 +5,6 @@ import android.widget.Toast
 
 class ShowToastUseCase(private val context: Context) {
     operator fun invoke(message: String) {
-        try {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        } catch (_: Exception) {
-        }
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }
