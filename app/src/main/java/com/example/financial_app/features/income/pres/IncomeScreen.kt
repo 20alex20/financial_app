@@ -16,13 +16,15 @@ import com.example.financial_app.ui.components.AddButton
 import com.example.financial_app.ui.components.Header
 import com.example.financial_app.ui.components.HeaderButton
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavController
+import com.example.financial_app.features.navigation.data.NavRoutes
 import com.example.financial_app.ui.components.ListItem
 import com.example.financial_app.ui.components.ListItemColorScheme
 import com.example.financial_app.ui.components.ListItemHeight
 import com.example.financial_app.ui.components.Trail
 
 @Composable
-fun IncomeScreen(vm: IncomeViewModel = viewModel()) {
+fun IncomeScreen(navController: NavController, vm: IncomeViewModel = viewModel()) {
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier.fillMaxSize()
@@ -30,24 +32,35 @@ fun IncomeScreen(vm: IncomeViewModel = viewModel()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
                 stringResource(R.string.income_today),
-                rightButton = HeaderButton(painterResource(R.drawable.history), onClick = { })
+                rightButton = HeaderButton(
+                    painterResource(R.drawable.history),
+                    onClick = {
+                        navController.navigate(
+                            NavRoutes.Income.route + "/" + NavRoutes.History.route
+                        ) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
             )
             ListItem(
                 stringResource(R.string.total),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
-                rightText = vm.balance.value,
+                rightText = vm.total.value,
             )
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                items(vm.income.value) { expense ->
+                items(vm.income.value) { income ->
                     ListItem(
-                        expense.categoryName,
-                        comment = expense.comment,
-                        rightText = expense.amount,
+                        income.categoryName,
+                        comment = income.comment,
+                        rightText = income.amount,
+                        emoji = income.categoryEmoji,
                         trail = Trail.LightArrow(onClick = { })
                     )
                 }

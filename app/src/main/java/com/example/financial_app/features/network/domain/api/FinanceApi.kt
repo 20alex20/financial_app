@@ -16,4 +16,4 @@ interface FinanceApi {
         @Query("startDate") startDate: String,
         @Query("endDate") endDate: String
     ): List<TransactionResponse>
-} 
+}

@@ -1,100 +1,63 @@
 package com.example.financial_app.features.expenses.data
 
 import android.content.Context
-import com.example.financial_app.R
-import com.example.financial_app.common.models.Currency
+import com.example.financial_app.common.code.repoTryCatchBlock
+import com.example.financial_app.common.models.Response
+import com.example.financial_app.features.network.data.models.Currency
 import com.example.financial_app.features.expenses.domain.models.Expense
-import com.example.financial_app.features.expenses.domain.usecase.ShowErrorUseCase
-import com.example.financial_app.features.network.domain.NetworkModule
+import com.example.financial_app.features.network.domain.NetworkAdapter
 import com.example.financial_app.features.network.domain.api.FinanceApi
+import com.example.financial_app.features.network.data.AccountRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class ExpensesRepo(private val context: Context) {
-    private val api = NetworkModule.provideApi(context, FinanceApi::class.java)
+class ExpensesRepo(context: Context) {
+    private val api = NetworkAdapter.provideApi(context, FinanceApi::class.java)
+    private val accountRepo = AccountRepository.init(context)
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val showError = ShowErrorUseCase(context)
 
     private var cachedExpenses: List<Expense>? = null
-    private var lastLoadDate: LocalDate? = null
-    private var outdatedExpenses = false
-    private var outdatedTotalSpent = false
-    private var currentCurrency: Currency? = null
 
-    private fun parseCurrency(currencyStr: String): Currency = when (currencyStr) {
-        "RUB" -> Currency.RUBLE
-        "USD" -> Currency.DOLLAR
-        "EUR" -> Currency.EURO
-        else -> Currency.RUBLE
+    suspend fun getCurrency(): Response<Currency> = withContext(Dispatchers.IO) {
+        val strCurrency = accountRepo.getAccount()?.currency
+        if (strCurrency != null)
+            Response.Success(Currency.parseStr(strCurrency))
+        else
+            Response.Failure(Exception("Error loading account data"))
     }
 
-    private suspend fun loadExpensesFromNetwork(): List<Expense> {
-        try {
-            val accounts = api.getAccounts()
-            val firstAccount = accounts.firstOrNull() ?: return emptyList()
+    fun getExpenses(): Flow<Response<List<Expense>>> = repoTryCatchBlock {
+        if (cachedExpenses != null)
+            return@repoTryCatchBlock cachedExpenses ?: emptyList()
 
-            currentCurrency = parseCurrency(firstAccount.currency)
-            
-            val today = LocalDate.now().format(dateFormatter)
-            val transactions = api.getTransactions(
-                accountId = firstAccount.id,
-                startDate = today,
-                endDate = today
-            )
+        val account = accountRepo.getAccount() ?: throw Exception("Error loading account data")
+        val today = LocalDate.now().format(dateFormatter)
+        val transactions = api.getTransactions(
+            accountId = account.id,
+            startDate = today,
+            endDate = today
+        )
 
-            return transactions
-                .filterNot { it.category.isIncome }
-                .map { transaction ->
-                    Expense(
-                        id = transaction.id,
-                        categoryName = transaction.category.name,
-                        categoryEmoji = transaction.category.emoji,
-                        amount = transaction.amount.toDouble(),
-                        comment = transaction.comment
-                    )
-                }.also { expenses ->
-                    cachedExpenses = expenses
-                    lastLoadDate = LocalDate.now()
-                }
-        } catch (e: Exception) {
-            showError(context.getString(R.string.error_loading_data))
-            throw e
-        }
-    }
-
-    private fun isCacheValid(): Boolean {
-        val today = LocalDate.now()
-        return cachedExpenses != null && lastLoadDate == today
-    }
-
-    suspend fun getExpenses(): List<Expense> = withContext(Dispatchers.IO) {
-        try {
-            if (!isCacheValid() || !outdatedExpenses) {
-                loadExpensesFromNetwork().also { outdatedTotalSpent = true }
-            } else {
-                outdatedExpenses = false
-                cachedExpenses ?: emptyList()
+        transactions
+            .filterNot { it.category.isIncome }
+            .sortedByDescending { it.transactionDate }
+            .map { transaction ->
+                Expense(
+                    id = transaction.id,
+                    categoryName = transaction.category.name,
+                    categoryEmoji = transaction.category.emoji,
+                    amount = transaction.amount.toDouble(),
+                    comment = transaction.comment
+                )
             }
-        } catch (e: Exception) {
-            cachedExpenses ?: emptyList()
-        }
-    }
+            .also { cachedExpenses = it }
+    }.flowOn(Dispatchers.IO)
 
-    suspend fun getTotalSpent(): Double = withContext(Dispatchers.IO) {
-        try {
-            val expenses = if (!isCacheValid() || !outdatedTotalSpent) {
-                loadExpensesFromNetwork().also { outdatedExpenses = true }
-            } else {
-                outdatedTotalSpent = false
-                cachedExpenses ?: emptyList()
-            }
-            expenses.sumOf { it.amount }
-        } catch (e: Exception) {
-            cachedExpenses?.sumOf { it.amount } ?: 0.0
-        }
+    fun clearCache() {
+        cachedExpenses = null
     }
-
-    fun getCurrentCurrency(): Currency = currentCurrency ?: Currency.RUBLE
 }

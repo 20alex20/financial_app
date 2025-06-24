@@ -29,4 +29,4 @@ data class CategoryInfo(
     @Json(name = "name") val name: String,
     @Json(name = "emoji") val emoji: String,
     @Json(name = "isIncome") val isIncome: Boolean
-) 
+)

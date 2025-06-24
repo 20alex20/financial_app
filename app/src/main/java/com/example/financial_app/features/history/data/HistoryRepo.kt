@@ -1,61 +1,77 @@
 package com.example.financial_app.features.history.data
 
-import com.example.financial_app.common.code.getStringAmount
-import com.example.financial_app.common.models.Currency
+import android.content.Context
+import com.example.financial_app.common.code.repoTryCatchBlock
+import com.example.financial_app.common.models.Response
 import com.example.financial_app.features.history.domain.models.HistoryRecord
-import com.example.financial_app.features.history.domain.models.RepoHistoryRecord
-import com.example.financial_app.features.history.domain.repo.HistoryRepoLoader
+import com.example.financial_app.features.network.data.AccountRepository
+import com.example.financial_app.features.network.data.models.Currency
+import com.example.financial_app.features.network.domain.NetworkAdapter
+import com.example.financial_app.features.network.domain.api.FinanceApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 
-object HistoryRepo {
-    private var loaded: Boolean = false
-    private val loader: HistoryRepoLoader = HistoryRepoLoader()
+class HistoryRepo(context: Context, private val isIncome: Boolean) {
+    private val api = NetworkAdapter.provideApi(context, FinanceApi::class.java)
+    private val accountRepo = AccountRepository.init(context)
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val dateTimeFormatter = DateTimeFormatterBuilder()
+        .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
+        .appendPattern("'Z'")
+        .toFormatter()
 
-    private var startDateTime: String = ""
-    private var endDateTime: String = ""
-    private var sum: Double = 0.0
-    private var currency: Currency = Currency.RUBLE
-    private var history: List<RepoHistoryRecord> = listOf()
+    private var cachedHistory: List<HistoryRecord>? = null
 
-    private fun load() {
-        val data = loader.loadHistoryData()
-        startDateTime = data.startDateTime
-        endDateTime = data.endDateTime
-        sum = data.sum
-        currency = data.currency
-        history = data.history
-        loaded = true
+    suspend fun getCurrency(): Response<Currency> = withContext(Dispatchers.IO) {
+        val strCurrency = accountRepo.getAccount()?.currency
+        if (strCurrency != null)
+            Response.Success(Currency.parseStr(strCurrency))
+        else
+            Response.Failure(Exception("Error loading account data"))
     }
 
-    fun getStartDateTime(): String {
-        if (!loaded)
-            load()
-        return startDateTime
-    }
+    fun getHistory(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<Response<List<HistoryRecord>>> = repoTryCatchBlock {
+        if (cachedHistory != null)
+            return@repoTryCatchBlock cachedHistory ?: emptyList()
 
-    fun getEndDateTime(): String {
-        if (!loaded)
-            load()
-        return endDateTime
-    }
+        val account = accountRepo.getAccount() ?: throw Exception("Error loading account data")
+        val transactions = api.getTransactions(
+            accountId = account.id,
+            startDate = startDate.format(dateFormatter),
+            endDate = endDate.format(dateFormatter)
+        )
 
-    fun getSum(): String {
-        if (!loaded)
-            load()
-        return getStringAmount(sum, currency)
-    }
+        transactions
+            .filter { it.category.isIncome == isIncome }
+            .sortedByDescending { it.transactionDate }
+            .map { transaction ->
+                HistoryRecord(
+                    id = transaction.id,
+                    categoryName = transaction.category.name,
+                    categoryEmoji = transaction.category.emoji,
+                    dateTime = LocalDateTime.parse(
+                        transaction.transactionDate,
+                        dateTimeFormatter
+                    ),
+                    amount = transaction.amount.toDouble(),
+                    comment = transaction.comment
+                )
+            }
+            .also { cachedHistory = it }
+    }.flowOn(Dispatchers.IO)
 
-    fun getHistory(): List<HistoryRecord> {
-        if (!loaded)
-            load()
-        return history.map {
-            HistoryRecord(
-                it.id,
-                it.categoryName,
-                it.categoryEmoji,
-                it.dateTime,
-                getStringAmount(it.amount, currency),
-                it.comment
-            )
-        }
+    fun clearCache() {
+        cachedHistory = null
     }
 }
