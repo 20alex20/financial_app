@@ -17,7 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.financial_app.features.navigation.pres.NavGraph
+import androidx.core.splashscreen.SplashScreenViewProvider
+import com.example.financial_app.features.navigation.ui.NavGraph
 import com.example.financial_app.features.network.domain.NetworkConnectionObserver
 import com.example.financial_app.ui.theme.FinancialAppTheme
 
@@ -26,40 +27,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         NetworkConnectionObserver.init(this)
 
-        val splashScreen = installSplashScreen()
-        splashScreen.setOnExitAnimationListener { splashViewProvider ->
-            val view = splashViewProvider.view
-            val scaleX = ObjectAnimator.ofFloat(view, View.SCALE_X, 1f, 1.3f)
-            val scaleY = ObjectAnimator.ofFloat(view, View.SCALE_Y, 1f, 1.3f)
-            val fadeOut = ObjectAnimator.ofFloat(view, View.ALPHA, 1f, 0f)
-
-            AnimatorSet().apply {
-                duration = 500
-                interpolator = AccelerateDecelerateInterpolator()
-                playTogether(scaleX, scaleY, fadeOut)
-                addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        splashViewProvider.remove()
-                    }
-                })
-                start()
-            }
-        }
-
+        installSplashScreen().setOnExitAnimationListener(::animateSplashScreen)
         enableEdgeToEdge()
         setContent {
             FinancialAppTheme(dynamicColor = false) {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     NavGraph(
-                        modifier = Modifier.padding(
-                            0.dp,
-                            0.dp,
-                            0.dp,
-                            innerPadding.calculateBottomPadding()
-                        )
+                        Modifier.padding(0.dp, 0.dp, 0.dp, innerPadding.calculateBottomPadding())
                     )
                 }
             }
@@ -69,5 +46,22 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         NetworkConnectionObserver.release()
+    }
+}
+
+fun animateSplashScreen(splashViewProvider: SplashScreenViewProvider) {
+    val view = splashViewProvider.view
+    val scaleX = ObjectAnimator.ofFloat(view, View.SCALE_X, 1f, 1.3f)
+    val scaleY = ObjectAnimator.ofFloat(view, View.SCALE_Y, 1f, 1.3f)
+    val fadeOut = ObjectAnimator.ofFloat(view, View.ALPHA, 1f, 0f)
+
+    AnimatorSet().apply {
+        duration = 500
+        interpolator = AccelerateDecelerateInterpolator()
+        playTogether(scaleX, scaleY, fadeOut)
+        addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) = splashViewProvider.remove()
+        })
+        start()
     }
 }

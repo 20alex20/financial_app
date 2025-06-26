@@ -11,7 +11,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.financial_app.R
@@ -23,11 +22,11 @@ import java.time.Instant
 @Composable
 fun Calendar(
     showCalendar: MutableState<Boolean>,
-    date: State<LocalDate>,
+    date: LocalDate,
     setNewDate: (LocalDate) -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = date.value
+        initialSelectedDateMillis = date
             .plusDays(1)
             .atStartOfDay(ZoneId.systemDefault())
             .toInstant()
