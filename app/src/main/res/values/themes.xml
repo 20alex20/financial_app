@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.FinancialApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Finances" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.FinancialApp.Starting" parent="Theme.SplashScreen">
+    <style name="Theme.Finances.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash_background</item>
-        <item name="postSplashScreenTheme">@style/Theme.FinancialApp</item>
+        <item name="postSplashScreenTheme">@style/Theme.Finances</item>
     </style>
 </resources>
