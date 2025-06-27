@@ -1,4 +1,4 @@
-package com.example.financial_app.ui.components
+package com.example.financial_app.common.graphics
 
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults

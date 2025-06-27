@@ -1,4 +1,4 @@
-package com.example.financial_app.ui.components
+package com.example.financial_app.common.graphics
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 
-data class HeaderButton(val icon: Painter, val onClick: () -> Unit)
+data class HeaderButton(
+    val icon: Painter,
+    val onClick: () -> Unit
+)
 
 @Composable
 fun Header(
@@ -60,10 +63,7 @@ fun Header(
 }
 
 @Composable
-fun IconButton(
-    button: HeaderButton?,
-    modifier: Modifier = Modifier
-) {
+fun IconButton(button: HeaderButton?, modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = when (button) {
@@ -74,8 +74,9 @@ fun IconButton(
                     bounded = false,
                     radius = 32.dp,
                     color = MaterialTheme.colorScheme.onPrimary
-                )
-            ) { button.onClick() }
+                ),
+                onClick = button.onClick
+            )
         }
     ) {
         if (button != null) Icon(

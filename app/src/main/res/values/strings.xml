@@ -2,14 +2,14 @@
     <string name="app_name">Финансы</string>
     <string name="expenses">Расходы</string>
     <string name="income">Доходы</string>
-    <string name="check">Счет</string>
+    <string name="account">Счет</string>
     <string name="categories">Статьи</string>
     <string name="settings">Настройки</string>
     <string name="add_button">Добавить</string>
     <string name="expenses_today">Расходы сегодня</string>
     <string name="income_today">Доходы сегодня</string>
     <string name="my_history">Моя история</string>
-    <string name="my_check">Мой счет</string>
+    <string name="my_account">Мой счет</string>
     <string name="my_categories">Мои статьи</string>
     <string name="total">Всего</string>
     <string name="balance">Баланс</string>

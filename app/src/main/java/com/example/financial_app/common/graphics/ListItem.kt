@@ -1,4 +1,4 @@
-package com.example.financial_app.ui.components
+package com.example.financial_app.common.graphics
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,13 +30,6 @@ import androidx.compose.ui.unit.dp
 import com.example.financial_app.R
 import com.example.financial_app.ui.theme.LightArrowColor
 
-sealed class Trail {
-    data class LightArrow(val onClick: () -> Unit) : Trail()
-    data class DarkArrow(val onClick: () -> Unit) : Trail()
-    data class InvisibleButton(val onClick: () -> Unit) : Trail()
-    data class Custom(val customTrail: @Composable () -> Unit) : Trail()
-}
-
 enum class ListItemHeight(val value: Dp) {
     HIGH(70.dp), LOW(56.dp)
 }
@@ -45,22 +38,28 @@ enum class ListItemColorScheme {
     SURFACE, PRIMARY_CONTAINER
 }
 
+sealed class Trail {
+    data object LightArrow : Trail()
+    data object DarkArrow : Trail()
+    data class Custom(val customTrail: @Composable () -> Unit) : Trail()
+}
+
 @Composable
 fun ListItem(
     content: String,
     modifier: Modifier = Modifier,
     height: ListItemHeight = ListItemHeight.HIGH,
     colorScheme: ListItemColorScheme = ListItemColorScheme.SURFACE,
+    paddingValues: PaddingValues = PaddingValues(16.dp, 0.dp),
+    dividerEnabled: Boolean = true,
+    emoji: String? = null,
     comment: String? = null,
     rightText: String? = null,
     additionalRightText: String? = null,
-    emoji: String? = null,
-    trail: Trail? = null,
-    dividerEnabled: Boolean = true,
-    paddingValues: PaddingValues = PaddingValues(16.dp, 0.dp)
+    onClick: (() -> Unit)? = null,
+    trail: Trail? = null
 ) {
     val colors = getColorScheme(colorScheme)
-
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = modifier
@@ -72,24 +71,14 @@ fun ListItem(
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = when (trail) {
-                is Trail.LightArrow -> Modifier
+            modifier = when (onClick) {
+                null -> Modifier
                     .fillMaxSize()
-                    .clickable { trail.onClick() }
-                    .padding(paddingValues)
-
-                is Trail.DarkArrow -> Modifier
-                    .fillMaxSize()
-                    .clickable { trail.onClick() }
-                    .padding(paddingValues)
-
-                is Trail.InvisibleButton -> Modifier
-                    .fillMaxSize()
-                    .clickable { trail.onClick() }
                     .padding(paddingValues)
 
                 else -> Modifier
                     .fillMaxSize()
+                    .clickable { onClick() }
                     .padding(paddingValues)
             }
         ) {
@@ -154,20 +143,22 @@ fun ListItem(
             }
 
             when (trail) {
+                null -> {}
                 is Trail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
                     contentDescription = content,
                     tint = LightArrowColor,
                     modifier = Modifier.size(24.dp)
                 )
+
                 is Trail.DarkArrow -> Icon(
                     painter = painterResource(R.drawable.dark_arrow),
                     contentDescription = content,
                     tint = colors.darkArrow,
                     modifier = Modifier.size(24.dp)
                 )
+
                 is Trail.Custom -> trail.customTrail()
-                else -> {}
             }
         }
 
@@ -192,8 +183,8 @@ internal data class ColorScheme(
 
 @Composable
 internal fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
-    if (colorSchemeType == ListItemColorScheme.SURFACE)
-        return ColorScheme(
+    return if (colorSchemeType == ListItemColorScheme.SURFACE)
+        ColorScheme(
             background = MaterialTheme.colorScheme.surface,
             emoji = MaterialTheme.colorScheme.onSurface,
             emojiBackground = MaterialTheme.colorScheme.inverseSurface,
@@ -203,7 +194,7 @@ internal fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
             darkArrow = MaterialTheme.colorScheme.onSurfaceVariant
         )
     else
-        return ColorScheme(
+        ColorScheme(
             background = MaterialTheme.colorScheme.primaryContainer,
             emoji = MaterialTheme.colorScheme.onPrimaryContainer,
             emojiBackground = MaterialTheme.colorScheme.inversePrimary,

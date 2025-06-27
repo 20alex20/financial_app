@@ -37,7 +37,7 @@ class NetworkConnectionObserver private constructor(context: Context) {
         private var instance: NetworkConnectionObserver? = null
 
         fun init(context: Context) {
-            instance ?: synchronized(this) {
+            if (instance == null) synchronized(this) {
                 if (instance == null)
                     instance = NetworkConnectionObserver(context.applicationContext)
             }

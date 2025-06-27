@@ -1,4 +1,4 @@
-package com.example.financial_app.ui.components
+package com.example.financial_app.common.graphics
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

@@ -1,4 +1,4 @@
-package com.example.financial_app.ui.components
+package com.example.financial_app.common.graphics
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,8 +14,6 @@ fun LoadingCircular(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
         modifier = modifier.fillMaxSize()
     ) {
-        CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary
-        )
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
     }
 }

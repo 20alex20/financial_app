@@ -6,16 +6,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 fun <T> repoTryCatchBlock(func: suspend () -> T): Flow<Response<T>> = flow {
-    val repeatTimes = 3
+    val retryTimes = 3
     val timer = 2000L
 
-    for (i in 0..repeatTimes) {
+    emit(Response.Loading)
+    repeat (retryTimes + 1) { i ->
         try {
-            if (i == 0)
-                emit(Response.Loading)
             val res = func()
             emit(Response.Success(res))
-            break
+            return@repeat
         } catch (e: Exception) {
             if (i == 0)
                 emit(Response.Failure(e))

@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.financial_app.features.categories.ui.CategoriesScreen
-import com.example.financial_app.features.account.ui.CheckScreen
+import com.example.financial_app.features.account.ui.AccountScreen
 import com.example.financial_app.features.expenses.ui.ExpensesScreen
 import com.example.financial_app.features.history.ui.HistoryScreen
 import com.example.financial_app.features.income.ui.IncomeScreen
@@ -54,7 +54,7 @@ fun NavGraph(modifier: Modifier = Modifier) {
             composable(NavRoutes.Income.route + "/" + NavRoutes.History.route) {
                 HistoryScreen(NavRoutes.Income.route, navController)
             }
-            composable(NavRoutes.Check.route) { CheckScreen() }
+            composable(NavRoutes.Account.route) { AccountScreen() }
             composable(NavRoutes.Categories.route) { CategoriesScreen() }
             composable(NavRoutes.Settings.route) { SettingsScreen() }
         }

@@ -14,10 +14,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.financial_app.R
 import com.example.financial_app.features.settings.data.SettingsRepo
-import com.example.financial_app.ui.components.Header
-import com.example.financial_app.ui.components.ListItem
-import com.example.financial_app.ui.components.ListItemHeight
-import com.example.financial_app.ui.components.Trail
+import com.example.financial_app.common.graphics.Header
+import com.example.financial_app.common.graphics.ListItem
+import com.example.financial_app.common.graphics.ListItemHeight
+import com.example.financial_app.common.graphics.Trail
 
 @Composable
 fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
@@ -35,19 +35,23 @@ fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
                 ListItem(
                     setting.name,
                     height = ListItemHeight.LOW,
-                    trail = if (!setting.withSwitch) Trail.DarkArrow(onClick = setting.onClick)
-                    else Trail.Custom {
-                        Switch(
-                            checked = vm.switchesChecked.value[index],
-                            onCheckedChange = { vm.changeSwitchChecked(index) },
-                            colors = SwitchDefaults.colors(
+                    onClick = if (!setting.withSwitch) setting.onClick else null,
+                    trail = when (setting.withSwitch) {
+                        false -> Trail.DarkArrow
+                        true -> Trail.Custom {
+                            val switchColors = SwitchDefaults.colors(
                                 uncheckedBorderColor = MaterialTheme.colorScheme.outline,
                                 checkedThumbColor = MaterialTheme.colorScheme.primary,
                                 checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
                                 uncheckedThumbColor = MaterialTheme.colorScheme.outline,
                                 uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHigh
                             )
-                        )
+                            Switch(
+                                checked = vm.switchesChecked.value[index],
+                                onCheckedChange = { vm.changeSwitchChecked(index) },
+                                colors = switchColors
+                            )
+                        }
                     }
                 )
             }

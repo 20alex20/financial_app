@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.financial_app.R
-import com.example.financial_app.ui.components.Header
-import com.example.financial_app.ui.components.ListItem
+import com.example.financial_app.common.graphics.Header
+import com.example.financial_app.common.graphics.ListItem
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme

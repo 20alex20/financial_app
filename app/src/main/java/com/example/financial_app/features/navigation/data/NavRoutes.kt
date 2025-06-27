@@ -1,10 +1,10 @@
 package com.example.financial_app.features.navigation.data
 
 sealed class NavRoutes(val route: String) {
-    object Expenses : NavRoutes("expenses")
-    object Income : NavRoutes("income")
-    object Check : NavRoutes("check")
-    object Categories : NavRoutes("categories")
-    object Settings : NavRoutes("settings")
-    object History : NavRoutes("history")
+    data object Expenses : NavRoutes("expenses")
+    data object Income : NavRoutes("income")
+    data object Account : NavRoutes("account")
+    data object Categories : NavRoutes("categories")
+    data object Settings : NavRoutes("settings")
+    data object History : NavRoutes("history")
 }
