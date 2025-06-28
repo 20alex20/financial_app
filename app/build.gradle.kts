@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.financial_app"
+    namespace = "com.example.finances"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.financial_app"
+        applicationId = "com.example.finances"
         minSdk = 27
         targetSdk = 35
         versionCode = 1
@@ -51,8 +51,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core.splashscreen)
-    
-    // Network
+
     implementation(libs.retrofit)
     implementation(libs.retrofit.moshi)
     implementation(libs.moshi)
