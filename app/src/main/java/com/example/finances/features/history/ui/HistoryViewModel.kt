@@ -24,6 +24,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
+/**
+ * ViewModel экрана истории
+ */
 class HistoryViewModel(
     private val historyRepo: HistoryRepo,
     private val isIncome: Boolean
@@ -149,6 +152,9 @@ class HistoryViewModel(
         viewModelScope.cancel()
     }
 
+    /**
+     * Фабрика по созданию ViewModel экрана истории и прокидывания в нее репозитория
+     */
     class Factory(
         private val context: Context,
         private val parentRoute: String

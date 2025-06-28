@@ -12,6 +12,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
+/**
+ * Генерирует запрос к серверу по заданному API
+ */
 object NetworkManager {
     private const val BASE_URL = "https://shmr-finance.ru/api/v1/"
 

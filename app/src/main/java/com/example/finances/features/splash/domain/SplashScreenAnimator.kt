@@ -10,7 +10,16 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
 
+/**
+ * Отвечает за инициализацию анимации сплеш экрана и ее запуск
+ */
 object SplashScreenAnimator {
+    private const val ANIMATION_DURATION = 500L
+    private const val SCALE_START = 1f
+    private const val SCALE_END = 1.3f
+    private const val ALPHA_START = 1f
+    private const val ALPHA_END = 0f
+
     private var splashViewProvider: SplashScreenViewProvider? = null
 
     private val removeSplashView = object : AnimatorListenerAdapter() {
@@ -23,12 +32,12 @@ object SplashScreenAnimator {
         val splashScreen = activity.installSplashScreen()
         splashScreen.setOnExitAnimationListener { provider ->
             AnimatorSet().apply {
-                duration = 500
+                duration = ANIMATION_DURATION
                 interpolator = AccelerateDecelerateInterpolator()
                 playTogether(
-                    ObjectAnimator.ofFloat(provider.view, View.SCALE_X, 1f, 1.3f),
-                    ObjectAnimator.ofFloat(provider.view, View.SCALE_Y, 1f, 1.3f),
-                    ObjectAnimator.ofFloat(provider.view, View.ALPHA, 1f, 0f)
+                    ObjectAnimator.ofFloat(provider.view, View.SCALE_X, SCALE_START, SCALE_END),
+                    ObjectAnimator.ofFloat(provider.view, View.SCALE_Y, SCALE_START, SCALE_END),
+                    ObjectAnimator.ofFloat(provider.view, View.ALPHA, ALPHA_START, ALPHA_END)
                 )
                 addListener(removeSplashView)
                 start()

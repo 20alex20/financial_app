@@ -1,5 +1,8 @@
 package com.example.finances.features.navigation.data
 
+/**
+ * Запечатанный класс содержит объекты, соответствующие экранам и используемые для навигации
+ */
 sealed class NavRoutes(val route: String) {
     data object Expenses : NavRoutes("expenses")
     data object Income : NavRoutes("income")

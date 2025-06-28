@@ -6,6 +6,9 @@ import com.example.finances.common.models.Currency
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
+/**
+ * Интерфейс репозитория экрана истории
+ */
 interface HistoryRepo {
     fun getCurrency(): Flow<Response<Currency>>
 

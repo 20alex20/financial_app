@@ -8,6 +8,9 @@ import android.net.NetworkRequest
 import android.widget.Toast
 import com.example.finances.R
 
+/**
+ * Отвечает за подписку на событие о потере соединения и отображение соответствующего сообщения
+ */
 class NetworkConnectionObserver private constructor(context: Context) {
     private val connectivityManager = context.getSystemService(
         Context.CONNECTIVITY_SERVICE

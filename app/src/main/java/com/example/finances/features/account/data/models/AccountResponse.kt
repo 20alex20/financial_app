@@ -3,6 +3,9 @@ package com.example.finances.features.account.data.models
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ * data-класс для хранения полученных от сервера данных счетов
+ */
 @JsonClass(generateAdapter = true)
 data class AccountResponse(
     @Json(name = "id") val id: Int,

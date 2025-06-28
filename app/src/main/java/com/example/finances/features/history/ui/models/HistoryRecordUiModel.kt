@@ -1,5 +1,8 @@
 package com.example.finances.features.history.ui.models
 
+/**
+ * data-класс для хранения информации о расходах/доходах, адаптированной для UI-слоя
+ */
 data class HistoryRecordUiModel(
     val id: Int,
     val categoryName: String,

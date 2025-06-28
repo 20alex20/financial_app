@@ -16,6 +16,9 @@ import com.example.finances.features.income.domain.repo.IncomeRepo
 import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel экрана доходов
+ */
 class IncomeViewModel(private val incomeRepo: IncomeRepo) : ViewModel() {
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -75,6 +78,9 @@ class IncomeViewModel(private val incomeRepo: IncomeRepo) : ViewModel() {
         loadIncomeAndTotal()
     }
 
+    /**
+     * Фабрика по созданию ViewModel экрана доходов и прокидывания в нее репозитория
+     */
     class Factory(private val context: Context) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -53,7 +53,7 @@ fun IncomeScreen(
             ListItem(
                 stringResource(R.string.total),
                 height = ListItemHeight.LOW,
-                colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
+                colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.total.value,
             )
             LazyColumn(

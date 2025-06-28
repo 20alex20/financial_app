@@ -30,17 +30,37 @@ import androidx.compose.ui.unit.dp
 import com.example.finances.R
 import com.example.finances.ui.theme.LightArrowColor
 
+/**
+ * Перечисление доступных размеров (высоты) ListItem
+ */
 enum class ListItemHeight(val value: Dp) {
     HIGH(70.dp), LOW(56.dp)
 }
 
+/**
+ * Перечисление доступных цветовых схем
+ */
 enum class ListItemColorScheme {
-    SURFACE, PRIMARY_CONTAINER
+    SURFACE, PRIMARY
 }
 
+/**
+ * Запечатанный класс со всеми типами trail
+ */
 sealed class Trail {
+    /**
+     * Светлая незакрашенная стрелка
+     */
     data object LightArrow : Trail()
+
+    /**
+     * Темная закрашенная стрелка
+     */
     data object DarkArrow : Trail()
+
+    /**
+     * Кастомная реализация trail
+     */
     data class Custom(val customTrail: @Composable () -> Unit) : Trail()
 }
 
@@ -171,6 +191,9 @@ fun ListItem(
     }
 }
 
+/**
+ * data-класс для хранения цветов выбранной цветовой схемы
+ */
 internal data class ColorScheme(
     val background: Color,
     val emoji: Color,
@@ -183,24 +206,21 @@ internal data class ColorScheme(
 
 @Composable
 internal fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
-    return if (colorSchemeType == ListItemColorScheme.SURFACE)
-        ColorScheme(
-            background = MaterialTheme.colorScheme.surface,
-            emoji = MaterialTheme.colorScheme.onSurface,
-            emojiBackground = MaterialTheme.colorScheme.inverseSurface,
-            content = MaterialTheme.colorScheme.onSurface,
-            comment = MaterialTheme.colorScheme.onSurfaceVariant,
-            rightText = MaterialTheme.colorScheme.onSurface,
-            darkArrow = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    else
-        ColorScheme(
-            background = MaterialTheme.colorScheme.primaryContainer,
-            emoji = MaterialTheme.colorScheme.onPrimaryContainer,
-            emojiBackground = MaterialTheme.colorScheme.inversePrimary,
-            content = MaterialTheme.colorScheme.onPrimaryContainer,
-            comment = MaterialTheme.colorScheme.onPrimary,
-            rightText = MaterialTheme.colorScheme.onPrimaryContainer,
-            darkArrow = MaterialTheme.colorScheme.onPrimary
-        )
+    return if (colorSchemeType == ListItemColorScheme.SURFACE) ColorScheme(
+        background = MaterialTheme.colorScheme.surface,
+        emoji = MaterialTheme.colorScheme.onSurface,
+        emojiBackground = MaterialTheme.colorScheme.inverseSurface,
+        content = MaterialTheme.colorScheme.onSurface,
+        comment = MaterialTheme.colorScheme.onSurfaceVariant,
+        rightText = MaterialTheme.colorScheme.onSurface,
+        darkArrow = MaterialTheme.colorScheme.onSurfaceVariant
+    ) else ColorScheme(
+        background = MaterialTheme.colorScheme.primaryContainer,
+        emoji = MaterialTheme.colorScheme.onPrimaryContainer,
+        emojiBackground = MaterialTheme.colorScheme.inversePrimary,
+        content = MaterialTheme.colorScheme.onPrimaryContainer,
+        comment = MaterialTheme.colorScheme.onPrimary,
+        rightText = MaterialTheme.colorScheme.onPrimaryContainer,
+        darkArrow = MaterialTheme.colorScheme.onPrimary
+    )
 }

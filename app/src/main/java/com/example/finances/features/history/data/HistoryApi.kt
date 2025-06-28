@@ -5,6 +5,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+/**
+ * Источник данных экрана истории (API для загрузки истории)
+ */
 interface HistoryApi {
     @GET("transactions/account/{accountId}/period")
     suspend fun getTransactions(

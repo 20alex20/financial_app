@@ -2,6 +2,9 @@ package com.example.finances.common.models
 
 import kotlin.math.roundToInt
 
+/**
+ * Перечисление поддерживаемых типов валют (объекты передают информацию о используемом типе валют)
+ */
 enum class Currency(val symbol: String) {
     RUBLE("₽"),
     DOLLAR("$"),

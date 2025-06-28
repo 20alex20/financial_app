@@ -5,6 +5,9 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+/**
+ * Источник данных экрана расходов (API для загрузки расходов)
+ */
 interface ExpensesApi {
     @GET("transactions/account/{accountId}/period")
     suspend fun getTransactions(

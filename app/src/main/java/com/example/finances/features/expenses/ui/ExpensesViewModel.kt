@@ -16,6 +16,9 @@ import com.example.finances.features.expenses.domain.repo.ExpensesRepo
 import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel экрана расходов
+ */
 class ExpensesViewModel(private val expensesRepo: ExpensesRepo) : ViewModel() {
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -75,6 +78,9 @@ class ExpensesViewModel(private val expensesRepo: ExpensesRepo) : ViewModel() {
         loadExpensesAndTotal()
     }
 
+    /**
+     * Фабрика по созданию ViewModel экрана расходов и прокидывания в нее репозитория
+     */
     class Factory(private val context: Context) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -15,6 +15,9 @@ import com.example.finances.features.network.domain.NetworkConnectionObserver
 import com.example.finances.features.splash.domain.SplashScreenAnimator
 import com.example.finances.ui.theme.FinancesTheme
 
+/**
+ * Activity, отвечающая за отображение главного UI и инициализацию/запуск доп функционала
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

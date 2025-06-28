@@ -5,6 +5,9 @@ import com.example.finances.common.models.Currency
 import com.example.finances.features.expenses.domain.models.Expense
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Интерфейс репозитория экрана расходов
+ */
 interface ExpensesRepo {
     fun getCurrency(): Flow<Response<Currency>>
 

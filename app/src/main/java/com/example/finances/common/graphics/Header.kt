@@ -57,6 +57,9 @@ fun Header(
     }
 }
 
+/**
+ * data-класс для хранения информации о кнопке-иконке в хедере
+ */
 data class HeaderButton(
     val icon: Painter,
     val onClick: () -> Unit

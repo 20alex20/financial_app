@@ -22,6 +22,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
 
+/**
+ * Имплементация интерфейса репозитория экрана истории
+ */
 class HistoryRepoImpl(
     context: Context,
     private val accountRepo: AccountRepo

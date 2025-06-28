@@ -55,21 +55,21 @@ fun HistoryScreen(
             ListItem(
                 stringResource(R.string.start),
                 height = ListItemHeight.LOW,
-                colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
+                colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.strStart.value,
                 onClick = { showStartCalendar.value = true }
             )
             ListItem(
                 stringResource(R.string.end),
                 height = ListItemHeight.LOW,
-                colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
+                colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.strEnd.value,
                 onClick = { showEndCalendar.value = true }
             )
             ListItem(
                 stringResource(R.string.sum),
                 height = ListItemHeight.LOW,
-                colorScheme = ListItemColorScheme.PRIMARY_CONTAINER,
+                colorScheme = ListItemColorScheme.PRIMARY,
                 dividerEnabled = false,
                 rightText = vm.total.value
             )

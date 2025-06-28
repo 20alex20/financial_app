@@ -11,6 +11,9 @@ import com.example.finances.features.account.data.AccountRepoImpl
 import com.example.finances.features.account.domain.repo.AccountRepo
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel экрана счета
+ */
 class AccountViewModel(private val accountRepo: AccountRepo) : ViewModel() {
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
@@ -53,6 +56,9 @@ class AccountViewModel(private val accountRepo: AccountRepo) : ViewModel() {
         loadBalanceAndCurrency()
     }
 
+    /**
+     * Фабрика по созданию ViewModel экрана счета и прокидывания в нее репозитория
+     */
     class Factory(private val context: Context) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
