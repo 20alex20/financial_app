@@ -21,13 +21,19 @@ object NetworkManager {
     @Volatile
     private var apiKey: String? = null
 
+    private fun loadApiKey(context: Context): String = apiKey ?: BufferedReader(
+        InputStreamReader(context.resources.openRawResource(R.raw.api_key))
+    ).readLine().trim().also { apiKey = it }
+
     fun <T> provideApi(context: Context, apiClass: Class<T>): T {
+        val loadedApiKey = loadApiKey(context)
+
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
 
         val client = OkHttpClient.Builder()
-            .addInterceptor(createAuthInterceptor(apiKey ?: readApiKey(context)))
+            .addInterceptor(createAuthInterceptor(loadedApiKey))
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
@@ -46,11 +52,5 @@ object NetworkManager {
             .addHeader("Authorization", "Bearer $apiKey")
             .build()
         chain.proceed(request)
-    }
-
-    private fun readApiKey(context: Context): String {
-        val inputStream = context.resources.openRawResource(R.raw.api_key)
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        return reader.readLine().trim().also { apiKey = it }
     }
 }

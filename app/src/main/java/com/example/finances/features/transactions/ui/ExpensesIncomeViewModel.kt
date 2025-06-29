@@ -11,9 +11,9 @@ import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.ui.mappers.toExpenseIncome
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
-import com.example.finances.features.transactions.ui.models.ExpenseIncome
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
+import com.example.finances.features.transactions.ui.models.ExpensesIncomeViewModelState
 import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -25,11 +25,8 @@ class ExpensesIncomeViewModel(
     private val transactionsRepo: TransactionsRepo,
     private val isIncome: Boolean
 ) : BaseViewModel() {
-    private val _expensesIncome = mutableStateOf(listOf<ExpenseIncome>())
-    val expensesIncome: State<List<ExpenseIncome>> = _expensesIncome
-
-    private val _total = mutableStateOf("0 ₽")
-    val total: State<String> = _total
+    private val _state = mutableStateOf(ExpensesIncomeViewModelState("0 ₽", emptyList()))
+    val state: State<ExpensesIncomeViewModelState> = _state
 
     override fun loadData() = viewModelScope.launch {
         try {
@@ -42,8 +39,10 @@ class ExpensesIncomeViewModel(
                     is Response.Failure -> setError()
                     is Response.Success -> {
                         resetLoadingAndError()
-                        _expensesIncome.value = reply.data.map { it.toExpenseIncome(currency) }
-                        _total.value = currency.getStrAmount(reply.data.sumOf { it.amount })
+                        _state.value = ExpensesIncomeViewModelState(
+                            currency.getStrAmount(reply.data.sumOf { it.amount }),
+                            reply.data.map { it.toExpenseIncome(currency) }
+                        )
                     }
                 }
             }

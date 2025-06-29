@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.IOException
 
-const val RETRY_TIMES = 3
-const val TIMER = 2000L
-const val ERROR_MESSAGE = "Data loading error"
+private const val RETRY_TIMES = 3
+private const val TIMER = 2000L
+private const val ERROR_MESSAGE = "Data loading error"
 
 fun <T> repoTryCatchBlock(func: suspend () -> T): Flow<Response<T>> = flow {
     emit(Response.Loading)
@@ -18,9 +18,10 @@ fun <T> repoTryCatchBlock(func: suspend () -> T): Flow<Response<T>> = flow {
             emit(Response.Success(res))
             return@repeat
         } catch (_: Exception) {
-            if (i == 0)
+            if (i == RETRY_TIMES)
                 emit(Response.Failure(IOException(ERROR_MESSAGE)))
-            delay(TIMER)
+            else
+                delay(TIMER)
         }
     }
 }

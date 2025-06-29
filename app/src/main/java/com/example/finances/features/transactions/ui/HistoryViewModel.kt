@@ -8,13 +8,14 @@ import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.data.network.models.Response
 import com.example.finances.core.data.repository.models.Currency
 import com.example.finances.features.account.data.AccountRepoImpl
-import com.example.finances.features.transactions.ui.models.HistoryRecord
 import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
+import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
+import com.example.finances.features.transactions.ui.models.HistoryViewModelState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
@@ -31,37 +32,34 @@ class HistoryViewModel(
     private var today: LocalDate = LocalDate.now()
     private var _loadedJob: Job? = null
 
-    private var _startDate = mutableStateOf(today.withDayOfMonth(1))
-    val startDate: State<LocalDate> = _startDate
+    private var _dates = mutableStateOf(
+        HistoryDatesViewModelState(
+            startDate = today.withDayOfMonth(1),
+            endDate = today,
+            strStart = "01.01.2025",
+            strEnd = "00:00"
+        )
+    )
+    val dates: State<HistoryDatesViewModelState> = _dates
 
-    private var _endDate = mutableStateOf(today)
-    val endDate: State<LocalDate> = _endDate
-
-    private val _strStart = mutableStateOf("01.01.2025")
-    val strStart: State<String> = _strStart
-
-    private val _strEnd = mutableStateOf("00:00")
-    val strEnd: State<String> = _strEnd
-
-    private val _history = mutableStateOf(listOf<HistoryRecord>())
-    val history: State<List<HistoryRecord>> = _history
-
-    private val _total = mutableStateOf("0 ₽")
-    val total: State<String> = _total
+    private val _state = mutableStateOf(HistoryViewModelState("0 ₽", emptyList()))
+    val state: State<HistoryViewModelState> = _state
 
     override fun loadData() = viewModelScope.launch {
         try {
             val currency = transactionsRepo.getCurrency().lastOrNull()
                 .let { if (it is Response.Success) it.data else Currency.RUBLE }
-            transactionsRepo.getTransactions(_startDate.value, _endDate.value, isIncome)
+            transactionsRepo.getTransactions(_dates.value.startDate, _dates.value.endDate, isIncome)
                 .collect { reply ->
                     when (reply) {
                         is Response.Loading -> setLoading()
                         is Response.Failure -> setError()
                         is Response.Success -> {
                             resetLoadingAndError()
-                            _history.value = reply.data.map { it.toHistoryRecord(currency, today) }
-                            _total.value = currency.getStrAmount(reply.data.sumOf { it.amount })
+                            _state.value = HistoryViewModelState(
+                                currency.getStrAmount(reply.data.sumOf { it.amount }),
+                                reply.data.map { it.toHistoryRecord(currency, today) }
+                            )
                         }
                     }
                 }
@@ -72,14 +70,18 @@ class HistoryViewModel(
 
     fun setPeriod(start: LocalDate, end: LocalDate) {
         today = LocalDate.now()
-        _endDate.value = if (end <= today) end else today
-        _startDate.value = if (start <= _endDate.value) start else _endDate.value
+        val endDate = if (end <= today) end else today
+        val startDate = if (start <= endDate) start else endDate
 
-        _strEnd.value = if (_endDate.value != today)
-            _endDate.value.format(DateTimeFormatters.date)
-        else
-            LocalDateTime.now().format(DateTimeFormatters.time)
-        _strStart.value = _startDate.value.format(DateTimeFormatters.date)
+        _dates.value = HistoryDatesViewModelState(
+            startDate = startDate,
+            endDate = endDate,
+            strStart = startDate.format(DateTimeFormatters.date),
+            strEnd = if (endDate != today)
+                endDate.format(DateTimeFormatters.date)
+            else
+                LocalDateTime.now().format(DateTimeFormatters.time)
+        )
 
         _loadedJob?.cancel()
     }

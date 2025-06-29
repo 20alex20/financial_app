@@ -36,12 +36,12 @@ fun HistoryScreen(
 ) {
     val showStartCalendar = remember { mutableStateOf(false) }
     val showEndCalendar = remember { mutableStateOf(false) }
-    Calendar(showStartCalendar, vm.startDate.value, setNewDate = { newDate ->
-        vm.setPeriod(newDate, vm.endDate.value)
+    Calendar(showStartCalendar, vm.dates.value.startDate, setNewDate = { newDate ->
+        vm.setPeriod(newDate, vm.dates.value.endDate)
         vm.loadDataWithClear()
     })
-    Calendar(showEndCalendar, vm.endDate.value, setNewDate = { newDate ->
-        vm.setPeriod(vm.startDate.value, newDate)
+    Calendar(showEndCalendar, vm.dates.value.endDate, setNewDate = { newDate ->
+        vm.setPeriod(vm.dates.value.startDate, newDate)
         vm.loadDataWithClear()
     })
 
@@ -58,14 +58,14 @@ fun HistoryScreen(
                 stringResource(R.string.start),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
-                rightText = vm.strStart.value,
+                rightText = vm.dates.value.strStart,
                 onClick = { showStartCalendar.value = true }
             )
             ListItem(
                 stringResource(R.string.end),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
-                rightText = vm.strEnd.value,
+                rightText = vm.dates.value.strEnd,
                 onClick = { showEndCalendar.value = true }
             )
             ListItem(
@@ -73,14 +73,14 @@ fun HistoryScreen(
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 dividerEnabled = false,
-                rightText = vm.total.value
+                rightText = vm.state.value.total
             )
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                items(vm.history.value) { record ->
+                items(vm.state.value.history) { record ->
                     ListItem(
                         record.categoryName,
                         comment = record.comment,

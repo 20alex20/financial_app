@@ -40,10 +40,10 @@ fun ExpensesIncomeScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
-                when (route == NavRoutes.Income.route) {
-                    false -> stringResource(R.string.expenses_today)
-                    true -> stringResource(R.string.income_today)
-                },
+                if (route == NavRoutes.Income.route)
+                    stringResource(R.string.income_today)
+                else
+                    stringResource(R.string.expenses_today),
                 rightButton = HeaderButton(
                     painterResource(R.drawable.history),
                     onClick = {
@@ -58,14 +58,14 @@ fun ExpensesIncomeScreen(
                 stringResource(R.string.total),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
-                rightText = vm.total.value,
+                rightText = vm.state.value.total,
             )
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                items(vm.expensesIncome.value) { transaction ->
+                items(vm.state.value.expensesIncome) { transaction ->
                     ListItem(
                         transaction.categoryName,
                         comment = transaction.comment,

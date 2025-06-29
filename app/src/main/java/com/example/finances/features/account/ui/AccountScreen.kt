@@ -38,7 +38,7 @@ fun AccountScreen(vm: AccountViewModel = viewModel(
                 stringResource(R.string.balance),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
-                rightText = vm.balance.value,
+                rightText = vm.state.value.balance,
                 emoji = stringResource(R.string.money_bag),
                 onClick = { },
                 trail = Trail.LightArrow
@@ -48,7 +48,7 @@ fun AccountScreen(vm: AccountViewModel = viewModel(
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 dividerEnabled = false,
-                rightText = vm.currency.value,
+                rightText = vm.state.value.currency,
                 onClick = { },
                 trail = Trail.LightArrow
             )

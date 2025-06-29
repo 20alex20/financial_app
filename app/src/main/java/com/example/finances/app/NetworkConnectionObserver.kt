@@ -17,16 +17,12 @@ class NetworkConnectionObserver private constructor(context: Context) {
     ) as ConnectivityManager
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        private val toast: Toast = Toast.makeText(
-            context,
-            R.string.error_no_internet,
-            Toast.LENGTH_SHORT
-        )
+        private val toast = Toast.makeText(context, R.string.error_no_internet, Toast.LENGTH_SHORT)
 
         override fun onLost(network: Network) = toast.show()
     }
 
-    fun unregister() = connectivityManager.unregisterNetworkCallback(networkCallback)
+    private fun unregister() = connectivityManager.unregisterNetworkCallback(networkCallback)
 
     init {
         val request = NetworkRequest.Builder()

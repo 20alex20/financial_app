@@ -164,6 +164,7 @@ fun ListItem(
 
             when (trail) {
                 null -> {}
+
                 is Trail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
                     contentDescription = content,
@@ -194,7 +195,7 @@ fun ListItem(
 /**
  * data-класс для хранения цветов выбранной цветовой схемы
  */
-internal data class ColorScheme(
+private data class ColorScheme(
     val background: Color,
     val emoji: Color,
     val emojiBackground: Color,
@@ -205,7 +206,7 @@ internal data class ColorScheme(
 )
 
 @Composable
-internal fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
+private fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
     return if (colorSchemeType == ListItemColorScheme.SURFACE) ColorScheme(
         background = MaterialTheme.colorScheme.surface,
         emoji = MaterialTheme.colorScheme.onSurface,
