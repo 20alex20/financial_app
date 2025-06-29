@@ -1,8 +1,8 @@
 package com.example.finances.features.history.domain.repo
 
-import com.example.finances.common.models.Response
+import com.example.finances.core.data.network.models.Response
+import com.example.finances.core.data.repository.models.Currency
 import com.example.finances.features.history.domain.models.HistoryRecord
-import com.example.finances.common.models.Currency
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 

@@ -1,6 +1,6 @@
 package com.example.finances.features.account.domain.models
 
-import com.example.finances.common.models.Currency
+import com.example.finances.core.data.repository.models.Currency
 
 /**
  * data-класс для хранения информации о счете
