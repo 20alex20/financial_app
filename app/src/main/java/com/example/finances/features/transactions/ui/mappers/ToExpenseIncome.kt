@@ -1,10 +1,10 @@
-package com.example.finances.features.transactions.domain.mappers
+package com.example.finances.features.transactions.ui.mappers
 
 import com.example.finances.core.data.repository.models.Currency
 import com.example.finances.features.transactions.domain.models.Transaction
-import com.example.finances.features.transactions.ui.models.UiTransaction
+import com.example.finances.features.transactions.ui.models.ExpenseIncome
 
-fun Transaction.toUiTransaction(currency: Currency) = UiTransaction(
+fun Transaction.toExpenseIncome(currency: Currency) = ExpenseIncome(
     id = this.id,
     categoryName = this.categoryName,
     categoryEmoji = this.categoryEmoji,

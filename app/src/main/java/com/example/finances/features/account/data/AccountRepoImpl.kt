@@ -3,7 +3,7 @@ package com.example.finances.features.account.data
 import android.content.Context
 import com.example.finances.core.data.network.NetworkManager
 import com.example.finances.core.data.repository.repoTryCatchBlock
-import com.example.finances.features.account.domain.mappers.toAccount
+import com.example.finances.features.account.data.mappers.toAccount
 import com.example.finances.features.account.domain.models.Account
 import com.example.finances.features.account.domain.repository.AccountRepo
 import kotlinx.coroutines.Dispatchers

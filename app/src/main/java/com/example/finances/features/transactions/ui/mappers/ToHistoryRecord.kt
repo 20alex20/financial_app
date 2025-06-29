@@ -1,12 +1,12 @@
-package com.example.finances.features.history.domain.mappers
+package com.example.finances.features.transactions.ui.mappers
 
-import com.example.finances.core.DateTimeFormatters
+import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.data.repository.models.Currency
-import com.example.finances.features.history.domain.models.HistoryRecord
-import com.example.finances.features.history.ui.models.UiHistoryRecord
+import com.example.finances.features.transactions.domain.models.Transaction
+import com.example.finances.features.transactions.ui.models.HistoryRecord
 import java.time.LocalDate
 
-fun HistoryRecord.toUiHistoryRecord(currency: Currency, today: LocalDate) = UiHistoryRecord(
+fun Transaction.toHistoryRecord(currency: Currency, today: LocalDate) = HistoryRecord(
     id = id,
     categoryName = categoryName,
     categoryEmoji = categoryEmoji,

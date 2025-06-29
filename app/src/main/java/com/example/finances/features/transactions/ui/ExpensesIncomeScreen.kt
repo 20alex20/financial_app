@@ -27,11 +27,11 @@ import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.Trail
 
 @Composable
-fun TransactionsScreen(
+fun ExpensesIncomeScreen(
     route: String,
     navController: NavController,
-    vm: TransactionsViewModel = viewModel(
-        factory = TransactionsViewModel.Factory(LocalContext.current, route)
+    vm: ExpensesIncomeViewModel = viewModel(
+        factory = ExpensesIncomeViewModel.Factory(LocalContext.current, route)
     )
 ) {
     Box(
@@ -65,7 +65,7 @@ fun TransactionsScreen(
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                items(vm.transactions.value) { transaction ->
+                items(vm.expensesIncome.value) { transaction ->
                     ListItem(
                         transaction.categoryName,
                         comment = transaction.comment,

@@ -1,4 +1,4 @@
-package com.example.finances.core.data.repository.common
+package com.example.finances.features.transactions.data.models
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

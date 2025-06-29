@@ -1,4 +1,4 @@
-package com.example.finances.features.history.ui
+package com.example.finances.features.transactions.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,11 +38,11 @@ fun HistoryScreen(
     val showEndCalendar = remember { mutableStateOf(false) }
     Calendar(showStartCalendar, vm.startDate.value, setNewDate = { newDate ->
         vm.setPeriod(newDate, vm.endDate.value)
-        vm.loadData()
+        vm.loadDataWithClear()
     })
     Calendar(showEndCalendar, vm.endDate.value, setNewDate = { newDate ->
         vm.setPeriod(vm.startDate.value, newDate)
-        vm.loadData()
+        vm.loadDataWithClear()
     })
 
     Box(modifier = Modifier.fillMaxSize()) {

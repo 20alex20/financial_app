@@ -1,5 +1,6 @@
-package com.example.finances.core.data.repository.common
+package com.example.finances.features.transactions.data
 
+import com.example.finances.features.transactions.data.models.TransactionResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -7,7 +8,7 @@ import retrofit2.http.Query
 /**
  * Источник данных (API для загрузки)
  */
-interface TransactionsHistoryApi {
+interface TransactionsApi {
     @GET("transactions/account/{accountId}/period")
     suspend fun getTransactions(
         @Path("accountId") accountId: Int,

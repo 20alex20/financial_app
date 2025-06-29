@@ -1,4 +1,4 @@
-package com.example.finances.core
+package com.example.finances.features.transactions.domain
 
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder

@@ -3,6 +3,7 @@ package com.example.finances.core.ui.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.Job
 
 abstract class BaseViewModel : ViewModel() {
     private val _loading = mutableStateOf(false)
@@ -26,9 +27,14 @@ abstract class BaseViewModel : ViewModel() {
         _error.value = true
     }
 
-    abstract fun loadData(): Any?
+    protected abstract fun loadData(): Job
+
+    fun loadDataWithClear() {
+        resetLoadingAndError()
+        loadData()
+    }
 
     init {
-        this.loadData()
+        loadDataWithClear()
     }
 }

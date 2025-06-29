@@ -1,9 +1,9 @@
-package com.example.finances.features.history.ui.models
+package com.example.finances.features.transactions.ui.models
 
 /**
  * data-класс для хранения информации о расходах/доходах, адаптированной для UI-слоя
  */
-data class UiHistoryRecord(
+data class HistoryRecord(
     val id: Int,
     val categoryName: String,
     val categoryEmoji: String,

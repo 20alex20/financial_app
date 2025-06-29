@@ -11,9 +11,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.finances.core.ui.components.BottomNavigationBar
 import com.example.finances.features.account.ui.AccountScreen
 import com.example.finances.features.categories.ui.CategoriesScreen
-import com.example.finances.features.history.ui.HistoryScreen
+import com.example.finances.features.transactions.ui.HistoryScreen
 import com.example.finances.features.settings.ui.SettingsScreen
-import com.example.finances.features.transactions.ui.TransactionsScreen
+import com.example.finances.features.transactions.ui.ExpensesIncomeScreen
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -25,13 +25,13 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             modifier = Modifier.weight(1f)
         ) {
             composable(NavRoutes.Expenses.route) {
-                TransactionsScreen(NavRoutes.Expenses.route, navController)
+                ExpensesIncomeScreen(NavRoutes.Expenses.route, navController)
             }
             composable(NavRoutes.Expenses.route + "/" + NavRoutes.History.route) {
                 HistoryScreen(NavRoutes.Expenses.route, navController)
             }
             composable(NavRoutes.Income.route) {
-                TransactionsScreen(NavRoutes.Income.route, navController)
+                ExpensesIncomeScreen(NavRoutes.Income.route, navController)
             }
             composable(NavRoutes.Income.route + "/" + NavRoutes.History.route) {
                 HistoryScreen(NavRoutes.Income.route, navController)
