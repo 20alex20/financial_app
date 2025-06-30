@@ -22,20 +22,23 @@ import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.Trail
 
 @Composable
-fun AccountScreen(vm: AccountViewModel = viewModel(
-    factory = AccountViewModel.Factory(LocalContext.current)
-)) {
+fun AccountScreen(
+    vm: AccountViewModel = viewModel(factory = AccountViewModel.Factory(LocalContext.current))
+) {
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier.fillMaxSize()
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
-                stringResource(R.string.my_account),
-                rightButton = HeaderButton(painterResource(R.drawable.edit), onClick = { })
+                title = stringResource(R.string.my_account),
+                rightButton = HeaderButton(
+                    icon = painterResource(R.drawable.edit),
+                    onClick = { }
+                )
             )
             ListItem(
-                stringResource(R.string.balance),
+                mainText = stringResource(R.string.balance),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.state.value.balance,
@@ -44,7 +47,7 @@ fun AccountScreen(vm: AccountViewModel = viewModel(
                 onClick = { }
             )
             ListItem(
-                stringResource(R.string.currency),
+                mainText = stringResource(R.string.currency),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 dividerEnabled = false,

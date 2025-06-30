@@ -56,28 +56,32 @@ fun HistoryScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
-                stringResource(R.string.my_history),
+                title = stringResource(R.string.my_history),
                 leftButton = HeaderButton(
-                    painterResource(R.drawable.back),
-                    onClick = { navController.popBackStack() }),
-                rightButton = HeaderButton(painterResource(R.drawable.analysis), onClick = { })
+                    icon = painterResource(R.drawable.back),
+                    onClick = { navController.popBackStack() }
+                ),
+                rightButton = HeaderButton(
+                    icon = painterResource(R.drawable.analysis),
+                    onClick = { }
+                )
             )
             ListItem(
-                stringResource(R.string.start),
+                mainText = stringResource(R.string.start),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.dates.value.strStart,
                 onClick = { showStartCalendar.value = true }
             )
             ListItem(
-                stringResource(R.string.end),
+                mainText = stringResource(R.string.end),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.dates.value.strEnd,
                 onClick = { showEndCalendar.value = true }
             )
             ListItem(
-                stringResource(R.string.sum),
+                mainText = stringResource(R.string.sum),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 dividerEnabled = false,
@@ -90,7 +94,7 @@ fun HistoryScreen(
             ) {
                 items(vm.state.value.history) { record ->
                     ListItem(
-                        record.categoryName,
+                        mainText = record.categoryName,
                         comment = record.comment,
                         rightText = record.amount,
                         additionalRightText = record.dateTime,

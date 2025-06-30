@@ -7,7 +7,7 @@ import com.example.finances.R
 import com.example.finances.core.navigation.models.NavBarItem
 
 @Composable
-fun navBarItems(): List<NavBarItem> = listOf(
+fun navBarItems() = listOf(
     NavBarItem(
         title = stringResource(R.string.expenses),
         image = painterResource(R.drawable.expenses),

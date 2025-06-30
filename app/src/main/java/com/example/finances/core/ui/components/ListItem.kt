@@ -48,25 +48,14 @@ enum class ListItemColorScheme {
  * Запечатанный класс со всеми типами trail
  */
 sealed class Trail {
-    /**
-     * Светлая незакрашенная стрелка
-     */
     data object LightArrow : Trail()
-
-    /**
-     * Темная закрашенная стрелка
-     */
     data object DarkArrow : Trail()
-
-    /**
-     * Кастомная реализация trail
-     */
     data class Custom(val customTrail: @Composable () -> Unit) : Trail()
 }
 
 @Composable
 fun ListItem(
-    content: String,
+    mainText: String,
     modifier: Modifier = Modifier,
     height: ListItemHeight = ListItemHeight.HIGH,
     colorScheme: ListItemColorScheme = ListItemColorScheme.SURFACE,
@@ -86,7 +75,6 @@ fun ListItem(
             .fillMaxWidth()
             .height(height.value)
             .background(colors.background)
-
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -126,7 +114,7 @@ fun ListItem(
                     .fillMaxHeight()
             ) {
                 Text(
-                    text = content,
+                    text = mainText,
                     style = MaterialTheme.typography.bodyLarge,
                     color = colors.content,
                     softWrap = false,
@@ -167,14 +155,14 @@ fun ListItem(
 
                 is Trail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
-                    contentDescription = content,
+                    contentDescription = mainText,
                     tint = LightArrowColor,
                     modifier = Modifier.size(24.dp)
                 )
 
                 is Trail.DarkArrow -> Icon(
                     painter = painterResource(R.drawable.dark_arrow),
-                    contentDescription = content,
+                    contentDescription = mainText,
                     tint = colors.darkArrow,
                     modifier = Modifier.size(24.dp)
                 )

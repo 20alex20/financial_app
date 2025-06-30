@@ -14,14 +14,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finances.R
+import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
 import com.example.finances.core.ui.components.ListItem
-import androidx.compose.foundation.lazy.items
+import com.example.finances.core.ui.components.LoadingCircular
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,29 +38,42 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CategoriesScreen(vm: CategoriesViewModel = viewModel()) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Header(stringResource(R.string.my_categories))
+fun CategoriesScreen(
+    vm: CategoriesViewModel = viewModel(factory = CategoriesViewModel.Factory(LocalContext.current))
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Header(stringResource(R.string.my_categories))
 
-        SearchBar(vm)
+            SearchBar(vm.state.value.searchQuery, { vm.updateSearchQuery(it) })
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-            items(vm.categories.value) { category ->
-                ListItem(
-                    category.name,
-                    emoji = category.emoji
-                )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                items(vm.state.value.filteredCategories) { category ->
+                    ListItem(
+                        mainText = category.name,
+                        emoji = category.emoji
+                    )
+                }
             }
         }
+
+        if (vm.loading.value)
+            LoadingCircular()
+        if (vm.error.value)
+            ErrorMessage()
     }
 }
 
 @Composable
-fun SearchBar(vm: CategoriesViewModel, modifier: Modifier = Modifier) {
+fun SearchBar(
+    searchQuery: String,
+    updateSearchQuery: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -68,9 +84,9 @@ fun SearchBar(vm: CategoriesViewModel, modifier: Modifier = Modifier) {
             .padding(4.dp, 0.dp)
     ) {
         TextField(
-            value = vm.inputText.value,
+            value = searchQuery,
             textStyle = MaterialTheme.typography.bodyLarge,
-            onValueChange = { newText -> vm.setInputText(newText) },
+            onValueChange = { updateSearchQuery(it) },
             singleLine = true,
             placeholder = {
                 Text(

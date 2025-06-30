@@ -40,12 +40,12 @@ fun ExpensesIncomeScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
-                when (route) {
+                title = when (route) {
                     NavRoutes.Income.route -> stringResource(R.string.income_today)
                     else -> stringResource(R.string.expenses_today)
                 },
                 rightButton = HeaderButton(
-                    painterResource(R.drawable.history),
+                    icon = painterResource(R.drawable.history),
                     onClick = {
                         navController.navigate(route + "/" + NavRoutes.History.route) {
                             launchSingleTop = true
@@ -55,7 +55,7 @@ fun ExpensesIncomeScreen(
                 )
             )
             ListItem(
-                stringResource(R.string.total),
+                mainText = stringResource(R.string.total),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.state.value.total,
@@ -67,7 +67,7 @@ fun ExpensesIncomeScreen(
             ) {
                 items(vm.state.value.expensesIncome) { transaction ->
                     ListItem(
-                        transaction.categoryName,
+                        mainText = transaction.categoryName,
                         comment = transaction.comment,
                         rightText = transaction.amount,
                         emoji = transaction.categoryEmoji,
