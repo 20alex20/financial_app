@@ -21,7 +21,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
- * ViewModel экрана истории
+ * Вьюмодель экрана истории
  */
 class HistoryViewModel(
     private val transactionsRepo: TransactionsRepo,
@@ -73,10 +73,15 @@ class HistoryViewModel(
             end = endDate,
             strStart = startDate.format(DateTimeFormatters.date),
             strEnd = when (endDate) {
-                _today -> endDate.format(DateTimeFormatters.date)
-                else -> LocalDateTime.now().format(DateTimeFormatters.time)
+                _today -> LocalDateTime.now().format(DateTimeFormatters.time)
+                else -> endDate.format(DateTimeFormatters.date)
             }
         )
+    }
+
+    init {
+        setPeriod(_dates.value.start, _dates.value.end)
+        reloadData()
     }
 
     /**

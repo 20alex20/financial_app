@@ -2,9 +2,6 @@ package com.example.finances.features.transactions.domain.models
 
 import java.time.LocalDateTime
 
-/**
- * data-класс для хранения информации о расходах
- */
 data class Transaction(
     val id: Int,
     val categoryName: String,

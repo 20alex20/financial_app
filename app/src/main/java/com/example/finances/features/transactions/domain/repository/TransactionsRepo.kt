@@ -6,7 +6,7 @@ import com.example.finances.features.transactions.domain.models.Transaction
 import java.time.LocalDate
 
 /**
- * Интерфейс репозитория экрана расходов
+ * Интерфейс репозитория транзакций
  */
 interface TransactionsRepo {
     suspend fun getCurrency(): Response<Currency>

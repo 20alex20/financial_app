@@ -5,6 +5,7 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -22,16 +23,22 @@ import java.time.ZoneId
 @Composable
 fun Calendar(
     showCalendar: MutableState<Boolean>,
-    date: LocalDate,
+    initialDate: LocalDate,
     setNewDate: (LocalDate) -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = date
+        initialSelectedDateMillis = initialDate
             .plusDays(1)
             .atStartOfDay(ZoneId.systemDefault())
             .toInstant()
-            .toEpochMilli()
+            .toEpochMilli(),
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return !getDateFromMillis(utcTimeMillis).isAfter(LocalDate.now())
+            }
+        }
     )
+
     val datePickerColors = DatePickerDefaults.colors(
         selectedDayContainerColor = MaterialTheme.colorScheme.primary,
         selectedDayContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -71,9 +78,8 @@ fun Calendar(
                 onClick = {
                     showCalendar.value = false
                     val millis = datePickerState.selectedDateMillis
-                    if (millis != null) setNewDate(
-                        Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
-                    )
+                    if (millis != null)
+                        setNewDate(getDateFromMillis(millis))
                 }
             ) {
                 Text(
@@ -99,4 +105,8 @@ fun Calendar(
             colors = datePickerColors
         )
     }
+}
+
+private fun getDateFromMillis(millis: Long): LocalDate {
+    return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
 }

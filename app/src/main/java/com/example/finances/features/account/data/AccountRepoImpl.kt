@@ -10,7 +10,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 /**
- * Имплементация интерфейса репозитория экрана счета
+ * Имплементация интерфейса репозитория счета
  */
 class AccountRepoImpl(context: Context) : AccountRepo {
     private val api = NetworkManager.provideApi(context, AccountApi::class.java)

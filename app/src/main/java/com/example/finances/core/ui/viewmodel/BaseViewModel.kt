@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Job
 
+/**
+ * Базовый класс для всех вьюмоделей приложения
+ */
 abstract class BaseViewModel : ViewModel() {
     private var _loadedJob: Job? = null
 
@@ -31,13 +34,9 @@ abstract class BaseViewModel : ViewModel() {
 
     protected abstract fun loadData(): Job
 
-    fun startLoadingData() {
+    fun reloadData() {
         _loadedJob?.cancel()
         setLoading()
         _loadedJob = loadData()
-    }
-
-    init {
-        startLoadingData()
     }
 }

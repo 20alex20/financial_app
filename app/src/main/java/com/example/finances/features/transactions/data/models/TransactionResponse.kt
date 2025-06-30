@@ -3,9 +3,6 @@ package com.example.finances.features.transactions.data.models
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-/**
- * data-класс для хранения полученных от сервера данных транзакций
- */
 @JsonClass(generateAdapter = true)
 data class TransactionResponse(
     @Json(name = "id") val id: Int,
@@ -18,9 +15,6 @@ data class TransactionResponse(
     @Json(name = "updatedAt") val updatedAt: String
 )
 
-/**
- * data-класс с информацией о счете транзакции
- */
 @JsonClass(generateAdapter = true)
 data class AccountInfo(
     @Json(name = "id") val id: Int,
@@ -29,9 +23,6 @@ data class AccountInfo(
     @Json(name = "currency") val currency: String
 )
 
-/**
- * data-класс с информацией о статье транзакции
- */
 @JsonClass(generateAdapter = true)
 data class CategoryInfo(
     @Json(name = "id") val id: Int,

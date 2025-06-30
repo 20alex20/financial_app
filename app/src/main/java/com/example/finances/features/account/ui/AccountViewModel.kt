@@ -13,7 +13,7 @@ import com.example.finances.features.account.ui.models.AccountViewModelState
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel экрана счета
+ * Вьюмодель экрана счета
  */
 class AccountViewModel(private val accountRepo: AccountRepo) : BaseViewModel() {
     private val _state = mutableStateOf(AccountViewModelState("0 ₽", "₽"))
@@ -36,8 +36,12 @@ class AccountViewModel(private val accountRepo: AccountRepo) : BaseViewModel() {
         }
     }
 
+    init {
+        reloadData()
+    }
+
     /**
-     * Фабрика по созданию ViewModel экрана счета и прокидывания в нее репозитория
+     * Фабрика по созданию вьюмодели экрана счета и прокидывания в нее репозитория
      */
     class Factory(context: Context) : ViewModelFactory<AccountViewModel>(
         viewModelClass = AccountViewModel::class.java,

@@ -17,6 +17,9 @@ private val HTTP_ERRORS_WITH_RETRY = listOf(
     HttpURLConnection.HTTP_GATEWAY_TIMEOUT
 )
 
+/**
+ * Исключение для непредвиденных ошибок
+ */
 class UnexpectedException(message: String) : Exception(message)
 
 suspend fun <T> repoTryCatchBlock(f: suspend () -> T): Response<T> = withContext(Dispatchers.IO) {

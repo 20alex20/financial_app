@@ -76,8 +76,8 @@ fun ListItem(
     comment: String? = null,
     rightText: String? = null,
     additionalRightText: String? = null,
-    onClick: (() -> Unit)? = null,
-    trail: Trail? = null
+    trail: Trail? = null,
+    onClick: (() -> Unit)? = null
 ) {
     val colors = getColorScheme(colorScheme)
     Box(
@@ -192,9 +192,6 @@ fun ListItem(
     }
 }
 
-/**
- * data-класс для хранения цветов выбранной цветовой схемы
- */
 private data class ColorScheme(
     val background: Color,
     val emoji: Color,

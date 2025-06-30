@@ -40,8 +40,8 @@ fun AccountScreen(vm: AccountViewModel = viewModel(
                 colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.state.value.balance,
                 emoji = stringResource(R.string.money_bag),
-                onClick = { },
-                trail = Trail.LightArrow
+                trail = Trail.LightArrow,
+                onClick = { }
             )
             ListItem(
                 stringResource(R.string.currency),
@@ -49,8 +49,8 @@ fun AccountScreen(vm: AccountViewModel = viewModel(
                 colorScheme = ListItemColorScheme.PRIMARY,
                 dividerEnabled = false,
                 rightText = vm.state.value.currency,
-                onClick = { },
-                trail = Trail.LightArrow
+                trail = Trail.LightArrow,
+                onClick = { }
             )
         }
 

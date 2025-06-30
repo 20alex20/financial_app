@@ -12,7 +12,7 @@ import com.example.finances.features.transactions.domain.repository.Transactions
 import java.time.LocalDate
 
 /**
- * Имплементация интерфейса репозитория экрана расходов
+ * Имплементация интерфейса репозитория транзакций
  */
 class TransactionsRepoImpl(
     context: Context,
@@ -40,8 +40,8 @@ class TransactionsRepoImpl(
 
         val transaction = api.getTransactions(
             accountId = account.data.id,
-            startDate = startDate.format(DateTimeFormatters.date),
-            endDate = endDate.format(DateTimeFormatters.date)
+            startDate = startDate.format(DateTimeFormatters.requestDate),
+            endDate = endDate.format(DateTimeFormatters.requestDate)
         )
         transaction
             .filter { it.category.isIncome == isIncome }

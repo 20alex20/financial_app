@@ -9,7 +9,7 @@ fun TransactionResponse.toTransaction() = Transaction(
     id = this.id,
     categoryName = this.category.name,
     categoryEmoji = this.category.emoji,
-    dateTime = LocalDateTime.parse(transactionDate, DateTimeFormatters.dateTime),
+    dateTime = LocalDateTime.parse(transactionDate, DateTimeFormatters.replyDateTime),
     amount = this.amount.toDouble(),
     comment = this.comment
 )

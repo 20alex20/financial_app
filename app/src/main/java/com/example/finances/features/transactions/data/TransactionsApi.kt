@@ -6,7 +6,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * Источник данных (API для загрузки)
+ * Источник данных транзакций (API для загрузки транзакций)
  */
 interface TransactionsApi {
     @GET("transactions/account/{accountId}/period")

@@ -3,7 +3,10 @@ package com.example.finances.core.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-open class ViewModelFactory<Q : ViewModel>(
+/**
+ * Базовая класс для всех фабрик по созданию вьюмоделей
+ */
+abstract class ViewModelFactory<Q : ViewModel>(
     private val viewModelClass: Class<Q>,
     private val viewModelInit: () -> Q
 ) : ViewModelProvider.Factory {

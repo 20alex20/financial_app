@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 /**
- * ViewModel экрана расходов
+ * Вьюмодель экрана расходов/доходов
  */
 class ExpensesIncomeViewModel(
     private val transactionsRepo: TransactionsRepo,
@@ -46,6 +46,10 @@ class ExpensesIncomeViewModel(
         } catch (_: Exception) {
             setError()
         }
+    }
+
+    init {
+        reloadData()
     }
 
     /**

@@ -71,8 +71,8 @@ fun ExpensesIncomeScreen(
                         comment = transaction.comment,
                         rightText = transaction.amount,
                         emoji = transaction.categoryEmoji,
-                        onClick = { },
-                        trail = Trail.LightArrow
+                        trail = Trail.LightArrow,
+                        onClick = { }
                     )
                 }
             }
