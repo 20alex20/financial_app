@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.data.network.NetworkManager
 import com.example.finances.core.data.network.models.Response
-import com.example.finances.core.data.repository.NoAccountException
+import com.example.finances.features.transactions.data.models.AccountLoadingException
 import com.example.finances.core.data.repository.repoTryCatchBlock
 import com.example.finances.features.account.domain.repository.AccountRepo
 import com.example.finances.features.transactions.data.mappers.toTransaction
@@ -25,7 +25,7 @@ class TransactionsRepoImpl(
             if (response is Response.Success)
                 response.data.currency
             else
-                throw NoAccountException(ERROR_LOADING_ACCOUNT)
+                throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
         }
     }
 
@@ -36,7 +36,7 @@ class TransactionsRepoImpl(
     ) = repoTryCatchBlock {
         val account = accountRepo.getAccount()
         if (account !is Response.Success)
-            throw NoAccountException(ERROR_LOADING_ACCOUNT)
+            throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
 
         val transaction = api.getTransactions(
             accountId = account.data.id,
@@ -50,6 +50,6 @@ class TransactionsRepoImpl(
     }
 
     companion object {
-        const val ERROR_LOADING_ACCOUNT = "Error loading account data"
+        const val ACCOUNT_LOADING_ERROR = "Account data loading error"
     }
 }
