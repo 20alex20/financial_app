@@ -14,7 +14,6 @@ import com.example.finances.features.transactions.domain.repository.Transactions
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.transactions.ui.models.ExpensesIncomeViewModelState
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -30,20 +29,18 @@ class ExpensesIncomeViewModel(
 
     override fun loadData() = viewModelScope.launch {
         try {
-            val currency = transactionsRepo.getCurrency().lastOrNull()
-                .let { if (it is Response.Success) it.data else Currency.RUBLE }
+            val currency = transactionsRepo.getCurrency().let {
+                if (it is Response.Success) it.data else Currency.RUBLE
+            }
             val today = LocalDate.now()
-            transactionsRepo.getTransactions(today, today, isIncome).collect { reply ->
-                when (reply) {
-                    is Response.Loading -> setLoading()
-                    is Response.Failure -> setError()
-                    is Response.Success -> {
-                        resetLoadingAndError()
-                        _state.value = ExpensesIncomeViewModelState(
-                            currency.getStrAmount(reply.data.sumOf { it.amount }),
-                            reply.data.map { it.toExpenseIncome(currency) }
-                        )
-                    }
+            when (val response = transactionsRepo.getTransactions(today, today, isIncome)) {
+                is Response.Failure -> setError()
+                is Response.Success -> {
+                    resetLoadingAndError()
+                    _state.value = ExpensesIncomeViewModelState(
+                        total = currency.getStrAmount(response.data.sumOf { it.amount }),
+                        expensesIncome = response.data.map { it.toExpenseIncome(currency) }
+                    )
                 }
             }
         } catch (_: Exception) {

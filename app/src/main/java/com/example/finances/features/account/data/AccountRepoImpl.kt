@@ -6,8 +6,6 @@ import com.example.finances.core.data.repository.repoTryCatchBlock
 import com.example.finances.features.account.data.mappers.toAccount
 import com.example.finances.features.account.domain.models.Account
 import com.example.finances.features.account.domain.repository.AccountRepo
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -21,11 +19,11 @@ class AccountRepoImpl(context: Context) : AccountRepo {
     @Volatile
     private var cachedAccount: Account? = null
 
-    override fun getAccount() = repoTryCatchBlock {
+    override suspend fun getAccount() = repoTryCatchBlock {
         cachedAccount ?: mutex.withLock {
             cachedAccount ?: api.getAccounts().first().toAccount().also { cachedAccount = it }
         }
-    }.flowOn(Dispatchers.IO)
+    }
 
     companion object {
         @Volatile

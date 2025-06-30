@@ -36,13 +36,13 @@ fun HistoryScreen(
 ) {
     val showStartCalendar = remember { mutableStateOf(false) }
     val showEndCalendar = remember { mutableStateOf(false) }
-    Calendar(showStartCalendar, vm.dates.value.startDate, setNewDate = { newDate ->
-        vm.setPeriod(newDate, vm.dates.value.endDate)
-        vm.loadDataWithClear()
+    Calendar(showStartCalendar, vm.dates.value.start, setNewDate = { newDate ->
+        vm.setPeriod(newDate, vm.dates.value.end)
+        vm.startLoadingData()
     })
-    Calendar(showEndCalendar, vm.dates.value.endDate, setNewDate = { newDate ->
-        vm.setPeriod(vm.dates.value.startDate, newDate)
-        vm.loadDataWithClear()
+    Calendar(showEndCalendar, vm.dates.value.end, setNewDate = { newDate ->
+        vm.setPeriod(vm.dates.value.start, newDate)
+        vm.startLoadingData()
     })
 
     Box(modifier = Modifier.fillMaxSize()) {

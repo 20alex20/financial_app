@@ -20,7 +20,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     Column(modifier = modifier) {
         NavHost(
-            navController,
+            navController = navController,
             startDestination = NavRoutes.Expenses.route,
             modifier = Modifier.weight(1f)
         ) {

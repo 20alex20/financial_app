@@ -5,11 +5,6 @@ package com.example.finances.core.data.network.models
  */
 sealed class Response<out T> {
     /**
-     * Загрузка началась
-     */
-    data object Loading : Response<Nothing>()
-
-    /**
      * Успешная загрузка + результат загрузки
      */
     data class Success<out T>(

@@ -21,17 +21,14 @@ class AccountViewModel(private val accountRepo: AccountRepo) : BaseViewModel() {
 
     override fun loadData() = viewModelScope.launch {
         try {
-            accountRepo.getAccount().collect { reply ->
-                when (reply) {
-                    is Response.Loading -> setLoading()
-                    is Response.Success -> {
-                        resetLoadingAndError()
-                        _state.value = AccountViewModelState(
-                            reply.data.currency.getStrAmount(reply.data.balance),
-                            reply.data.currency.symbol
-                        )
-                    }
-                    is Response.Failure -> setError()
+            when (val response = accountRepo.getAccount()) {
+                is Response.Failure -> setError()
+                is Response.Success -> {
+                    resetLoadingAndError()
+                    _state.value = AccountViewModelState(
+                        balance = response.data.currency.getStrAmount(response.data.balance),
+                        currency = response.data.currency.symbol
+                    )
                 }
             }
         } catch (_: Exception) {

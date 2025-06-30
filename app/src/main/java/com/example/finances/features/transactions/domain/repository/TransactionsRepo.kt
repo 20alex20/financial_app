@@ -3,18 +3,17 @@ package com.example.finances.features.transactions.domain.repository
 import com.example.finances.core.data.network.models.Response
 import com.example.finances.core.data.repository.models.Currency
 import com.example.finances.features.transactions.domain.models.Transaction
-import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 /**
  * Интерфейс репозитория экрана расходов
  */
 interface TransactionsRepo {
-    fun getCurrency(): Flow<Response<Currency>>
+    suspend fun getCurrency(): Response<Currency>
 
-    fun getTransactions(
+    suspend fun getTransactions(
         startDate: LocalDate,
         endDate: LocalDate,
         isIncome: Boolean
-    ): Flow<Response<List<Transaction>>>
+    ): Response<List<Transaction>>
 }

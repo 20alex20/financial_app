@@ -40,10 +40,10 @@ fun ExpensesIncomeScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
-                if (route == NavRoutes.Income.route)
-                    stringResource(R.string.income_today)
-                else
-                    stringResource(R.string.expenses_today),
+                when (route) {
+                    NavRoutes.Income.route -> stringResource(R.string.income_today)
+                    else -> stringResource(R.string.expenses_today)
+                },
                 rightButton = HeaderButton(
                     painterResource(R.drawable.history),
                     onClick = {

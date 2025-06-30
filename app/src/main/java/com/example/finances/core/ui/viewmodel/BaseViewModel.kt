@@ -6,18 +6,15 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.Job
 
 abstract class BaseViewModel : ViewModel() {
+    private var _loadedJob: Job? = null
+
     private val _loading = mutableStateOf(false)
     val loading: State<Boolean> = _loading
 
     private val _error = mutableStateOf(false)
     val error: State<Boolean> = _error
 
-    protected fun resetLoadingAndError() {
-        _loading.value = false
-        _error.value = false
-    }
-
-    protected fun setLoading() {
+    private fun setLoading() {
         _error.value = false
         _loading.value = true
     }
@@ -27,14 +24,20 @@ abstract class BaseViewModel : ViewModel() {
         _error.value = true
     }
 
+    protected fun resetLoadingAndError() {
+        _loading.value = false
+        _error.value = false
+    }
+
     protected abstract fun loadData(): Job
 
-    fun loadDataWithClear() {
-        resetLoadingAndError()
-        loadData()
+    fun startLoadingData() {
+        _loadedJob?.cancel()
+        setLoading()
+        _loadedJob = loadData()
     }
 
     init {
-        loadDataWithClear()
+        startLoadingData()
     }
 }

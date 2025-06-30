@@ -16,8 +16,6 @@ import com.example.finances.features.transactions.domain.repository.Transactions
 import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
 import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
 import com.example.finances.features.transactions.ui.models.HistoryViewModelState
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,13 +27,12 @@ class HistoryViewModel(
     private val transactionsRepo: TransactionsRepo,
     private val isIncome: Boolean
 ) : BaseViewModel() {
-    private var today: LocalDate = LocalDate.now()
-    private var _loadedJob: Job? = null
+    private var _today: LocalDate = LocalDate.now()
 
     private var _dates = mutableStateOf(
         HistoryDatesViewModelState(
-            startDate = today.withDayOfMonth(1),
-            endDate = today,
+            start = _today.withDayOfMonth(1),
+            end = _today,
             strStart = "01.01.2025",
             strEnd = "00:00"
         )
@@ -47,48 +44,39 @@ class HistoryViewModel(
 
     override fun loadData() = viewModelScope.launch {
         try {
-            val currency = transactionsRepo.getCurrency().lastOrNull()
-                .let { if (it is Response.Success) it.data else Currency.RUBLE }
-            transactionsRepo.getTransactions(_dates.value.startDate, _dates.value.endDate, isIncome)
-                .collect { reply ->
-                    when (reply) {
-                        is Response.Loading -> setLoading()
-                        is Response.Failure -> setError()
-                        is Response.Success -> {
-                            resetLoadingAndError()
-                            _state.value = HistoryViewModelState(
-                                currency.getStrAmount(reply.data.sumOf { it.amount }),
-                                reply.data.map { it.toHistoryRecord(currency, today) }
-                            )
-                        }
-                    }
+            val currency = transactionsRepo.getCurrency().let {
+                if (it is Response.Success) it.data else Currency.RUBLE
+            }
+            val r = transactionsRepo.getTransactions(_dates.value.start, _dates.value.end, isIncome)
+            when (r) {
+                is Response.Failure -> setError()
+                is Response.Success -> {
+                    resetLoadingAndError()
+                    _state.value = HistoryViewModelState(
+                        total = currency.getStrAmount(r.data.sumOf { it.amount }),
+                        history = r.data.map { it.toHistoryRecord(currency, _today) }
+                    )
                 }
+            }
         } catch (_: Exception) {
             setError()
         }
-    }.also { _loadedJob = it }
+    }
 
     fun setPeriod(start: LocalDate, end: LocalDate) {
-        today = LocalDate.now()
-        val endDate = if (end <= today) end else today
+        _today = LocalDate.now()
+        val endDate = if (end <= _today) end else _today
         val startDate = if (start <= endDate) start else endDate
 
         _dates.value = HistoryDatesViewModelState(
-            startDate = startDate,
-            endDate = endDate,
+            start = startDate,
+            end = endDate,
             strStart = startDate.format(DateTimeFormatters.date),
-            strEnd = if (endDate != today)
-                endDate.format(DateTimeFormatters.date)
-            else
-                LocalDateTime.now().format(DateTimeFormatters.time)
+            strEnd = when (endDate) {
+                _today -> endDate.format(DateTimeFormatters.date)
+                else -> LocalDateTime.now().format(DateTimeFormatters.time)
+            }
         )
-
-        _loadedJob?.cancel()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        _loadedJob?.cancel()
     }
 
     /**
