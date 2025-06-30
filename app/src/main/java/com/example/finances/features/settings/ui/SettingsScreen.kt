@@ -14,10 +14,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finances.R
 import com.example.finances.features.settings.data.SettingsRepo
-import com.example.finances.common.graphics.Header
-import com.example.finances.common.graphics.ListItem
-import com.example.finances.common.graphics.ListItemHeight
-import com.example.finances.common.graphics.Trail
+import com.example.finances.core.ui.components.Header
+import com.example.finances.core.ui.components.ListItem
+import com.example.finances.core.ui.components.ListItemHeight
+import com.example.finances.core.ui.components.Trail
 
 @Composable
 fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
@@ -36,9 +36,10 @@ fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
                     setting.name,
                     height = ListItemHeight.LOW,
                     onClick = if (!setting.withSwitch) setting.onClick else null,
-                    trail = when (setting.withSwitch) {
-                        false -> Trail.DarkArrow
-                        true -> Trail.Custom {
+                    trail = if (!setting.withSwitch)
+                        Trail.DarkArrow
+                    else
+                        Trail.Custom {
                             val switchColors = SwitchDefaults.colors(
                                 uncheckedBorderColor = MaterialTheme.colorScheme.outline,
                                 checkedThumbColor = MaterialTheme.colorScheme.primary,
@@ -52,7 +53,6 @@ fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
                                 colors = switchColors
                             )
                         }
-                    }
                 )
             }
         }

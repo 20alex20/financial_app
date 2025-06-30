@@ -4,7 +4,7 @@ import com.example.finances.features.account.data.models.AccountResponse
 import retrofit2.http.GET
 
 /**
- * Источник данных экрана счета (API для загрузки счета)
+ * Источник данных счетов (API для загрузки счетов)
  */
 interface AccountApi {
     @GET("accounts")

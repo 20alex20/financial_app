@@ -4,22 +4,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finances.R
-import com.example.finances.common.graphics.AddButton
-import com.example.finances.common.graphics.Header
-import com.example.finances.common.graphics.HeaderButton
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
-import com.example.finances.common.graphics.ErrorMessage
-import com.example.finances.common.graphics.ListItem
-import com.example.finances.common.graphics.ListItemColorScheme
-import com.example.finances.common.graphics.ListItemHeight
-import com.example.finances.common.graphics.LoadingCircular
-import com.example.finances.common.graphics.Trail
+import com.example.finances.core.ui.components.AddButton
+import com.example.finances.core.ui.components.ErrorMessage
+import com.example.finances.core.ui.components.Header
+import com.example.finances.core.ui.components.HeaderButton
+import com.example.finances.core.ui.components.ListItem
+import com.example.finances.core.ui.components.ListItemColorScheme
+import com.example.finances.core.ui.components.ListItemHeight
+import com.example.finances.core.ui.components.LoadingCircular
+import com.example.finances.core.ui.components.Trail
 
 @Composable
 fun AccountScreen(vm: AccountViewModel = viewModel(
@@ -38,19 +38,19 @@ fun AccountScreen(vm: AccountViewModel = viewModel(
                 stringResource(R.string.balance),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
-                rightText = vm.balance.value,
+                rightText = vm.state.value.balance,
                 emoji = stringResource(R.string.money_bag),
-                onClick = { },
-                trail = Trail.LightArrow
+                trail = Trail.LightArrow,
+                onClick = { }
             )
             ListItem(
                 stringResource(R.string.currency),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 dividerEnabled = false,
-                rightText = vm.currency.value,
-                onClick = { },
-                trail = Trail.LightArrow
+                rightText = vm.state.value.currency,
+                trail = Trail.LightArrow,
+                onClick = { }
             )
         }
 
