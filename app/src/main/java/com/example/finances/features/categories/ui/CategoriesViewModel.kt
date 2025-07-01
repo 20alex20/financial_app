@@ -16,7 +16,9 @@ import kotlinx.coroutines.launch
 /**
  * Вьюмодель экрана статей
  */
-class CategoriesViewModel(private val categoriesRepo: CategoriesRepo) : BaseViewModel() {
+class CategoriesViewModel private constructor(
+    private val categoriesRepo: CategoriesRepo
+) : BaseViewModel() {
     private var _allCategories = emptyList<Category>()
 
     private val _state = mutableStateOf(CategoriesViewModelState("", emptyList()))

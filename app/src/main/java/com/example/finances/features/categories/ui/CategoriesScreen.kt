@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,15 +26,12 @@ import com.example.finances.core.ui.components.ListItem
 import com.example.finances.core.ui.components.LoadingCircular
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.finances.core.ui.components.TextInput
 
 @Composable
 fun CategoriesScreen(
@@ -43,10 +39,11 @@ fun CategoriesScreen(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Header(stringResource(R.string.my_categories))
-
-            SearchBar(vm.state.value.searchQuery, { vm.updateSearchQuery(it) })
-
+            Header(title = stringResource(R.string.my_categories))
+            SearchBar(
+                query = vm.state.value.searchQuery,
+                updateQuery = { vm.updateSearchQuery(it) }
+            )
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -69,11 +66,7 @@ fun CategoriesScreen(
 }
 
 @Composable
-fun SearchBar(
-    searchQuery: String,
-    updateSearchQuery: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun SearchBar(query: String, updateQuery: (String) -> Unit, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -83,40 +76,11 @@ fun SearchBar(
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .padding(4.dp, 0.dp)
     ) {
-        TextField(
-            value = searchQuery,
-            textStyle = MaterialTheme.typography.bodyLarge,
-            onValueChange = { updateSearchQuery(it) },
-            singleLine = true,
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.search_placeholder),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                focusedLabelColor = Color.Transparent,
-                unfocusedLabelColor = Color.Transparent,
-                disabledLabelColor = Color.Transparent,
-                focusedPlaceholderColor = Color.Transparent,
-                unfocusedPlaceholderColor = Color.Transparent,
-                disabledPlaceholderColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent,
-
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                cursorColor = MaterialTheme.colorScheme.onSurface
-            ),
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f)
+        TextInput(
+            text = query,
+            updateText = { updateQuery(it) },
+            placeholderText = stringResource(R.string.search_placeholder),
+            modifier = Modifier.weight(1f)
         )
 
         Box(

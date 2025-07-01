@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 /**
  * Вьюмодель экрана счета
  */
-class AccountViewModel(private val accountRepo: AccountRepo) : BaseViewModel() {
+class AccountViewModel private constructor(private val accountRepo: AccountRepo) : BaseViewModel() {
     private val _state = mutableStateOf(AccountViewModelState("0 ₽", "₽"))
     val state: State<AccountViewModelState> = _state
 

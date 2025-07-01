@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,10 +46,10 @@ enum class ListItemColorScheme {
 /**
  * Запечатанный класс со всеми типами trail
  */
-sealed class Trail {
-    data object LightArrow : Trail()
-    data object DarkArrow : Trail()
-    data class Custom(val customTrail: @Composable () -> Unit) : Trail()
+sealed class ListItemTrail {
+    data object LightArrow : ListItemTrail()
+    data object DarkArrow : ListItemTrail()
+    data class Custom(val customTrail: @Composable () -> Unit) : ListItemTrail()
 }
 
 @Composable
@@ -59,13 +58,12 @@ fun ListItem(
     modifier: Modifier = Modifier,
     height: ListItemHeight = ListItemHeight.HIGH,
     colorScheme: ListItemColorScheme = ListItemColorScheme.SURFACE,
-    paddingValues: PaddingValues = PaddingValues(16.dp, 0.dp),
     dividerEnabled: Boolean = true,
     emoji: String? = null,
     comment: String? = null,
     rightText: String? = null,
     additionalRightText: String? = null,
-    trail: Trail? = null,
+    trail: ListItemTrail? = null,
     onClick: (() -> Unit)? = null
 ) {
     val colors = getColorScheme(colorScheme)
@@ -74,7 +72,6 @@ fun ListItem(
         modifier = modifier
             .fillMaxWidth()
             .height(height.value)
-            .background(colors.background)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -82,12 +79,14 @@ fun ListItem(
             modifier = when (onClick) {
                 null -> Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .background(colors.background)
+                    .padding(16.dp, 0.dp)
 
                 else -> Modifier
                     .fillMaxSize()
+                    .background(colors.background)
                     .clickable { onClick() }
-                    .padding(paddingValues)
+                    .padding(16.dp, 0.dp)
             }
         ) {
             if (emoji != null) Box(
@@ -153,21 +152,21 @@ fun ListItem(
             when (trail) {
                 null -> {}
 
-                is Trail.LightArrow -> Icon(
+                is ListItemTrail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
                     contentDescription = mainText,
                     tint = LightArrowColor,
                     modifier = Modifier.size(24.dp)
                 )
 
-                is Trail.DarkArrow -> Icon(
+                is ListItemTrail.DarkArrow -> Icon(
                     painter = painterResource(R.drawable.dark_arrow),
                     contentDescription = mainText,
                     tint = colors.darkArrow,
                     modifier = Modifier.size(24.dp)
                 )
 
-                is Trail.Custom -> trail.customTrail()
+                is ListItemTrail.Custom -> trail.customTrail()
             }
         }
 
@@ -193,7 +192,7 @@ private data class ColorScheme(
 @Composable
 private fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
     return if (colorSchemeType == ListItemColorScheme.SURFACE) ColorScheme(
-        background = MaterialTheme.colorScheme.surface,
+        background = Color.Transparent,
         emoji = MaterialTheme.colorScheme.onSurface,
         emojiBackground = MaterialTheme.colorScheme.inverseSurface,
         content = MaterialTheme.colorScheme.onSurface,

@@ -20,7 +20,7 @@ import java.time.LocalDate
 /**
  * Вьюмодель экрана расходов/доходов
  */
-class ExpensesIncomeViewModel(
+class ExpensesIncomeViewModel private constructor(
     private val transactionsRepo: TransactionsRepo,
     private val isIncome: Boolean
 ) : BaseViewModel() {

@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 /**
  * Вьюмодель экрана истории
  */
-class HistoryViewModel(
+class HistoryViewModel private constructor(
     private val transactionsRepo: TransactionsRepo,
     private val isIncome: Boolean
 ) : BaseViewModel() {

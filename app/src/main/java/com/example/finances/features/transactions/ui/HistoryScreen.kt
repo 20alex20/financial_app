@@ -24,7 +24,7 @@ import com.example.finances.core.ui.components.ListItem
 import com.example.finances.core.ui.components.ListItemColorScheme
 import com.example.finances.core.ui.components.ListItemHeight
 import com.example.finances.core.ui.components.LoadingCircular
-import com.example.finances.core.ui.components.Trail
+import com.example.finances.core.ui.components.ListItemTrail
 
 @Composable
 fun HistoryScreen(
@@ -99,7 +99,7 @@ fun HistoryScreen(
                         rightText = record.amount,
                         additionalRightText = record.dateTime,
                         emoji = record.categoryEmoji,
-                        trail = Trail.LightArrow,
+                        trail = ListItemTrail.LightArrow,
                         onClick = { }
                     )
                 }
