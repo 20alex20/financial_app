@@ -1,5 +1,6 @@
-package com.example.finances.features.transactions.ui.mappers
+package com.example.finances.features.transactions.domain.mappers
 
+import com.example.finances.core.data.repository.mappers.toStrAmount
 import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.data.repository.models.Currency
 import com.example.finances.features.transactions.domain.models.Transaction
@@ -14,6 +15,6 @@ fun Transaction.toHistoryRecord(currency: Currency, today: LocalDate) = HistoryR
         dateTime.format(DateTimeFormatters.time)
     else
         dateTime.format(DateTimeFormatters.date),
-    amount = currency.getStrAmount(amount),
+    amount = amount.toStrAmount(currency),
     comment = comment
 )

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,7 +23,7 @@ import com.example.finances.core.ui.components.LoadingCircular
 @Composable
 fun AccountScreen(
     navController: NavController,
-    vm: AccountViewModel = viewModel(factory = AccountViewModel.Factory(LocalContext.current))
+    vm: AccountViewModel = viewModel(factory = AccountViewModel.Factory())
 ) {
     Box(
         contentAlignment = Alignment.BottomEnd,
@@ -49,6 +48,12 @@ fun AccountScreen(
                 colorScheme = ListItemColorScheme.PRIMARY,
                 emoji = stringResource(R.string.money_bag),
                 rightText = vm.state.value.balance
+            )
+            ListItem(
+                mainText = stringResource(R.string.account_name),
+                height = ListItemHeight.LOW,
+                colorScheme = ListItemColorScheme.PRIMARY,
+                rightText = vm.state.value.accountName
             )
             ListItem(
                 mainText = stringResource(R.string.currency),

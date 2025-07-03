@@ -44,12 +44,12 @@ enum class ListItemColorScheme {
 }
 
 /**
- * Запечатанный класс со всеми типами trail
+ * Запечатанный интерфейс со всеми типами trail
  */
-sealed class ListItemTrail {
-    data object LightArrow : ListItemTrail()
-    data object DarkArrow : ListItemTrail()
-    data class Custom(val customTrail: @Composable () -> Unit) : ListItemTrail()
+sealed interface ListItemTrail {
+    data object LightArrow : ListItemTrail
+    data object DarkArrow : ListItemTrail
+    data class Custom(val customTrail: @Composable () -> Unit) : ListItemTrail
 }
 
 @Composable

@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,9 +29,7 @@ import com.example.finances.core.ui.components.ListItemTrail
 fun ExpensesIncomeScreen(
     route: String,
     navController: NavController,
-    vm: ExpensesIncomeViewModel = viewModel(
-        factory = ExpensesIncomeViewModel.Factory(LocalContext.current, route)
-    )
+    vm: ExpensesIncomeViewModel = viewModel(factory = ExpensesIncomeViewModel.Factory(route))
 ) {
     Box(
         contentAlignment = Alignment.BottomEnd,

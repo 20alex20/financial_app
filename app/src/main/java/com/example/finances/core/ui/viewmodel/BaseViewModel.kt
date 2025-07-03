@@ -17,7 +17,7 @@ abstract class BaseViewModel : ViewModel() {
     private val _error = mutableStateOf(false)
     val error: State<Boolean> = _error
 
-    private fun setLoading() {
+    protected fun setLoading() {
         _error.value = false
         _loading.value = true
     }

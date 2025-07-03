@@ -1,11 +1,11 @@
 package com.example.finances.features.transactions.ui
 
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.data.network.models.Response
+import com.example.finances.core.data.repository.mappers.toStrAmount
 import com.example.finances.core.data.repository.models.Currency
 import com.example.finances.features.account.data.AccountRepoImpl
 import com.example.finances.core.navigation.NavRoutes
@@ -13,7 +13,7 @@ import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
-import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
+import com.example.finances.features.transactions.domain.mappers.toHistoryRecord
 import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
 import com.example.finances.features.transactions.ui.models.HistoryViewModelState
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ class HistoryViewModel private constructor(
                 is Response.Success -> {
                     resetLoadingAndError()
                     _state.value = HistoryViewModelState(
-                        total = currency.getStrAmount(r.data.sumOf { it.amount }),
+                        total = r.data.sumOf { it.amount }.toStrAmount(currency),
                         history = r.data.map { it.toHistoryRecord(currency, _today) }
                     )
                 }
@@ -87,11 +87,11 @@ class HistoryViewModel private constructor(
     /**
      * Фабрика по созданию ViewModel экрана истории и прокидывания в нее репозитория
      */
-    class Factory(context: Context, parentRoute: String) : ViewModelFactory<HistoryViewModel>(
+    class Factory(parentRoute: String) : ViewModelFactory<HistoryViewModel>(
         viewModelClass = HistoryViewModel::class.java,
         viewModelInit = {
             HistoryViewModel(
-                transactionsRepo = TransactionsRepoImpl(context, AccountRepoImpl.init(context)),
+                transactionsRepo = TransactionsRepoImpl(AccountRepoImpl.init()),
                 isIncome = parentRoute == NavRoutes.Income.route
             )
         }

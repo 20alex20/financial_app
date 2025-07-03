@@ -1,15 +1,15 @@
 package com.example.finances.features.transactions.ui
 
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.example.finances.core.data.network.models.Response
+import com.example.finances.core.data.repository.mappers.toStrAmount
 import com.example.finances.core.data.repository.models.Currency
 import com.example.finances.features.account.data.AccountRepoImpl
 import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
-import com.example.finances.features.transactions.ui.mappers.toExpenseIncome
+import com.example.finances.features.transactions.domain.mappers.toExpenseIncome
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
@@ -38,7 +38,7 @@ class ExpensesIncomeViewModel private constructor(
                 is Response.Success -> {
                     resetLoadingAndError()
                     _state.value = ExpensesIncomeViewModelState(
-                        total = currency.getStrAmount(response.data.sumOf { it.amount }),
+                        total = response.data.sumOf { it.amount }.toStrAmount(currency),
                         expensesIncome = response.data.map { it.toExpenseIncome(currency) }
                     )
                 }
@@ -55,11 +55,11 @@ class ExpensesIncomeViewModel private constructor(
     /**
      * Фабрика по созданию ViewModel экрана расходов и прокидывания в нее репозитория
      */
-    class Factory(context: Context, route: String) : ViewModelFactory<ExpensesIncomeViewModel>(
+    class Factory(route: String) : ViewModelFactory<ExpensesIncomeViewModel>(
         viewModelClass = ExpensesIncomeViewModel::class.java,
         viewModelInit = {
             ExpensesIncomeViewModel(
-                transactionsRepo = TransactionsRepoImpl(context, AccountRepoImpl.init(context)),
+                transactionsRepo = TransactionsRepoImpl(AccountRepoImpl.init()),
                 isIncome = route == NavRoutes.Income.route
             )
         }

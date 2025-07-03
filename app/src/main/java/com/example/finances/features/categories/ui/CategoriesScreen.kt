@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finances.R
@@ -35,7 +34,7 @@ import com.example.finances.core.ui.components.TextInput
 
 @Composable
 fun CategoriesScreen(
-    vm: CategoriesViewModel = viewModel(factory = CategoriesViewModel.Factory(LocalContext.current))
+    vm: CategoriesViewModel = viewModel(factory = CategoriesViewModel.Factory())
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {

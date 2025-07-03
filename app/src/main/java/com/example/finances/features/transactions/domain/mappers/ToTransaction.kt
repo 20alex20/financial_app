@@ -1,4 +1,4 @@
-package com.example.finances.features.transactions.data.mappers
+package com.example.finances.features.transactions.domain.mappers
 
 import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.features.transactions.data.models.TransactionResponse
@@ -6,10 +6,10 @@ import com.example.finances.features.transactions.domain.models.Transaction
 import java.time.LocalDateTime
 
 fun TransactionResponse.toTransaction() = Transaction(
-    id = this.id,
-    categoryName = this.category.name,
-    categoryEmoji = this.category.emoji,
+    id = id,
+    categoryName = category.name,
+    categoryEmoji = category.emoji,
     dateTime = LocalDateTime.parse(transactionDate, DateTimeFormatters.replyDateTime),
-    amount = this.amount.toDouble(),
-    comment = this.comment
+    amount = amount.toDouble(),
+    comment = comment
 )

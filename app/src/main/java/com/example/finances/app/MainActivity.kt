@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.finances.core.data.network.NetworkManager
+import com.example.finances.core.ui.MainScreen
 
 /**
  * Activity, отвечающая за отображение главного UI и инициализацию/запуск доп функционала
@@ -11,8 +13,9 @@ import androidx.activity.enableEdgeToEdge
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        NetworkConnectionObserver.init(this)
         SplashScreenAnimator.init(this)
+        NetworkConnectionObserver.init(this)
+        NetworkManager.init(this)
 
         enableEdgeToEdge()
         setContent { MainScreen() }

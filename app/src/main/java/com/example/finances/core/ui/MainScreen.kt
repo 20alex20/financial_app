@@ -1,4 +1,4 @@
-package com.example.finances.app
+package com.example.finances.core.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

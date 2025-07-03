@@ -1,5 +1,6 @@
 package com.example.finances.features.account.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
@@ -37,11 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.finances.R
+import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
 import com.example.finances.core.ui.components.HeaderButton
 import com.example.finances.core.ui.components.ListItem
 import com.example.finances.core.ui.components.ListItemHeight
 import com.example.finances.core.ui.components.ListItemTrail
+import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.TextInput
 import com.example.finances.features.account.domain.currencyModalItems
 import kotlinx.coroutines.launch
@@ -50,70 +53,88 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditAccountScreen(
     navController: NavController,
-    vm: AccountChangeViewModel = viewModel(
-        factory = AccountChangeViewModel.Factory(LocalContext.current)
-    )
+    vm: EditAccountViewModel = viewModel(factory = EditAccountViewModel.Factory())
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
+    val uploadError = Toast.makeText(
+        LocalContext.current,
+        R.string.error_sending_data,
+        Toast.LENGTH_SHORT
+    )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        Header(
-            title = stringResource(R.string.my_account),
-            leftButton = HeaderButton(
-                icon = painterResource(R.drawable.cancel),
-                onClick = { navController.popBackStack() }
-            ),
-            rightButton = HeaderButton(
-                icon = painterResource(R.drawable.apply),
-                onClick = { }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Header(
+                title = stringResource(R.string.my_account),
+                leftButton = HeaderButton(
+                    icon = painterResource(R.drawable.cancel),
+                    onClick = { navController.popBackStack() }
+                ),
+                rightButton = HeaderButton(
+                    icon = painterResource(R.drawable.apply),
+                    onClick = {
+                        val success = vm.saveChanges()
+                        coroutineScope.launch {
+                            if (success.await())
+                                navController.popBackStack()
+                            else
+                                uploadError.show()
+                        }
+                    }
+                )
             )
-        )
 
-        val balanceFocus = remember { FocusRequester() }
-        ListItem(
-            mainText = stringResource(R.string.balance),
-            height = ListItemHeight.LOW,
-            emoji = stringResource(R.string.money_bag),
-            onClick = { balanceFocus.requestFocus() },
-            trail = ListItemTrail.Custom {
-                TextInput(
-                    text = vm.balance.value,
-                    updateText = { vm.updateBalance(it) },
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .focusRequester(balanceFocus)
-                        .focusable()
-                )
-            },
-            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
-        )
+            val balanceFocus = remember { FocusRequester() }
+            ListItem(
+                mainText = stringResource(R.string.balance),
+                height = ListItemHeight.LOW,
+                emoji = stringResource(R.string.money_bag),
+                onClick = { balanceFocus.requestFocus() },
+                trail = ListItemTrail.Custom {
+                    TextInput(
+                        text = vm.state.value.balance,
+                        updateText = { vm.updateBalance(it) },
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .focusRequester(balanceFocus)
+                            .focusable()
+                    )
+                },
+                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            )
 
-        val accountNameFocus = remember { FocusRequester() }
-        ListItem(
-            mainText = stringResource(R.string.account_name),
-            height = ListItemHeight.LOW,
-            onClick = { accountNameFocus.requestFocus() },
-            trail = ListItemTrail.Custom {
-                TextInput(
-                    text = vm.accountName.value,
-                    updateText = { vm.updateAccountName(it) },
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .focusRequester(accountNameFocus)
-                        .focusable()
-                )
-            },
-            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
-        )
+            val accountNameFocus = remember { FocusRequester() }
+            ListItem(
+                mainText = stringResource(R.string.account_name),
+                height = ListItemHeight.LOW,
+                onClick = { accountNameFocus.requestFocus() },
+                trail = ListItemTrail.Custom {
+                    TextInput(
+                        text = vm.state.value.accountName,
+                        updateText = { vm.updateAccountName(it) },
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .focusRequester(accountNameFocus)
+                            .focusable()
+                    )
+                },
+                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            )
 
-        ListItem(
-            mainText = stringResource(R.string.currency),
-            height = ListItemHeight.LOW,
-            rightText = vm.currency.value,
-            onClick = { coroutineScope.launch { sheetState.show() } },
-            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
-        )
+            ListItem(
+                mainText = stringResource(R.string.currency),
+                height = ListItemHeight.LOW,
+                rightText = vm.state.value.currency,
+                onClick = { coroutineScope.launch { sheetState.show() } },
+                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            )
+        }
+
+        if (vm.loading.value)
+            LoadingCircular()
+        if (vm.error.value)
+            ErrorMessage()
     }
 
     ModalBottomSheet(

@@ -1,4 +1,4 @@
-package com.example.finances.features.transactions.data.models
+package com.example.finances.core.data.network
 
 /**
  * Исключение для ошибки загрузки данных счета

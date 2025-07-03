@@ -1,6 +1,5 @@
 package com.example.finances.features.categories.ui
 
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -40,11 +39,11 @@ class CategoriesViewModel private constructor(
     }
 
     fun updateSearchQuery(query: String) {
-        val trimQuery = query.trim()
+        val trimmedQuery = query.trim()
         _state.value = CategoriesViewModelState(
             searchQuery = query,
             filteredCategories = _allCategories.filter { category ->
-                category.name.contains(trimQuery, ignoreCase = true)
+                category.name.contains(trimmedQuery, ignoreCase = true)
             }
         )
     }
@@ -56,8 +55,8 @@ class CategoriesViewModel private constructor(
     /**
      * Фабрика по созданию вьюмодели экрана статей и прокидывания в нее репозитория
      */
-    class Factory(context: Context) : ViewModelFactory<CategoriesViewModel>(
+    class Factory : ViewModelFactory<CategoriesViewModel>(
         viewModelClass = CategoriesViewModel::class.java,
-        viewModelInit = { CategoriesViewModel(CategoriesRepoImpl(context)) }
+        viewModelInit = { CategoriesViewModel(CategoriesRepoImpl()) }
     )
 }
