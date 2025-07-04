@@ -3,7 +3,11 @@ package com.example.finances.core.ui.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.finances.core.ReloadEvent
+import com.example.finances.core.ReloadEventBus
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /**
  * Базовый класс для всех вьюмоделей приложения
@@ -32,11 +36,28 @@ abstract class BaseViewModel : ViewModel() {
         _error.value = false
     }
 
-    protected abstract fun loadData(): Job
+    protected abstract suspend fun loadData()
 
     fun reloadData() {
         _loadedJob?.cancel()
-        setLoading()
-        _loadedJob = loadData()
+        _loadedJob = viewModelScope.launch {
+            setLoading()
+            try {
+                loadData()
+            } catch (_: Exception) {
+                setError()
+            }
+        }
+    }
+
+    protected open suspend fun handleReloadEvent(reloadEvent: ReloadEvent) {}
+
+    protected fun observeReloadEvents() = viewModelScope.launch {
+        ReloadEventBus.events.collect { reloadEvent ->
+            try {
+                handleReloadEvent(reloadEvent)
+            } catch (_: Exception) {
+            }
+        }
     }
 }

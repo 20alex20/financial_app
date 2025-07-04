@@ -27,6 +27,10 @@ class ConvertAmountUseCase {
             .reversed() + " " + currency.symbol
     }
 
+    operator fun invoke(value: String, newCurrency: Currency): String {
+        return value.dropLast(1) + newCurrency.symbol
+    }
+
     companion object {
         private const val MAX_AMOUNT_LENGTH = 12
         private const val DIGITS_NUMBER = 3

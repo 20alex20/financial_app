@@ -7,6 +7,7 @@ import com.example.finances.core.data.repoTryCatchBlock
 import com.example.finances.features.account.data.mappers.toAccount
 import com.example.finances.features.account.data.mappers.toAccountUpdateRequest
 import com.example.finances.features.account.domain.models.Account
+import com.example.finances.features.account.domain.models.ShortAccount
 import com.example.finances.features.account.domain.repository.AccountRepo
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -26,17 +27,15 @@ class AccountRepoImpl : AccountRepo {
         }
     }
 
-    override suspend fun updateAccount(
-        account: Account,
-        isRealAccountId: Boolean
-    ) = repoTryCatchBlock {
-        var accountId = account.id
-        if (!isRealAccountId) accountId = getAccount().let { accountForId ->
+    override suspend fun updateAccount(account: ShortAccount, accountId: Int?) = repoTryCatchBlock {
+        val id = accountId ?: getAccount().let { accountForId ->
             if (accountForId !is Response.Success)
                 throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
             accountForId.data.id
         }
-        api.updateAccount(accountId, account.toAccountUpdateRequest()).toAccount()
+        api.updateAccount(id, account.toAccountUpdateRequest()).toAccount().also { account ->
+            cachedAccount = account
+        }
     }
 
     companion object {

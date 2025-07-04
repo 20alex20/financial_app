@@ -3,47 +3,29 @@ package com.example.finances.features.account.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.example.finances.core.ReloadEvent
+import com.example.finances.core.ReloadEventBus
 import com.example.finances.core.data.Response
 import com.example.finances.core.domain.ConvertAmountUseCase
 import com.example.finances.core.domain.models.Currency
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.account.data.AccountRepoImpl
-import com.example.finances.features.account.domain.models.Account
+import com.example.finances.features.account.domain.models.ShortAccount
+import com.example.finances.features.account.ui.mappers.toShortAccount
 import com.example.finances.features.account.ui.models.AccountViewModelState
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewModel() {
     private val _convertAmountUseCase = ConvertAmountUseCase()
     private var _deferred: Deferred<Boolean>? = null
 
-    private var _account = Account(0, "Мой счет", 0.0, Currency.RUBLE)
-    private var _isRealAccountId = false
+    private var _account = ShortAccount("Мой счет", 0.0, Currency.RUBLE)
+    private var _accountId: Int? = null
 
     private val _state = mutableStateOf(AccountViewModelState("Мой счет", "0 ₽", "₽"))
     val state: State<AccountViewModelState> = _state
-
-    override fun loadData() = viewModelScope.launch {
-        try {
-            when (val response = accountRepo.getAccount()) {
-                is Response.Failure -> setError()
-                is Response.Success -> {
-                    resetLoadingAndError()
-                    val account = response.data
-                    _account = account.also { _isRealAccountId = true }
-                    _state.value = AccountViewModelState(
-                        accountName = account.name,
-                        balance = _convertAmountUseCase(account.balance, account.currency),
-                        currency = account.currency.symbol
-                    )
-                }
-            }
-        } catch (_: Exception) {
-            setError()
-        }
-    }
 
     fun updateAccountName(newName: String) {
         val accountName = newName.take(MAX_ACCOUNT_NAME_LENGTH)
@@ -62,14 +44,33 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
         _state.value = _state.value.copy(currency = newCurrency.symbol)
     }
 
+    override suspend fun loadData() {
+        when (val response = accountRepo.getAccount()) {
+            is Response.Failure -> setError()
+            is Response.Success -> {
+                resetLoadingAndError()
+                _accountId = response.data.id
+                _account = response.data.toShortAccount()
+                _state.value = AccountViewModelState(
+                    accountName = response.data.name,
+                    balance = _convertAmountUseCase(response.data.balance, response.data.currency),
+                    currency = response.data.currency.symbol
+                )
+            }
+        }
+    }
+
     fun saveChanges(): Deferred<Boolean> {
         _deferred?.cancel()
         return viewModelScope.async {
             setLoading()
             try {
-                val response = accountRepo.updateAccount(_account, _isRealAccountId)
+                val response = accountRepo.updateAccount(_account, _accountId)
                 resetLoadingAndError()
-                return@async response is Response.Success && response.data == _account
+                if (response is Response.Success && response.data.toShortAccount() == _account) {
+                    ReloadEventBus.send(ReloadEvent.AccountUpdated)
+                    return@async true
+                }
             } catch (_: Exception) {
                 resetLoadingAndError()
             }
