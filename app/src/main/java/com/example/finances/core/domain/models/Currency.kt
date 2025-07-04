@@ -1,4 +1,4 @@
-package com.example.finances.core.data.repository.models
+package com.example.finances.core.domain.models
 
 /**
  * Перечисление поддерживаемых типов валют (объекты передают информацию о используемом типе валют)

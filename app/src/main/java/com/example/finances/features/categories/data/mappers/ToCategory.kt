@@ -1,4 +1,4 @@
-package com.example.finances.features.categories.domain.mappers
+package com.example.finances.features.categories.data.mappers
 
 import com.example.finances.features.categories.data.models.CategoryResponse
 import com.example.finances.features.categories.domain.models.Category

@@ -3,7 +3,7 @@ package com.example.finances.features.categories.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.data.network.models.Response
+import com.example.finances.core.data.Response
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.categories.data.CategoriesRepoImpl

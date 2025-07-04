@@ -1,4 +1,4 @@
-package com.example.finances.core.data.network.models
+package com.example.finances.core.data
 
 /**
  * Запечатанный интерфейс со всеми типами возвращаемых из data-слоя в ui-слой результатов загрузки

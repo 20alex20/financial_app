@@ -1,6 +1,6 @@
-package com.example.finances.features.transactions.domain.mappers
+package com.example.finances.features.transactions.data.mappers
 
-import com.example.finances.features.transactions.domain.DateTimeFormatters
+import com.example.finances.core.domain.DateTimeFormatters
 import com.example.finances.features.transactions.data.models.TransactionResponse
 import com.example.finances.features.transactions.domain.models.Transaction
 import java.time.LocalDateTime

@@ -3,22 +3,25 @@ package com.example.finances.features.transactions.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.features.transactions.domain.DateTimeFormatters
-import com.example.finances.core.data.network.models.Response
-import com.example.finances.core.data.repository.mappers.toStrAmount
-import com.example.finances.core.data.repository.models.Currency
+import com.example.finances.core.domain.DateTimeFormatters
+import com.example.finances.core.data.Response
+import com.example.finances.core.domain.ConvertAmountUseCase
+import com.example.finances.core.domain.models.Currency
 import com.example.finances.features.account.data.AccountRepoImpl
 import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
-import com.example.finances.features.transactions.domain.mappers.toHistoryRecord
+import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
 import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
 import com.example.finances.features.transactions.ui.models.HistoryViewModelState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Вьюмодель экрана истории
@@ -27,20 +30,16 @@ class HistoryViewModel private constructor(
     private val transactionsRepo: TransactionsRepo,
     private val isIncome: Boolean
 ) : BaseViewModel() {
+    private val _convertAmountUseCase = ConvertAmountUseCase()
     private var _today: LocalDate = LocalDate.now()
 
-    private var _dates = mutableStateOf(
-        HistoryDatesViewModelState(
-            start = _today.withDayOfMonth(1),
-            end = _today,
-            strStart = "01.01.2025",
-            strEnd = "00:00"
-        )
+    private val _dates = mutableStateOf(
+        HistoryDatesViewModelState(_today.withDayOfMonth(1), _today, "01.01.2025", "00:00")
     )
     val dates: State<HistoryDatesViewModelState> = _dates
 
-    private val _state = mutableStateOf(HistoryViewModelState("0 ₽", emptyList()))
-    val state: State<HistoryViewModelState> = _state
+    private val _state = MutableStateFlow(HistoryViewModelState("0 ₽", emptyList()))
+    val state: StateFlow<HistoryViewModelState> = _state.asStateFlow()
 
     override fun loadData() = viewModelScope.launch {
         try {
@@ -53,7 +52,7 @@ class HistoryViewModel private constructor(
                 is Response.Success -> {
                     resetLoadingAndError()
                     _state.value = HistoryViewModelState(
-                        total = r.data.sumOf { it.amount }.toStrAmount(currency),
+                        total = _convertAmountUseCase(r.data.sumOf { it.amount }, currency),
                         history = r.data.map { it.toHistoryRecord(currency, _today) }
                     )
                 }

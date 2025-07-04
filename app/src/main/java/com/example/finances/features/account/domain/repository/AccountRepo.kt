@@ -1,8 +1,7 @@
 package com.example.finances.features.account.domain.repository
 
-import com.example.finances.core.data.network.models.Response
+import com.example.finances.core.data.Response
 import com.example.finances.features.account.domain.models.Account
-import com.example.finances.features.account.domain.models.ShortAccount
 
 /**
  * Интерфейс репозитория счета
@@ -10,5 +9,5 @@ import com.example.finances.features.account.domain.models.ShortAccount
 interface AccountRepo {
     suspend fun getAccount(): Response<Account>
 
-    suspend fun updateAccount(account: ShortAccount): Response<Account>
+    suspend fun updateAccount(account: Account, isRealAccountId: Boolean): Response<Account>
 }

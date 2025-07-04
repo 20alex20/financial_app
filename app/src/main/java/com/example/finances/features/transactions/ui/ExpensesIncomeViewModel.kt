@@ -1,21 +1,22 @@
 package com.example.finances.features.transactions.ui
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.data.network.models.Response
-import com.example.finances.core.data.repository.mappers.toStrAmount
-import com.example.finances.core.data.repository.models.Currency
+import com.example.finances.core.data.Response
+import com.example.finances.core.domain.ConvertAmountUseCase
+import com.example.finances.core.domain.models.Currency
 import com.example.finances.features.account.data.AccountRepoImpl
 import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
-import com.example.finances.features.transactions.domain.mappers.toExpenseIncome
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
+import com.example.finances.features.transactions.ui.mappers.toExpenseIncome
 import com.example.finances.features.transactions.ui.models.ExpensesIncomeViewModelState
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Вьюмодель экрана расходов/доходов
@@ -24,8 +25,10 @@ class ExpensesIncomeViewModel private constructor(
     private val transactionsRepo: TransactionsRepo,
     private val isIncome: Boolean
 ) : BaseViewModel() {
-    private val _state = mutableStateOf(ExpensesIncomeViewModelState("0 ₽", emptyList()))
-    val state: State<ExpensesIncomeViewModelState> = _state
+    private val _convertAmountUseCase = ConvertAmountUseCase()
+
+    private val _state = MutableStateFlow(ExpensesIncomeViewModelState("0 ₽", emptyList()))
+    val state: StateFlow<ExpensesIncomeViewModelState> = _state.asStateFlow()
 
     override fun loadData() = viewModelScope.launch {
         try {
@@ -38,7 +41,7 @@ class ExpensesIncomeViewModel private constructor(
                 is Response.Success -> {
                     resetLoadingAndError()
                     _state.value = ExpensesIncomeViewModelState(
-                        total = response.data.sumOf { it.amount }.toStrAmount(currency),
+                        total = _convertAmountUseCase(response.data.sumOf { it.amount }, currency),
                         expensesIncome = response.data.map { it.toExpenseIncome(currency) }
                     )
                 }

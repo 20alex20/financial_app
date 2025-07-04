@@ -1,6 +1,6 @@
-package com.example.finances.features.account.domain.mappers
+package com.example.finances.features.account.data.mappers
 
-import com.example.finances.core.data.repository.mappers.toCurrency
+import com.example.finances.core.data.mappers.toCurrency
 import com.example.finances.features.account.data.models.AccountResponse
 import com.example.finances.features.account.domain.models.Account
 

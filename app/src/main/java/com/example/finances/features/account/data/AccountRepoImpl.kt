@@ -1,13 +1,12 @@
 package com.example.finances.features.account.data
 
-import com.example.finances.core.data.network.AccountLoadingException
+import com.example.finances.core.data.exceptions.AccountLoadingException
 import com.example.finances.core.data.network.NetworkManager
-import com.example.finances.core.data.network.models.Response
-import com.example.finances.core.data.repository.repoTryCatchBlock
-import com.example.finances.features.account.data.models.AccountUpdateRequest
-import com.example.finances.features.account.domain.mappers.toAccount
+import com.example.finances.core.data.Response
+import com.example.finances.core.data.repoTryCatchBlock
+import com.example.finances.features.account.data.mappers.toAccount
+import com.example.finances.features.account.data.mappers.toAccountUpdateRequest
 import com.example.finances.features.account.domain.models.Account
-import com.example.finances.features.account.domain.models.ShortAccount
 import com.example.finances.features.account.domain.repository.AccountRepo
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -27,16 +26,17 @@ class AccountRepoImpl : AccountRepo {
         }
     }
 
-    override suspend fun updateAccount(account: ShortAccount) = repoTryCatchBlock {
-        val currentAccount = getAccount()
-        if (currentAccount !is Response.Success)
-            throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
-        val request = AccountUpdateRequest(
-            name = account.name,
-            balance = String.format(null, "%.2f", account.balance),
-            currency = account.currency.shortName
-        )
-        api.updateAccount(currentAccount.data.id, request).toAccount()
+    override suspend fun updateAccount(
+        account: Account,
+        isRealAccountId: Boolean
+    ) = repoTryCatchBlock {
+        var accountId = account.id
+        if (!isRealAccountId) accountId = getAccount().let { accountForId ->
+            if (accountForId !is Response.Success)
+                throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
+            accountForId.data.id
+        }
+        api.updateAccount(accountId, account.toAccountUpdateRequest()).toAccount()
     }
 
     companion object {

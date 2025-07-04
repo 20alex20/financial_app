@@ -1,8 +1,8 @@
 package com.example.finances.features.categories.data
 
 import com.example.finances.core.data.network.NetworkManager
-import com.example.finances.core.data.repository.repoTryCatchBlock
-import com.example.finances.features.categories.domain.mappers.toCategory
+import com.example.finances.core.data.repoTryCatchBlock
+import com.example.finances.features.categories.data.mappers.toCategory
 import com.example.finances.features.categories.domain.repository.CategoriesRepo
 
 /**

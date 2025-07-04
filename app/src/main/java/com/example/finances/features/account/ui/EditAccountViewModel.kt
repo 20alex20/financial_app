@@ -3,23 +3,24 @@ package com.example.finances.features.account.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.data.network.models.Response
-import com.example.finances.core.data.repository.mappers.toStrAmount
-import com.example.finances.core.data.repository.models.Currency
+import com.example.finances.core.data.Response
+import com.example.finances.core.domain.ConvertAmountUseCase
+import com.example.finances.core.domain.models.Currency
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.account.data.AccountRepoImpl
-import com.example.finances.features.account.domain.mappers.toAmount
-import com.example.finances.features.account.domain.mappers.toShortAccount
-import com.example.finances.features.account.domain.models.ShortAccount
+import com.example.finances.features.account.domain.models.Account
 import com.example.finances.features.account.ui.models.AccountViewModelState
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewModel() {
-    private var _account = ShortAccount("Мой счет", 0.0, Currency.RUBLE)
+    private val _convertAmountUseCase = ConvertAmountUseCase()
     private var _deferred: Deferred<Boolean>? = null
+
+    private var _account = Account(0, "Мой счет", 0.0, Currency.RUBLE)
+    private var _isRealAccountId = false
 
     private val _state = mutableStateOf(AccountViewModelState("Мой счет", "0 ₽", "₽"))
     val state: State<AccountViewModelState> = _state
@@ -30,11 +31,12 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
                 is Response.Failure -> setError()
                 is Response.Success -> {
                     resetLoadingAndError()
-                    _account = response.data.toShortAccount()
+                    val account = response.data
+                    _account = account.also { _isRealAccountId = true }
                     _state.value = AccountViewModelState(
-                        accountName = response.data.name,
-                        balance = response.data.balance.toStrAmount(response.data.currency),
-                        currency = response.data.currency.symbol
+                        accountName = account.name,
+                        balance = _convertAmountUseCase(account.balance, account.currency),
+                        currency = account.currency.symbol
                     )
                 }
             }
@@ -49,9 +51,9 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
     }
 
     fun updateBalance(newBalance: String) {
-        val amount = newBalance.toAmount()
+        val amount = _convertAmountUseCase(newBalance)
         _account = _account.copy(balance = amount)
-        _state.value = _state.value.copy(balance = amount.toStrAmount(_account.currency))
+        _state.value = _state.value.copy(balance = _convertAmountUseCase(amount, _account.currency))
     }
 
     fun updateCurrency(newCurrency: Currency) {
@@ -63,14 +65,14 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
         _deferred?.cancel()
         return viewModelScope.async {
             setLoading()
-            var success = false
             try {
-                val response = accountRepo.updateAccount(_account)
-                success = response is Response.Success && response.data.toShortAccount() == _account
+                val response = accountRepo.updateAccount(_account, _isRealAccountId)
+                resetLoadingAndError()
+                return@async response is Response.Success && response.data == _account
             } catch (_: Exception) {
+                resetLoadingAndError()
             }
-            resetLoadingAndError()
-            success
+            false
         }.also { _deferred = it }
     }
 
