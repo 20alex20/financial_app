@@ -1,14 +1,14 @@
 package com.example.finances.core.domain
 
 import com.example.finances.core.domain.models.Currency
-import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 class ConvertAmountUseCase {
     operator fun invoke(value: String): Double {
         var amount = 0.0
         val digits = value.replace(Regex("[^0-9]"), "")
         if (digits.isNotEmpty()) {
-            amount = digits.toDouble()
+            amount = digits.take(MAX_AMOUNT_LENGTH).toDouble()
             val index = value.indexOfFirst { it.isDigit() || it == '-' }
             if (value[index] == '-')
                 amount *= -1
@@ -18,7 +18,7 @@ class ConvertAmountUseCase {
 
     operator fun invoke(value: Double, currency: Currency): String {
         return value
-            .roundToInt()
+            .roundToLong()
             .toString()
             .reversed()
             .chunked(DIGITS_NUMBER)
@@ -28,6 +28,7 @@ class ConvertAmountUseCase {
     }
 
     companion object {
+        private const val MAX_AMOUNT_LENGTH = 12
         private const val DIGITS_NUMBER = 3
     }
 }

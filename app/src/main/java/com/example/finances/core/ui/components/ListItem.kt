@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,6 +59,7 @@ fun ListItem(
     modifier: Modifier = Modifier,
     height: ListItemHeight = ListItemHeight.HIGH,
     colorScheme: ListItemColorScheme = ListItemColorScheme.SURFACE,
+    paddingValues: PaddingValues = PaddingValues(16.dp, 0.dp),
     dividerEnabled: Boolean = true,
     emoji: String? = null,
     comment: String? = null,
@@ -80,13 +82,13 @@ fun ListItem(
                 null -> Modifier
                     .fillMaxSize()
                     .background(colors.background)
-                    .padding(16.dp, 0.dp)
+                    .padding(paddingValues)
 
                 else -> Modifier
                     .fillMaxSize()
                     .background(colors.background)
                     .clickable { onClick() }
-                    .padding(16.dp, 0.dp)
+                    .padding(paddingValues)
             }
         ) {
             if (emoji != null) Box(

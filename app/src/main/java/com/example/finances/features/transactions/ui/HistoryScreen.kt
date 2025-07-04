@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -18,12 +20,12 @@ import com.example.finances.R
 import com.example.finances.core.ui.components.Calendar
 import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
-import com.example.finances.core.ui.components.HeaderButton
 import com.example.finances.core.ui.components.ListItem
 import com.example.finances.core.ui.components.ListItemColorScheme
 import com.example.finances.core.ui.components.ListItemHeight
 import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
+import com.example.finances.core.ui.components.models.HeaderButton
 
 @Composable
 fun HistoryScreen(
@@ -31,24 +33,8 @@ fun HistoryScreen(
     navController: NavController,
     vm: HistoryViewModel = viewModel(factory = HistoryViewModel.Factory(parentRoute))
 ) {
-    val showStartCalendar = remember { mutableStateOf(false) }
-    val showEndCalendar = remember { mutableStateOf(false) }
-    Calendar(
-        showCalendar = showStartCalendar,
-        initialDate = vm.dates.value.start,
-        setNewDate = { newDate ->
-            vm.setPeriod(newDate, vm.dates.value.end)
-            vm.reloadData()
-        }
-    )
-    Calendar(
-        showCalendar = showEndCalendar,
-        initialDate = vm.dates.value.end,
-        setNewDate = { newDate ->
-            vm.setPeriod(vm.dates.value.start, newDate)
-            vm.reloadData()
-        }
-    )
+    var isStartCalendarOpen by remember { mutableStateOf(false) }
+    var isEndCalendarOpen by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -68,14 +54,14 @@ fun HistoryScreen(
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.dates.value.strStart,
-                onClick = { showStartCalendar.value = true }
+                onClick = { isStartCalendarOpen = true }
             )
             ListItem(
                 mainText = stringResource(R.string.end),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.dates.value.strEnd,
-                onClick = { showEndCalendar.value = true }
+                onClick = { isEndCalendarOpen = true }
             )
             ListItem(
                 mainText = stringResource(R.string.sum),
@@ -107,5 +93,28 @@ fun HistoryScreen(
             LoadingCircular()
         if (vm.error.value)
             ErrorMessage()
+
+        Calendar(
+            isCalendarOpen = isStartCalendarOpen,
+            initialDate = vm.dates.value.start,
+            closeCalendar = { newDate ->
+                isStartCalendarOpen = false
+                if (newDate != null) {
+                    vm.setPeriod(newDate, vm.dates.value.end)
+                    vm.reloadData()
+                }
+            }
+        )
+        Calendar(
+            isCalendarOpen = isEndCalendarOpen,
+            initialDate = vm.dates.value.end,
+            closeCalendar = { newDate ->
+                isEndCalendarOpen = false
+                if (newDate != null) {
+                    vm.setPeriod(vm.dates.value.start, newDate)
+                    vm.reloadData()
+                }
+            }
+        )
     }
 }

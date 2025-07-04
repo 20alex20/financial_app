@@ -18,12 +18,12 @@ import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.core.ui.components.AddButton
 import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
-import com.example.finances.core.ui.components.HeaderButton
 import com.example.finances.core.ui.components.ListItem
 import com.example.finances.core.ui.components.ListItemColorScheme
 import com.example.finances.core.ui.components.ListItemHeight
 import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
+import com.example.finances.core.ui.components.models.HeaderButton
 
 @Composable
 fun ExpensesIncomeScreen(

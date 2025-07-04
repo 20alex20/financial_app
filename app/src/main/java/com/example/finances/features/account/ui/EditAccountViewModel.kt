@@ -46,8 +46,9 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
     }
 
     fun updateAccountName(newName: String) {
-        _account = _account.copy(name = newName)
-        _state.value = _state.value.copy(accountName = newName)
+        val accountName = newName.take(MAX_ACCOUNT_NAME_LENGTH)
+        _account = _account.copy(name = accountName)
+        _state.value = _state.value.copy(accountName = accountName)
     }
 
     fun updateBalance(newBalance: String) {
@@ -84,4 +85,8 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
         viewModelClass = EditAccountViewModel::class.java,
         viewModelInit = { EditAccountViewModel(AccountRepoImpl.init()) }
     )
+
+    companion object {
+        private const val MAX_ACCOUNT_NAME_LENGTH = 32
+    }
 }

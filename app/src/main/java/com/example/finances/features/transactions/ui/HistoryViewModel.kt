@@ -12,16 +12,15 @@ import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
+import com.example.finances.features.transactions.domain.LoadCurrencyUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
 import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
 import com.example.finances.features.transactions.ui.models.HistoryViewModelState
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Вьюмодель экрана истории
@@ -31,26 +30,26 @@ class HistoryViewModel private constructor(
     private val isIncome: Boolean
 ) : BaseViewModel() {
     private val _convertAmountUseCase = ConvertAmountUseCase()
-    private var _today: LocalDate = LocalDate.now()
+    private val _loadCurrencyUseCase = LoadCurrencyUseCase()
+    private var _today = LocalDate.now()
 
     private val _dates = mutableStateOf(
         HistoryDatesViewModelState(_today.withDayOfMonth(1), _today, "01.01.2025", "00:00")
     )
     val dates: State<HistoryDatesViewModelState> = _dates
 
-    private val _state = MutableStateFlow(HistoryViewModelState("0 ₽", emptyList()))
-    val state: StateFlow<HistoryViewModelState> = _state.asStateFlow()
+    private val _state = mutableStateOf(HistoryViewModelState("0 ₽", emptyList()))
+    val state: State<HistoryViewModelState> = _state
 
     override fun loadData() = viewModelScope.launch {
         try {
-            val currency = transactionsRepo.getCurrency().let {
-                if (it is Response.Success) it.data else Currency.RUBLE
-            }
+            val asyncCurrency = async { _loadCurrencyUseCase(transactionsRepo) }
             val r = transactionsRepo.getTransactions(_dates.value.start, _dates.value.end, isIncome)
             when (r) {
                 is Response.Failure -> setError()
                 is Response.Success -> {
                     resetLoadingAndError()
+                    val currency = asyncCurrency.await()
                     _state.value = HistoryViewModelState(
                         total = _convertAmountUseCase(r.data.sumOf { it.amount }, currency),
                         history = r.data.map { it.toHistoryRecord(currency, _today) }

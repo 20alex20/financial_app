@@ -8,17 +8,19 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun TextInput(
     text: String,
     updateText: (String) -> Unit,
     modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start,
     placeholderText: String? = null
 ) {
     TextField(
         value = text,
-        textStyle = MaterialTheme.typography.bodyLarge,
+        textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = textAlign),
         onValueChange = { updateText(it) },
         singleLine = true,
         placeholder = {

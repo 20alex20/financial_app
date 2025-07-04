@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -66,41 +67,44 @@ fun CategoriesScreen(
 
 @Composable
 fun SearchBar(query: String, updateQuery: (String) -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
+        contentAlignment = Alignment.BottomCenter,
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(4.dp, 0.dp)
     ) {
-        TextInput(
-            text = query,
-            updateText = { updateQuery(it) },
-            placeholderText = stringResource(R.string.search_placeholder),
-            modifier = Modifier.weight(1f)
-        )
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(48.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = ripple(
-                        bounded = false,
-                        radius = 28.dp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                ) { }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+                .fillMaxSize()
+                .padding(4.dp, 0.dp)
         ) {
-            Icon(
-                painter = painterResource(R.drawable.search),
-                contentDescription = stringResource(R.string.search),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp)
+            TextInput(
+                text = query,
+                updateText = { updateQuery(it) },
+                placeholderText = stringResource(R.string.search_placeholder),
+                modifier = Modifier.weight(1f)
             )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.search),
+                    contentDescription = stringResource(R.string.search),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
+
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp),
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
     }
 }
