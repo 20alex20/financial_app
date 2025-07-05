@@ -1,6 +1,5 @@
-package com.example.finances.core.data.repository
+package com.example.finances.core.data
 
-import com.example.finances.core.data.network.models.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -23,7 +22,7 @@ private val HTTP_ERRORS_WITH_RETRY = listOf(
 class UnexpectedException(message: String) : Exception(message)
 
 suspend fun <T> repoTryCatchBlock(f: suspend () -> T): Response<T> = withContext(Dispatchers.IO) {
-    repeat(RETRY_TIMES + 1) { i ->
+    for (i in 0..RETRY_TIMES) {
         try {
             val res = f()
             return@withContext Response.Success(res)
@@ -34,7 +33,7 @@ suspend fun <T> repoTryCatchBlock(f: suspend () -> T): Response<T> = withContext
             if (i == RETRY_TIMES || e.code() !in HTTP_ERRORS_WITH_RETRY)
                 return@withContext Response.Failure(e)
         } catch (_: Exception) {
-            return@repeat
+            break
         }
         delay(TIMER)
     }

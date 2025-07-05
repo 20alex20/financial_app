@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -19,20 +18,18 @@ import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.core.ui.components.AddButton
 import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
-import com.example.finances.core.ui.components.HeaderButton
 import com.example.finances.core.ui.components.ListItem
 import com.example.finances.core.ui.components.ListItemColorScheme
 import com.example.finances.core.ui.components.ListItemHeight
 import com.example.finances.core.ui.components.LoadingCircular
-import com.example.finances.core.ui.components.Trail
+import com.example.finances.core.ui.components.ListItemTrail
+import com.example.finances.core.ui.components.models.HeaderButton
 
 @Composable
 fun ExpensesIncomeScreen(
     route: String,
     navController: NavController,
-    vm: ExpensesIncomeViewModel = viewModel(
-        factory = ExpensesIncomeViewModel.Factory(LocalContext.current, route)
-    )
+    vm: ExpensesIncomeViewModel = viewModel(factory = ExpensesIncomeViewModel.Factory(route))
 ) {
     Box(
         contentAlignment = Alignment.BottomEnd,
@@ -40,12 +37,12 @@ fun ExpensesIncomeScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
-                when (route) {
+                title = when (route) {
                     NavRoutes.Income.route -> stringResource(R.string.income_today)
                     else -> stringResource(R.string.expenses_today)
                 },
                 rightButton = HeaderButton(
-                    painterResource(R.drawable.history),
+                    icon = painterResource(R.drawable.history),
                     onClick = {
                         navController.navigate(route + "/" + NavRoutes.History.route) {
                             launchSingleTop = true
@@ -55,7 +52,7 @@ fun ExpensesIncomeScreen(
                 )
             )
             ListItem(
-                stringResource(R.string.total),
+                mainText = stringResource(R.string.total),
                 height = ListItemHeight.LOW,
                 colorScheme = ListItemColorScheme.PRIMARY,
                 rightText = vm.state.value.total,
@@ -67,11 +64,11 @@ fun ExpensesIncomeScreen(
             ) {
                 items(vm.state.value.expensesIncome) { transaction ->
                     ListItem(
-                        transaction.categoryName,
+                        mainText = transaction.categoryName,
                         comment = transaction.comment,
                         rightText = transaction.amount,
                         emoji = transaction.categoryEmoji,
-                        trail = Trail.LightArrow,
+                        trail = ListItemTrail.LightArrow,
                         onClick = { }
                     )
                 }

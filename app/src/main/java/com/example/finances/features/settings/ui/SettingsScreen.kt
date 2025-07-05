@@ -17,7 +17,7 @@ import com.example.finances.features.settings.data.SettingsRepo
 import com.example.finances.core.ui.components.Header
 import com.example.finances.core.ui.components.ListItem
 import com.example.finances.core.ui.components.ListItemHeight
-import com.example.finances.core.ui.components.Trail
+import com.example.finances.core.ui.components.ListItemTrail
 
 @Composable
 fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
@@ -37,9 +37,9 @@ fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
                     height = ListItemHeight.LOW,
                     onClick = if (!setting.withSwitch) setting.onClick else null,
                     trail = if (!setting.withSwitch)
-                        Trail.DarkArrow
+                        ListItemTrail.DarkArrow
                     else
-                        Trail.Custom {
+                        ListItemTrail.Custom {
                             val switchColors = SwitchDefaults.colors(
                                 uncheckedBorderColor = MaterialTheme.colorScheme.outline,
                                 checkedThumbColor = MaterialTheme.colorScheme.primary,

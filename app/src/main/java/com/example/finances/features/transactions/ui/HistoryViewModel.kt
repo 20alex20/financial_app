@@ -1,67 +1,44 @@
 package com.example.finances.features.transactions.ui
 
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.features.transactions.domain.DateTimeFormatters
-import com.example.finances.core.data.network.models.Response
-import com.example.finances.core.data.repository.models.Currency
+import com.example.finances.core.buses.ReloadEvent
+import com.example.finances.core.domain.DateTimeFormatters
+import com.example.finances.core.data.Response
+import com.example.finances.core.domain.ConvertAmountUseCase
 import com.example.finances.features.account.data.AccountRepoImpl
 import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.core.ui.viewmodel.BaseViewModel
 import com.example.finances.core.ui.viewmodel.ViewModelFactory
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
+import com.example.finances.features.transactions.domain.LoadCurrencyUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
 import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
 import com.example.finances.features.transactions.ui.models.HistoryViewModelState
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
  * Вьюмодель экрана истории
  */
-class HistoryViewModel(
+class HistoryViewModel private constructor(
     private val transactionsRepo: TransactionsRepo,
     private val isIncome: Boolean
 ) : BaseViewModel() {
-    private var _today: LocalDate = LocalDate.now()
+    private val _convertAmountUseCase = ConvertAmountUseCase()
+    private val _loadCurrencyUseCase = LoadCurrencyUseCase(transactionsRepo)
+    private var _today = LocalDate.now()
 
-    private var _dates = mutableStateOf(
-        HistoryDatesViewModelState(
-            start = _today.withDayOfMonth(1),
-            end = _today,
-            strStart = "01.01.2025",
-            strEnd = "00:00"
-        )
+    private val _dates = mutableStateOf(
+        HistoryDatesViewModelState(_today.withDayOfMonth(1), _today, "01.01.2025", "00:00")
     )
     val dates: State<HistoryDatesViewModelState> = _dates
 
     private val _state = mutableStateOf(HistoryViewModelState("0 ₽", emptyList()))
     val state: State<HistoryViewModelState> = _state
-
-    override fun loadData() = viewModelScope.launch {
-        try {
-            val currency = transactionsRepo.getCurrency().let {
-                if (it is Response.Success) it.data else Currency.RUBLE
-            }
-            val r = transactionsRepo.getTransactions(_dates.value.start, _dates.value.end, isIncome)
-            when (r) {
-                is Response.Failure -> setError()
-                is Response.Success -> {
-                    resetLoadingAndError()
-                    _state.value = HistoryViewModelState(
-                        total = currency.getStrAmount(r.data.sumOf { it.amount }),
-                        history = r.data.map { it.toHistoryRecord(currency, _today) }
-                    )
-                }
-            }
-        } catch (_: Exception) {
-            setError()
-        }
-    }
 
     fun setPeriod(start: LocalDate, end: LocalDate) {
         _today = LocalDate.now()
@@ -79,19 +56,56 @@ class HistoryViewModel(
         )
     }
 
+    override suspend fun loadData() {
+        val asyncCurrency = viewModelScope.async { _loadCurrencyUseCase() }
+        val response = transactionsRepo.getTransactions(
+            _dates.value.start,
+            _dates.value.end,
+            isIncome
+        )
+        when (response) {
+            is Response.Failure -> setError()
+            is Response.Success -> {
+                resetLoadingAndError()
+                val currency = asyncCurrency.await()
+                _state.value = HistoryViewModelState(
+                    total = _convertAmountUseCase(response.data.sumOf { it.amount }, currency),
+                    history = response.data.map { it.toHistoryRecord(currency, _today) }
+                )
+            }
+        }
+    }
+
+    override suspend fun handleReloadEvent(reloadEvent: ReloadEvent) {
+        when (reloadEvent) {
+            ReloadEvent.AccountUpdated -> {
+                val newCurrency = _loadCurrencyUseCase()
+                _state.value = HistoryViewModelState(
+                    total = _convertAmountUseCase(_state.value.total, newCurrency),
+                    history = _state.value.history.map { expenseIncome ->
+                        expenseIncome.copy(
+                            amount = _convertAmountUseCase(expenseIncome.amount, newCurrency)
+                        )
+                    }
+                )
+            }
+        }
+    }
+
     init {
         setPeriod(_dates.value.start, _dates.value.end)
         reloadData()
+        observeReloadEvents()
     }
 
     /**
-     * Фабрика по созданию ViewModel экрана истории и прокидывания в нее репозитория
+     * Фабрика по созданию вьюмодели экрана истории и прокидывания в нее репозитория
      */
-    class Factory(context: Context, parentRoute: String) : ViewModelFactory<HistoryViewModel>(
+    class Factory(parentRoute: String) : ViewModelFactory<HistoryViewModel>(
         viewModelClass = HistoryViewModel::class.java,
         viewModelInit = {
             HistoryViewModel(
-                transactionsRepo = TransactionsRepoImpl(context, AccountRepoImpl.init(context)),
+                transactionsRepo = TransactionsRepoImpl(AccountRepoImpl.init()),
                 isIncome = parentRoute == NavRoutes.Income.route
             )
         }

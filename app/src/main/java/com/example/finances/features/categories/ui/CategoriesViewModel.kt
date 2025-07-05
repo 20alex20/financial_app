@@ -1,27 +1,56 @@
 package com.example.finances.features.categories.ui
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.State
-import com.example.finances.features.categories.data.CategoriesRepo
+import androidx.compose.runtime.mutableStateOf
+import com.example.finances.core.data.Response
+import com.example.finances.core.ui.viewmodel.BaseViewModel
+import com.example.finances.core.ui.viewmodel.ViewModelFactory
+import com.example.finances.features.categories.data.CategoriesRepoImpl
 import com.example.finances.features.categories.domain.models.Category
+import com.example.finances.features.categories.domain.repository.CategoriesRepo
+import com.example.finances.features.categories.ui.models.CategoriesViewModelState
 
-class CategoriesViewModel : ViewModel() {
-    private val _inputText = mutableStateOf("")
-    val inputText: State<String> = _inputText
+/**
+ * Вьюмодель экрана статей
+ */
+class CategoriesViewModel private constructor(
+    private val categoriesRepo: CategoriesRepo
+) : BaseViewModel() {
+    private var _allCategories = emptyList<Category>()
 
-    private val _categories = mutableStateOf(listOf<Category>())
-    val categories: State<List<Category>> = _categories
+    private val _state = mutableStateOf(CategoriesViewModelState("", emptyList()))
+    val state: State<CategoriesViewModelState> = _state
 
-    fun setInputText(text: String) {
-        _inputText.value = text
+    fun updateSearchQuery(query: String) {
+        val trimmedQuery = query.trim()
+        _state.value = CategoriesViewModelState(
+            searchQuery = query,
+            filteredCategories = _allCategories.filter { category ->
+                category.name.contains(trimmedQuery, ignoreCase = true)
+            }
+        )
     }
 
-    private fun loadCategories() {
-        _categories.value = CategoriesRepo.getCategories()
+    override suspend fun loadData() {
+        when (val response = categoriesRepo.getCategories()) {
+            is Response.Failure -> setError()
+            is Response.Success -> {
+                resetLoadingAndError()
+                _allCategories = response.data
+                updateSearchQuery(_state.value.searchQuery)
+            }
+        }
     }
 
     init {
-        loadCategories()
+        reloadData()
     }
+
+    /**
+     * Фабрика по созданию вьюмодели экрана статей и прокидывания в нее репозитория
+     */
+    class Factory : ViewModelFactory<CategoriesViewModel>(
+        viewModelClass = CategoriesViewModel::class.java,
+        viewModelInit = { CategoriesViewModel(CategoriesRepoImpl()) }
+    )
 }

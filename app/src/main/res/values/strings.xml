@@ -13,6 +13,7 @@
     <string name="my_categories">Мои статьи</string>
     <string name="total">Всего</string>
     <string name="balance">Баланс</string>
+    <string name="account_name">Название счета</string>
     <string name="currency">Валюта</string>
     <string name="money_bag">💰</string>
     <string name="search">Поиск</string>
@@ -28,8 +29,13 @@
     <string name="start">Начало</string>
     <string name="end">Конец</string>
     <string name="sum">Сумма</string>
+    <string name="error_sending_data">Ошибка отправки данных</string>
     <string name="error_data_loading">Ошибка загрузки данных</string>
     <string name="error_no_internet">Соединение потеряно</string>
     <string name="date_picker_ok">OK</string>
     <string name="date_picker_cancel">Cancel</string>
+    <string name="ruble">Российский рубль ₽</string>
+    <string name="dollar">Американский доллар $</string>
+    <string name="euro">Евро</string>
+    <string name="cancel">Отмена</string>
 </resources>

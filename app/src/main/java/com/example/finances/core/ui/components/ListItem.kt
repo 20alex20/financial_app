@@ -45,28 +45,17 @@ enum class ListItemColorScheme {
 }
 
 /**
- * Запечатанный класс со всеми типами trail
+ * Запечатанный интерфейс со всеми типами trail
  */
-sealed class Trail {
-    /**
-     * Светлая незакрашенная стрелка
-     */
-    data object LightArrow : Trail()
-
-    /**
-     * Темная закрашенная стрелка
-     */
-    data object DarkArrow : Trail()
-
-    /**
-     * Кастомная реализация trail
-     */
-    data class Custom(val customTrail: @Composable () -> Unit) : Trail()
+sealed interface ListItemTrail {
+    data object LightArrow : ListItemTrail
+    data object DarkArrow : ListItemTrail
+    data class Custom(val customTrail: @Composable () -> Unit) : ListItemTrail
 }
 
 @Composable
 fun ListItem(
-    content: String,
+    mainText: String,
     modifier: Modifier = Modifier,
     height: ListItemHeight = ListItemHeight.HIGH,
     colorScheme: ListItemColorScheme = ListItemColorScheme.SURFACE,
@@ -76,7 +65,7 @@ fun ListItem(
     comment: String? = null,
     rightText: String? = null,
     additionalRightText: String? = null,
-    trail: Trail? = null,
+    trail: ListItemTrail? = null,
     onClick: (() -> Unit)? = null
 ) {
     val colors = getColorScheme(colorScheme)
@@ -85,8 +74,6 @@ fun ListItem(
         modifier = modifier
             .fillMaxWidth()
             .height(height.value)
-            .background(colors.background)
-
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -94,10 +81,12 @@ fun ListItem(
             modifier = when (onClick) {
                 null -> Modifier
                     .fillMaxSize()
+                    .background(colors.background)
                     .padding(paddingValues)
 
                 else -> Modifier
                     .fillMaxSize()
+                    .background(colors.background)
                     .clickable { onClick() }
                     .padding(paddingValues)
             }
@@ -126,7 +115,7 @@ fun ListItem(
                     .fillMaxHeight()
             ) {
                 Text(
-                    text = content,
+                    text = mainText,
                     style = MaterialTheme.typography.bodyLarge,
                     color = colors.content,
                     softWrap = false,
@@ -165,21 +154,21 @@ fun ListItem(
             when (trail) {
                 null -> {}
 
-                is Trail.LightArrow -> Icon(
+                is ListItemTrail.LightArrow -> Icon(
                     painter = painterResource(R.drawable.light_arrow),
-                    contentDescription = content,
+                    contentDescription = mainText,
                     tint = LightArrowColor,
                     modifier = Modifier.size(24.dp)
                 )
 
-                is Trail.DarkArrow -> Icon(
+                is ListItemTrail.DarkArrow -> Icon(
                     painter = painterResource(R.drawable.dark_arrow),
-                    contentDescription = content,
+                    contentDescription = mainText,
                     tint = colors.darkArrow,
                     modifier = Modifier.size(24.dp)
                 )
 
-                is Trail.Custom -> trail.customTrail()
+                is ListItemTrail.Custom -> trail.customTrail()
             }
         }
 
@@ -205,7 +194,7 @@ private data class ColorScheme(
 @Composable
 private fun getColorScheme(colorSchemeType: ListItemColorScheme): ColorScheme {
     return if (colorSchemeType == ListItemColorScheme.SURFACE) ColorScheme(
-        background = MaterialTheme.colorScheme.surface,
+        background = Color.Transparent,
         emoji = MaterialTheme.colorScheme.onSurface,
         emojiBackground = MaterialTheme.colorScheme.inverseSurface,
         content = MaterialTheme.colorScheme.onSurface,

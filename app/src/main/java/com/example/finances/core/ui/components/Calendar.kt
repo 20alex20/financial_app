@@ -11,7 +11,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.finances.R
@@ -22,9 +21,9 @@ import java.time.ZoneId
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Calendar(
-    showCalendar: MutableState<Boolean>,
+    isCalendarOpen: Boolean,
     initialDate: LocalDate,
-    setNewDate: (LocalDate) -> Unit
+    closeCalendar: (LocalDate?) -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = initialDate
@@ -34,7 +33,7 @@ fun Calendar(
             .toEpochMilli(),
         selectableDates = object : SelectableDates {
             override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                return !getDateFromMillis(utcTimeMillis).isAfter(LocalDate.now())
+                return !utcTimeMillis.toLocalDate().isAfter(LocalDate.now())
             }
         }
     )
@@ -71,15 +70,12 @@ fun Calendar(
         )
     )
 
-    if (showCalendar.value) DatePickerDialog(
-        onDismissRequest = { showCalendar.value = false },
+    if (isCalendarOpen) DatePickerDialog(
+        onDismissRequest = { closeCalendar(null) },
         confirmButton = {
             TextButton(
                 onClick = {
-                    showCalendar.value = false
-                    val millis = datePickerState.selectedDateMillis
-                    if (millis != null)
-                        setNewDate(getDateFromMillis(millis))
+                    closeCalendar(datePickerState.selectedDateMillis?.toLocalDate())
                 }
             ) {
                 Text(
@@ -90,7 +86,7 @@ fun Calendar(
             }
         },
         dismissButton = {
-            TextButton(onClick = { showCalendar.value = false }) {
+            TextButton(onClick = { closeCalendar(null) }) {
                 Text(
                     text = stringResource(R.string.date_picker_cancel),
                     style = MaterialTheme.typography.labelLarge,
@@ -107,6 +103,6 @@ fun Calendar(
     }
 }
 
-private fun getDateFromMillis(millis: Long): LocalDate {
-    return Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+private fun Long.toLocalDate(): LocalDate {
+    return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDate()
 }
