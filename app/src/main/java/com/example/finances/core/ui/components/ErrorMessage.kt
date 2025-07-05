@@ -1,8 +1,11 @@
 package com.example.finances.core.ui.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +21,8 @@ fun ErrorMessage(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .padding(0.dp, ListItemHeight.LOW.value * 2, 0.dp, 0.dp)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .padding(0.dp, ListItemHeight.LOW.value, 0.dp, 0.dp)
     ) {
         Text(
             text = stringResource(R.string.error_data_loading),

@@ -1,6 +1,7 @@
 package com.example.finances.core.ui.components
 
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -8,6 +9,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
@@ -16,7 +18,8 @@ fun TextInput(
     updateText: (String) -> Unit,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Start,
-    placeholderText: String? = null
+    placeholderText: String? = null,
+    keyboardType: KeyboardType = KeyboardType.Unspecified
 ) {
     TextField(
         value = text,
@@ -48,6 +51,9 @@ fun TextInput(
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             disabledTextColor = MaterialTheme.colorScheme.onSurface,
             cursorColor = MaterialTheme.colorScheme.onSurface
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = keyboardType
         ),
         modifier = modifier.fillMaxHeight()
     )

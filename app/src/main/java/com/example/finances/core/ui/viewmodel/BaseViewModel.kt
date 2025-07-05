@@ -4,8 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.ReloadEvent
-import com.example.finances.core.ReloadEventBus
+import com.example.finances.core.buses.ReloadEvent
+import com.example.finances.core.buses.ReloadEventBus
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -48,6 +48,10 @@ abstract class BaseViewModel : ViewModel() {
                 setError()
             }
         }
+    }
+
+    protected suspend fun sendReloadEvent(reloadEvent: ReloadEvent) {
+        ReloadEventBus.send(reloadEvent)
     }
 
     protected open suspend fun handleReloadEvent(reloadEvent: ReloadEvent) {}

@@ -52,12 +52,6 @@ fun ModalSheet(
             )
         }
     ) {
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp),
-            color = MaterialTheme.colorScheme.outlineVariant
-        )
         sheetItems.forEach { currency ->
             SheetListItem(
                 text = currency.name,

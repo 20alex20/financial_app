@@ -2,7 +2,7 @@ package com.example.finances.features.account.ui
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.example.finances.core.ReloadEvent
+import com.example.finances.core.buses.ReloadEvent
 import com.example.finances.core.data.Response
 import com.example.finances.core.domain.ConvertAmountUseCase
 import com.example.finances.features.account.data.AccountRepoImpl

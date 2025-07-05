@@ -3,8 +3,7 @@ package com.example.finances.features.account.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.ReloadEvent
-import com.example.finances.core.ReloadEventBus
+import com.example.finances.core.buses.ReloadEvent
 import com.example.finances.core.data.Response
 import com.example.finances.core.domain.ConvertAmountUseCase
 import com.example.finances.core.domain.models.Currency
@@ -17,6 +16,9 @@ import com.example.finances.features.account.ui.models.AccountViewModelState
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 
+/**
+ * Вьюмодель экрана редактирования счета
+ */
 class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewModel() {
     private val _convertAmountUseCase = ConvertAmountUseCase()
     private var _deferred: Deferred<Boolean>? = null
@@ -41,7 +43,10 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
 
     fun updateCurrency(newCurrency: Currency) {
         _account = _account.copy(currency = newCurrency)
-        _state.value = _state.value.copy(currency = newCurrency.symbol)
+        _state.value = _state.value.copy(
+            balance = _convertAmountUseCase(_account.balance, newCurrency),
+            currency = newCurrency.symbol
+        )
     }
 
     override suspend fun loadData() {
@@ -68,7 +73,7 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
                 val response = accountRepo.updateAccount(_account, _accountId)
                 resetLoadingAndError()
                 if (response is Response.Success && response.data.toShortAccount() == _account) {
-                    ReloadEventBus.send(ReloadEvent.AccountUpdated)
+                    sendReloadEvent(ReloadEvent.AccountUpdated)
                     return@async true
                 }
             } catch (_: Exception) {
@@ -82,6 +87,9 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
         reloadData()
     }
 
+    /**
+     * Фабрика по созданию вьюмодели экрана редактирования счета и прокидывания в нее репозитория
+     */
     class Factory : ViewModelFactory<EditAccountViewModel>(
         viewModelClass = EditAccountViewModel::class.java,
         viewModelInit = { EditAccountViewModel(AccountRepoImpl.init()) }

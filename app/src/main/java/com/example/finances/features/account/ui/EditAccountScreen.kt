@@ -2,7 +2,8 @@ package com.example.finances.features.account.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,8 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,7 +44,7 @@ import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.features.account.domain.currencySheetItems
 import kotlinx.coroutines.launch
 
-private const val TEXT_INPUT_WIDTH = 0.5f
+private const val TEXT_INPUT_WIDTH = 0.6f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +56,7 @@ fun EditAccountScreen(
     var isSheetOpen by remember { mutableStateOf(false) }
     val sheetItems = currencySheetItems()
     val coroutineScope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
     val uploadError = Toast.makeText(
         LocalContext.current,
         R.string.error_sending_data,
@@ -65,11 +69,15 @@ fun EditAccountScreen(
                 title = stringResource(R.string.my_account),
                 leftButton = HeaderButton(
                     icon = painterResource(R.drawable.cancel),
-                    onClick = { navController.popBackStack() }
+                    onClick = {
+                        focusManager.clearFocus()
+                        navController.popBackStack()
+                    }
                 ),
                 rightButton = HeaderButton(
                     icon = painterResource(R.drawable.apply),
                     onClick = {
+                        focusManager.clearFocus()
                         val success = vm.saveChanges()
                         coroutineScope.launch {
                             if (success.await())
@@ -93,10 +101,10 @@ fun EditAccountScreen(
                         text = vm.state.value.balance,
                         updateText = { vm.updateBalance(it) },
                         textAlign = TextAlign.End,
+                        keyboardType = KeyboardType.Number,
                         modifier = Modifier
                             .fillMaxWidth(TEXT_INPUT_WIDTH)
                             .focusRequester(balanceFocus)
-                            .focusable()
                     )
                 },
                 modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
@@ -116,7 +124,6 @@ fun EditAccountScreen(
                         modifier = Modifier
                             .fillMaxWidth(TEXT_INPUT_WIDTH)
                             .focusRequester(accountNameFocus)
-                            .focusable()
                     )
                 },
                 modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
@@ -126,8 +133,21 @@ fun EditAccountScreen(
                 mainText = stringResource(R.string.currency),
                 height = ListItemHeight.LOW,
                 rightText = vm.state.value.currency,
-                onClick = { isSheetOpen = true },
+                onClick = {
+                    focusManager.clearFocus()
+                    isSheetOpen = true
+                },
                 modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { focusManager.clearFocus() }
             )
         }
 

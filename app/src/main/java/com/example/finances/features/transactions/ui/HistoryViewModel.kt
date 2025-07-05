@@ -3,7 +3,7 @@ package com.example.finances.features.transactions.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.ReloadEvent
+import com.example.finances.core.buses.ReloadEvent
 import com.example.finances.core.domain.DateTimeFormatters
 import com.example.finances.core.data.Response
 import com.example.finances.core.domain.ConvertAmountUseCase
@@ -99,7 +99,7 @@ class HistoryViewModel private constructor(
     }
 
     /**
-     * Фабрика по созданию ViewModel экрана истории и прокидывания в нее репозитория
+     * Фабрика по созданию вьюмодели экрана истории и прокидывания в нее репозитория
      */
     class Factory(parentRoute: String) : ViewModelFactory<HistoryViewModel>(
         viewModelClass = HistoryViewModel::class.java,

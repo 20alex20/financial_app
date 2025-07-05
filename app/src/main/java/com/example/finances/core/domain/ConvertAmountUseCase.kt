@@ -3,6 +3,9 @@ package com.example.finances.core.domain
 import com.example.finances.core.domain.models.Currency
 import kotlin.math.roundToLong
 
+/**
+ * Юзкейс для преобразования суммы в другой формат/тип
+ */
 class ConvertAmountUseCase {
     operator fun invoke(value: String): Double {
         var amount = 0.0

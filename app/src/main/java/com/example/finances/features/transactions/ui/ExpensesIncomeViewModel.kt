@@ -3,7 +3,7 @@ package com.example.finances.features.transactions.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.ReloadEvent
+import com.example.finances.core.buses.ReloadEvent
 import com.example.finances.core.data.Response
 import com.example.finances.core.domain.ConvertAmountUseCase
 import com.example.finances.features.account.data.AccountRepoImpl
@@ -69,7 +69,7 @@ class ExpensesIncomeViewModel private constructor(
     }
 
     /**
-     * Фабрика по созданию ViewModel экрана расходов и прокидывания в нее репозитория
+     * Фабрика по созданию вьюмодели экрана расходов и прокидывания в нее репозитория
      */
     class Factory(route: String) : ViewModelFactory<ExpensesIncomeViewModel>(
         viewModelClass = ExpensesIncomeViewModel::class.java,
