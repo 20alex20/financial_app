@@ -1,6 +1,7 @@
 package com.example.finances.core.utils.usecases
 
 import com.example.finances.core.utils.models.Currency
+import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.roundToLong
 
@@ -8,7 +9,7 @@ import kotlin.math.roundToLong
  * Юзкейс для преобразования суммы в другой формат/тип
  */
 @Singleton
-class ConvertAmountUseCase {
+class ConvertAmountUseCase @Inject constructor() {
     operator fun invoke(value: String): Double {
         var amount = 0.0
         val digits = value.replace(Regex("[^0-9]"), "")

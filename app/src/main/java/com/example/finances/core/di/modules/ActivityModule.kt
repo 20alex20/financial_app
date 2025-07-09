@@ -2,10 +2,10 @@ package com.example.finances.core.di.modules
 
 import android.app.Activity
 import android.content.Context
+import androidx.lifecycle.ViewModelProvider
 import com.example.finances.core.di.ActivityContext
 import com.example.finances.core.di.ActivityScope
-import com.example.finances.core.utils.NetworkConnectionObserver
-import com.example.finances.core.utils.SplashScreenAnimator
+import com.example.finances.core.utils.viewmodel.ViewModelFactory
 import dagger.Binds
 import dagger.Module
 
@@ -18,9 +18,5 @@ interface ActivityModule {
 
     @Binds
     @ActivityScope
-    fun bindsNetworkConnectionObserver(): NetworkConnectionObserver
-
-    @Binds
-    @ActivityScope
-    fun bindsSplashScreenAnimator(): SplashScreenAnimator
+    fun bindsViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 }

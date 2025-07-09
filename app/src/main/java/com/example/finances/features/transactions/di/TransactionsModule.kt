@@ -6,7 +6,6 @@ import com.example.finances.core.utils.viewmodel.ViewModelKey
 import com.example.finances.features.transactions.data.TransactionsApi
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
-import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.ui.models.ExpensesHistoryViewModel
 import com.example.finances.features.transactions.ui.models.ExpensesViewModel
 import com.example.finances.features.transactions.ui.models.IncomeHistoryViewModel
@@ -16,7 +15,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
 import retrofit2.Retrofit
-import javax.inject.Singleton
 
 @Module
 interface TransactionsModule {
@@ -43,10 +41,6 @@ interface TransactionsModule {
     @Binds
     @ActivityScope
     fun bindsTransactionsRepoImpl(transactionsRepoImpl: TransactionsRepoImpl): TransactionsRepo
-
-    @Binds
-    @Singleton
-    fun bindsLoadCurrencyUseCase(): LoadCurrencyUseCase
 
     companion object {
         @Provides

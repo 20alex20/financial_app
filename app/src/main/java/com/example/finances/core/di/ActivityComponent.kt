@@ -1,6 +1,7 @@
 package com.example.finances.core.di
 
 import android.app.Activity
+import androidx.lifecycle.ViewModelProvider
 import com.example.finances.core.di.modules.ActivityModule
 import com.example.finances.core.utils.NetworkConnectionObserver
 import com.example.finances.features.account.di.AccountModule
@@ -20,6 +21,8 @@ import dagger.Subcomponent
 )
 interface ActivityComponent {
     fun networkConnectionObserver(): NetworkConnectionObserver
+    
+    fun viewModelFactory(): ViewModelProvider.Factory
 
     @Subcomponent.Factory
     interface Factory {

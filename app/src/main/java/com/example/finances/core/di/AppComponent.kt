@@ -1,7 +1,6 @@
 package com.example.finances.core.di
 
 import android.app.Application
-import androidx.lifecycle.ViewModelProvider
 import com.example.finances.core.di.modules.RetrofitClientModule
 import com.example.finances.core.di.modules.AppModule
 import dagger.BindsInstance
@@ -16,8 +15,6 @@ import javax.inject.Singleton
     ]
 )
 interface AppComponent {
-    fun viewModelProviderFactory(): ViewModelProvider.Factory
-
     fun activityComponent(): ActivityComponent.Factory
 
     @Component.Factory

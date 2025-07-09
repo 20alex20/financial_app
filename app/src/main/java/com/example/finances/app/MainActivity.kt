@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CompositionLocalProvider(
-                LocalViewModelFactory provides appComponent.viewModelProviderFactory()
+                LocalViewModelFactory provides activityComponent.viewModelFactory()
             ) {
                 MainScreen()
             }
