@@ -3,6 +3,7 @@ package com.example.finances.core.di
 import android.app.Activity
 import androidx.lifecycle.ViewModelProvider
 import com.example.finances.core.di.modules.ActivityModule
+import com.example.finances.core.di.modules.ViewModelModule
 import com.example.finances.core.utils.NetworkConnectionObserver
 import com.example.finances.features.account.di.AccountModule
 import com.example.finances.features.categories.di.CategoriesModule
@@ -16,7 +17,8 @@ import dagger.Subcomponent
         ActivityModule::class,
         AccountModule::class,
         CategoriesModule::class,
-        TransactionsModule::class
+        TransactionsModule::class,
+        ViewModelModule::class
     ]
 )
 interface ActivityComponent {
