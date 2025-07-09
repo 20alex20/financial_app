@@ -1,21 +1,24 @@
 package com.example.finances.features.transactions.data
 
-import com.example.finances.core.domain.DateTimeFormatters
-import com.example.finances.core.data.network.NetworkManager
-import com.example.finances.core.data.Response
-import com.example.finances.core.data.exceptions.AccountLoadingException
-import com.example.finances.core.data.repoTryCatchBlock
-import com.example.finances.features.account.domain.repository.AccountRepo
+import com.example.finances.core.di.ActivityScope
+import com.example.finances.features.transactions.domain.DateTimeFormatters
+import com.example.finances.core.utils.repository.Response
+import com.example.finances.core.utils.repository.repoTryCatchBlock
+import com.example.finances.features.account.domain.extensions.AccountLoadingException
+import com.example.finances.features.account.domain.repository.ExternalAccountRepo
 import com.example.finances.features.transactions.data.mappers.toTransaction
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import java.time.LocalDate
+import javax.inject.Inject
 
 /**
  * Имплементация интерфейса репозитория транзакций
  */
-class TransactionsRepoImpl(private val accountRepo: AccountRepo) : TransactionsRepo {
-    private val api = NetworkManager.provideApi(TransactionsApi::class.java)
-
+@ActivityScope
+class TransactionsRepoImpl @Inject constructor(
+    private val accountRepo: ExternalAccountRepo,
+    private val transactionsApi: TransactionsApi
+) : TransactionsRepo {
     override suspend fun getCurrency() = repoTryCatchBlock {
         accountRepo.getAccount().let { response ->
             if (response is Response.Success)
@@ -34,7 +37,7 @@ class TransactionsRepoImpl(private val accountRepo: AccountRepo) : TransactionsR
         if (account !is Response.Success)
             throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
 
-        api.getTransactions(
+        transactionsApi.getTransactions(
             accountId = account.data.id,
             startDate = startDate.format(DateTimeFormatters.requestDate),
             endDate = endDate.format(DateTimeFormatters.requestDate)

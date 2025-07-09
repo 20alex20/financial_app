@@ -2,21 +2,21 @@ package com.example.finances.features.account.ui
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.example.finances.core.buses.ReloadEvent
-import com.example.finances.core.data.Response
-import com.example.finances.core.domain.ConvertAmountUseCase
-import com.example.finances.features.account.data.AccountRepoImpl
+import com.example.finances.core.utils.viewmodel.ReloadEvent
+import com.example.finances.core.utils.repository.Response
+import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import com.example.finances.features.account.domain.repository.AccountRepo
-import com.example.finances.core.ui.viewmodel.BaseViewModel
-import com.example.finances.core.ui.viewmodel.ViewModelFactory
+import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.features.account.ui.models.AccountViewModelState
+import javax.inject.Inject
 
 /**
  * Вьюмодель экрана счета
  */
-class AccountViewModel private constructor(private val accountRepo: AccountRepo) : BaseViewModel() {
-    private val _convertAmountUseCase = ConvertAmountUseCase()
-
+class AccountViewModel @Inject constructor(
+    private val accountRepo: AccountRepo,
+    private val convertAmountUseCase: ConvertAmountUseCase
+) : BaseViewModel() {
     private val _state = mutableStateOf(AccountViewModelState("Мой счет", "0 ₽", "₽"))
     val state: State<AccountViewModelState> = _state
 
@@ -27,7 +27,7 @@ class AccountViewModel private constructor(private val accountRepo: AccountRepo)
                 resetLoadingAndError()
                 _state.value = AccountViewModelState(
                     accountName = response.data.name,
-                    balance = _convertAmountUseCase(response.data.balance, response.data.currency),
+                    balance = convertAmountUseCase(response.data.balance, response.data.currency),
                     currency = response.data.currency.symbol
                 )
             }
@@ -44,12 +44,4 @@ class AccountViewModel private constructor(private val accountRepo: AccountRepo)
         reloadData()
         observeReloadEvents()
     }
-
-    /**
-     * Фабрика по созданию вьюмодели экрана счета и прокидывания в нее репозитория
-     */
-    class Factory : ViewModelFactory<AccountViewModel>(
-        viewModelClass = AccountViewModel::class.java,
-        viewModelInit = { AccountViewModel(AccountRepoImpl.init()) }
-    )
 }

@@ -13,11 +13,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -31,7 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.finances.R
-import com.example.finances.core.domain.models.Currency
+import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
+import com.example.finances.core.utils.models.Currency
 import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
 import com.example.finances.core.ui.components.ListItem
@@ -44,27 +43,22 @@ import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.features.account.domain.currencySheetItems
 import kotlinx.coroutines.launch
 
-private const val TEXT_INPUT_WIDTH = 0.6f
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditAccountScreen(
-    navController: NavController,
-    vm: EditAccountViewModel = viewModel(factory = EditAccountViewModel.Factory())
-) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var isSheetOpen by remember { mutableStateOf(false) }
-    val sheetItems = currencySheetItems()
-    val coroutineScope = rememberCoroutineScope()
+fun EditAccountScreen(navController: NavController) {
+    val vm: EditAccountViewModel = viewModel(factory = LocalViewModelFactory.current)
+
     val focusManager = LocalFocusManager.current
-    val uploadError = Toast.makeText(
-        LocalContext.current,
-        R.string.error_sending_data,
-        Toast.LENGTH_SHORT
-    )
+    val coroutineScope = rememberCoroutineScope()
+    val isSheetOpen = remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
+            val uploadError = Toast.makeText(
+                LocalContext.current,
+                R.string.error_sending_data,
+                Toast.LENGTH_SHORT
+            )
             Header(
                 title = stringResource(R.string.my_account),
                 leftButton = HeaderButton(
@@ -103,7 +97,7 @@ fun EditAccountScreen(
                         textAlign = TextAlign.End,
                         keyboardType = KeyboardType.Number,
                         modifier = Modifier
-                            .fillMaxWidth(TEXT_INPUT_WIDTH)
+                            .fillMaxWidth(0.6f)
                             .focusRequester(balanceFocus)
                     )
                 },
@@ -122,7 +116,7 @@ fun EditAccountScreen(
                         updateText = { vm.updateAccountName(it) },
                         textAlign = TextAlign.End,
                         modifier = Modifier
-                            .fillMaxWidth(TEXT_INPUT_WIDTH)
+                            .fillMaxWidth(0.6f)
                             .focusRequester(accountNameFocus)
                     )
                 },
@@ -135,7 +129,7 @@ fun EditAccountScreen(
                 rightText = vm.state.value.currency,
                 onClick = {
                     focusManager.clearFocus()
-                    isSheetOpen = true
+                    isSheetOpen.value = true
                 },
                 modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
             )
@@ -156,14 +150,15 @@ fun EditAccountScreen(
         if (vm.error.value)
             ErrorMessage()
 
-        if (isSheetOpen) ModalSheet(
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        if (isSheetOpen.value) ModalSheet(
             sheetState = sheetState,
-            sheetItems = sheetItems,
+            sheetItems = currencySheetItems(),
             closeSheet = { obj ->
-                if (obj is Currency)
-                    vm.updateCurrency(obj)
-                coroutineScope.launch { sheetState.hide() }
-                    .invokeOnCompletion { isSheetOpen = false }
+                if (obj is Currency) vm.updateCurrency(obj)
+                coroutineScope.launch {
+                    sheetState.hide()
+                }.invokeOnCompletion { isSheetOpen.value = false }
             }
         ).also { coroutineScope.launch { sheetState.show() } }
     }

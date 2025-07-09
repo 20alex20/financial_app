@@ -1,17 +1,19 @@
 package com.example.finances.features.categories.data
 
-import com.example.finances.core.data.network.NetworkManager
-import com.example.finances.core.data.repoTryCatchBlock
+import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.utils.repository.repoTryCatchBlock
 import com.example.finances.features.categories.data.mappers.toCategory
 import com.example.finances.features.categories.domain.repository.CategoriesRepo
+import javax.inject.Inject
 
 /**
  * Имплементация интерфейса репозитория статей
  */
-class CategoriesRepoImpl : CategoriesRepo {
-    private val api = NetworkManager.provideApi(CategoriesApi::class.java)
-
+@ActivityScope
+class CategoriesRepoImpl @Inject constructor(
+    private val categoriesApi: CategoriesApi
+) : CategoriesRepo {
     override suspend fun getCategories() = repoTryCatchBlock {
-        api.getCategories().map { it.toCategory() }.sortedBy { it.name }
+        categoriesApi.getCategories().map { it.toCategory() }.sortedBy { it.name }
     }
 }

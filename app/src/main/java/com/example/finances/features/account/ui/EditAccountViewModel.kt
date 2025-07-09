@@ -3,25 +3,27 @@ package com.example.finances.features.account.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.buses.ReloadEvent
-import com.example.finances.core.data.Response
-import com.example.finances.core.domain.ConvertAmountUseCase
-import com.example.finances.core.domain.models.Currency
-import com.example.finances.core.ui.viewmodel.BaseViewModel
-import com.example.finances.core.ui.viewmodel.ViewModelFactory
-import com.example.finances.features.account.data.AccountRepoImpl
+import com.example.finances.core.utils.viewmodel.ReloadEvent
+import com.example.finances.core.utils.repository.Response
+import com.example.finances.core.utils.usecases.ConvertAmountUseCase
+import com.example.finances.core.utils.models.Currency
+import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.features.account.domain.models.ShortAccount
+import com.example.finances.features.account.domain.repository.AccountRepo
 import com.example.finances.features.account.ui.mappers.toShortAccount
 import com.example.finances.features.account.ui.models.AccountViewModelState
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import javax.inject.Inject
 
 /**
  * Вьюмодель экрана редактирования счета
  */
-class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewModel() {
-    private val _convertAmountUseCase = ConvertAmountUseCase()
-    private var _deferred: Deferred<Boolean>? = null
+class EditAccountViewModel @Inject constructor(
+    private val accountRepo: AccountRepo,
+    private val convertAmountUseCase: ConvertAmountUseCase
+) : BaseViewModel() {
+    private var _deferredSaving: Deferred<Boolean>? = null
 
     private var _account = ShortAccount("Мой счет", 0.0, Currency.RUBLE)
     private var _accountId: Int? = null
@@ -36,15 +38,15 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
     }
 
     fun updateBalance(newBalance: String) {
-        val amount = _convertAmountUseCase(newBalance)
+        val amount = convertAmountUseCase(newBalance)
         _account = _account.copy(balance = amount)
-        _state.value = _state.value.copy(balance = _convertAmountUseCase(amount, _account.currency))
+        _state.value = _state.value.copy(balance = convertAmountUseCase(amount, _account.currency))
     }
 
     fun updateCurrency(newCurrency: Currency) {
         _account = _account.copy(currency = newCurrency)
         _state.value = _state.value.copy(
-            balance = _convertAmountUseCase(_account.balance, newCurrency),
+            balance = convertAmountUseCase(_account.balance, newCurrency),
             currency = newCurrency.symbol
         )
     }
@@ -58,7 +60,7 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
                 _account = response.data.toShortAccount()
                 _state.value = AccountViewModelState(
                     accountName = response.data.name,
-                    balance = _convertAmountUseCase(response.data.balance, response.data.currency),
+                    balance = convertAmountUseCase(response.data.balance, response.data.currency),
                     currency = response.data.currency.symbol
                 )
             }
@@ -66,34 +68,26 @@ class EditAccountViewModel(private val accountRepo: AccountRepoImpl) : BaseViewM
     }
 
     fun saveChanges(): Deferred<Boolean> {
-        _deferred?.cancel()
+        _deferredSaving?.cancel()
         return viewModelScope.async {
             setLoading()
             try {
                 val response = accountRepo.updateAccount(_account, _accountId)
                 resetLoadingAndError()
                 if (response is Response.Success && response.data.toShortAccount() == _account) {
-                    sendReloadEvent(ReloadEvent.AccountUpdated)
+                    send(ReloadEvent.AccountUpdated)
                     return@async true
                 }
             } catch (_: Exception) {
                 resetLoadingAndError()
             }
             false
-        }.also { _deferred = it }
+        }.also { _deferredSaving = it }
     }
 
     init {
         reloadData()
     }
-
-    /**
-     * Фабрика по созданию вьюмодели экрана редактирования счета и прокидывания в нее репозитория
-     */
-    class Factory : ViewModelFactory<EditAccountViewModel>(
-        viewModelClass = EditAccountViewModel::class.java,
-        viewModelInit = { EditAccountViewModel(AccountRepoImpl.init()) }
-    )
 
     companion object {
         private const val MAX_ACCOUNT_NAME_LENGTH = 32

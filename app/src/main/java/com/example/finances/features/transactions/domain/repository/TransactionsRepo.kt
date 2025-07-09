@@ -1,7 +1,7 @@
 package com.example.finances.features.transactions.domain.repository
 
-import com.example.finances.core.data.Response
-import com.example.finances.core.domain.models.Currency
+import com.example.finances.core.utils.repository.Response
+import com.example.finances.core.utils.models.Currency
 import com.example.finances.features.transactions.domain.models.Transaction
 import java.time.LocalDate
 

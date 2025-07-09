@@ -9,12 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.finances.core.ui.components.BottomNavigationBar
-import com.example.finances.features.account.ui.EditAccountScreen
-import com.example.finances.features.account.ui.AccountScreen
+import com.example.finances.features.account.navigation.AccountNavigation
 import com.example.finances.features.categories.ui.CategoriesScreen
-import com.example.finances.features.transactions.ui.HistoryScreen
 import com.example.finances.features.settings.ui.SettingsScreen
-import com.example.finances.features.transactions.ui.ExpensesIncomeScreen
+import com.example.finances.features.transactions.navigation.TransactionsNavigation
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
@@ -22,31 +20,24 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         NavHost(
             navController = navController,
-            startDestination = NavRoutes.Expenses.route,
+            startDestination = NavBarRoutes.Expenses,
             modifier = Modifier.weight(1f)
         ) {
-            composable(NavRoutes.Expenses.route) {
-                ExpensesIncomeScreen(NavRoutes.Expenses.route, navController)
+            composable<NavBarRoutes.Expenses> {
+                TransactionsNavigation(isIncome = false)
             }
-            composable(NavRoutes.Expenses.route + "/" + NavRoutes.History.route) {
-                HistoryScreen(NavRoutes.Expenses.route, navController)
+            composable<NavBarRoutes.Income> {
+                TransactionsNavigation(isIncome = true)
             }
-            composable(NavRoutes.Income.route) {
-                ExpensesIncomeScreen(NavRoutes.Income.route, navController)
+            composable<NavBarRoutes.Account> {
+                AccountNavigation()
             }
-            composable(NavRoutes.Income.route + "/" + NavRoutes.History.route) {
-                HistoryScreen(NavRoutes.Income.route, navController)
-            }
-            composable(NavRoutes.Account.route) {
-                AccountScreen(navController)
-            }
-            composable(NavRoutes.EditAccount.route) {
-                EditAccountScreen(navController)
-            }
-            composable(NavRoutes.Categories.route) {
+            composable<NavBarRoutes.Categories> {
                 CategoriesScreen()
             }
-            composable(NavRoutes.Settings.route) { SettingsScreen() }
+            composable<NavBarRoutes.Settings> {
+                SettingsScreen()
+            }
         }
 
         BottomNavigationBar(

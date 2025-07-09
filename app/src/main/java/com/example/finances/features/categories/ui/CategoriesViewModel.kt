@@ -2,18 +2,17 @@ package com.example.finances.features.categories.ui
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import com.example.finances.core.data.Response
-import com.example.finances.core.ui.viewmodel.BaseViewModel
-import com.example.finances.core.ui.viewmodel.ViewModelFactory
-import com.example.finances.features.categories.data.CategoriesRepoImpl
+import com.example.finances.core.utils.repository.Response
+import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.features.categories.domain.models.Category
 import com.example.finances.features.categories.domain.repository.CategoriesRepo
 import com.example.finances.features.categories.ui.models.CategoriesViewModelState
+import javax.inject.Inject
 
 /**
  * Вьюмодель экрана статей
  */
-class CategoriesViewModel private constructor(
+class CategoriesViewModel @Inject constructor(
     private val categoriesRepo: CategoriesRepo
 ) : BaseViewModel() {
     private var _allCategories = emptyList<Category>()
@@ -45,12 +44,4 @@ class CategoriesViewModel private constructor(
     init {
         reloadData()
     }
-
-    /**
-     * Фабрика по созданию вьюмодели экрана статей и прокидывания в нее репозитория
-     */
-    class Factory : ViewModelFactory<CategoriesViewModel>(
-        viewModelClass = CategoriesViewModel::class.java,
-        viewModelInit = { CategoriesViewModel(CategoriesRepoImpl()) }
-    )
 }

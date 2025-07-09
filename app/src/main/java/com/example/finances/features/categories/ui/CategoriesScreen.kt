@@ -28,11 +28,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.finances.core.ui.components.TextInput
+import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
 
 @Composable
-fun CategoriesScreen(
-    vm: CategoriesViewModel = viewModel(factory = CategoriesViewModel.Factory())
-) {
+fun CategoriesScreen() {
+    val vm: CategoriesViewModel = viewModel(factory = LocalViewModelFactory.current)
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(title = stringResource(R.string.my_categories))

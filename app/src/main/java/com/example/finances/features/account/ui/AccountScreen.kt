@@ -11,7 +11,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.finances.R
-import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
 import com.example.finances.core.ui.components.ListItem
@@ -19,12 +18,13 @@ import com.example.finances.core.ui.components.ListItemColorScheme
 import com.example.finances.core.ui.components.ListItemHeight
 import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.models.HeaderButton
+import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
+import com.example.finances.features.account.navigation.AccountNavRoutes
 
 @Composable
-fun AccountScreen(
-    navController: NavController,
-    vm: AccountViewModel = viewModel(factory = AccountViewModel.Factory())
-) {
+fun AccountScreen(navController: NavController) {
+    val vm: AccountViewModel = viewModel(factory = LocalViewModelFactory.current)
+
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier.fillMaxSize()
@@ -35,7 +35,7 @@ fun AccountScreen(
                 rightButton = HeaderButton(
                     icon = painterResource(R.drawable.edit),
                     onClick = {
-                        navController.navigate(NavRoutes.EditAccount.route) {
+                        navController.navigate(AccountNavRoutes.EditAccount) {
                             launchSingleTop = true
                             restoreState = true
                         }
