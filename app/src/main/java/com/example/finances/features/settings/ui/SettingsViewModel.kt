@@ -1,23 +1,16 @@
 package com.example.finances.features.settings.ui
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.State
+import com.example.finances.core.utils.viewmodel.BaseViewModel
+import com.example.finances.features.settings.domain.models.Settings
+import javax.inject.Inject
 
-class SettingsViewModel : ViewModel() {
-    private val _switchesChecked = mutableStateOf(listOf<Boolean>())
-    val switchesChecked: State<List<Boolean>> = _switchesChecked
+class SettingsViewModel @Inject constructor() : BaseViewModel() {
+    fun getSettings(): Settings = Settings(
+        isDarkTheme = false,
+        isNotificationsEnabled = true
+    )
 
-    fun changeSwitchChecked(index: Int) {
-        if (index < 0 || index >= _switchesChecked.value.size)
-            return
-        val checked = _switchesChecked.value.toMutableList()
-        checked[index] = !checked[index]
-        _switchesChecked.value = checked
-    }
-
-    fun createSwitchesChecked(size: Int) {
-        if (_switchesChecked.value.isEmpty())
-            _switchesChecked.value = List(size) { false }
+    fun updateSettings(settings: Settings) {
+        // TODO: Implement settings update
     }
 }

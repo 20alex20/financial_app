@@ -1,60 +1,59 @@
 package com.example.finances.features.settings.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.dp
 import com.example.finances.R
-import com.example.finances.features.settings.data.SettingsRepo
-import com.example.finances.core.ui.components.Header
-import com.example.finances.core.ui.components.ListItem
-import com.example.finances.core.ui.components.ListItemHeight
-import com.example.finances.core.ui.components.ListItemTrail
+import com.example.finances.core.ui.components.TopBar
+import com.example.finances.features.settings.domain.models.Settings
 
 @Composable
-fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Header(stringResource(R.string.settings))
+fun SettingsScreen(
+    viewModel: SettingsViewModel
+) {
+    var settings by remember { mutableStateOf(viewModel.getSettings()) }
 
-        val settings = SettingsRepo.getSettings()
-        vm.createSwitchesChecked(settings.size)
-        LazyColumn(
+    Scaffold(
+        topBar = {
+            TopBar(title = stringResource(R.string.settings))
+        }
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
         ) {
-            itemsIndexed(settings) { index, setting ->
-                ListItem(
-                    setting.name,
-                    height = ListItemHeight.LOW,
-                    onClick = if (!setting.withSwitch) setting.onClick else null,
-                    trail = if (!setting.withSwitch)
-                        ListItemTrail.DarkArrow
-                    else
-                        ListItemTrail.Custom {
-                            val switchColors = SwitchDefaults.colors(
-                                uncheckedBorderColor = MaterialTheme.colorScheme.outline,
-                                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                            )
-                            Switch(
-                                checked = vm.switchesChecked.value[index],
-                                onCheckedChange = { vm.changeSwitchChecked(index) },
-                                colors = switchColors
-                            )
-                        }
-                )
-            }
+            Switch(
+                checked = settings.isDarkTheme,
+                onCheckedChange = { isChecked ->
+                    settings = settings.copy(isDarkTheme = isChecked)
+                    viewModel.updateSettings(settings)
+                },
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = stringResource(R.string.dark_theme),
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Switch(
+                checked = settings.isNotificationsEnabled,
+                onCheckedChange = { isChecked ->
+                    settings = settings.copy(isNotificationsEnabled = isChecked)
+                    viewModel.updateSettings(settings)
+                },
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = stringResource(R.string.notifications),
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
