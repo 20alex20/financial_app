@@ -1,19 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.example.finances"
-    compileSdk = 35
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.example.finances"
-        minSdk = 27
-        targetSdk = 35
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.compileSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -30,45 +29,57 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+    
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+    
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
+    
     buildFeatures {
         compose = true
+    }
+    
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 }
 
 dependencies {
+    implementation(project(":core"))
+    implementation(project(":feature-account"))
+    implementation(project(":feature-categories"))
+    implementation(project(":feature-transactions"))
+
+    // AndroidX Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.core.splashscreen)
 
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.moshi)
-    implementation(libs.moshi)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.logging)
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.androidx.compose.lifecycle.runtime)
+    implementation(libs.androidx.compose.lifecycle.viewmodel)
+    debugImplementation(libs.bundles.compose.debug)
 
+    // DI
     implementation(libs.dagger)
-    ksp(libs.dagger.compiler)
-    
+    kapt(libs.dagger.compiler)
+
+    // Networking
+    implementation(libs.bundles.networking)
+
+    // Testing
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 }

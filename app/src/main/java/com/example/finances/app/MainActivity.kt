@@ -1,36 +1,31 @@
 package com.example.finances.app
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import com.example.finances.core.di.ActivityComponent
-import com.example.finances.core.di.DaggerActivityComponent
+import com.example.finances.app.navigation.AppNavigationCoordinator
 import com.example.finances.core.ui.MainScreen
+import com.example.finances.core.ui.theme.FinancesTheme
+import javax.inject.Inject
 
-/**
- * Activity, отвечающая за отображение главного UI и инициализацию/запуск доп функционала
- */
 class MainActivity : ComponentActivity() {
-    private lateinit var activityComponent: ActivityComponent
+    @Inject
+    lateinit var navigationCoordinator: AppNavigationCoordinator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 
-        activityComponent = DaggerActivityComponent.factory().create(this, appComponent)
-        activityComponent.networkConnectionObserver()
-        activityComponent.splashScreenAnimator()
+        // Initialize DI
+        (application as FinancesApplication)
+            .appComponent
+            .activityComponent()
+            .create(this, (application as FinancesApplication).appComponent)
+            .inject(this)
 
-        enableEdgeToEdge()
         setContent {
-            MainScreen(activityComponent.viewModelFactory())
+            FinancesTheme {
+                MainScreen(navigationCoordinator)
+            }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        activityComponent.networkConnectionObserver().unregister()
     }
 }
