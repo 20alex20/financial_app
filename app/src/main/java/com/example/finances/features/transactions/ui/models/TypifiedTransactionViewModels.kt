@@ -23,7 +23,7 @@ class IncomeViewModel @Inject constructor(
     convertAmountUseCase: ConvertAmountUseCase,
     loadCurrencyUseCase: LoadCurrencyUseCase
 ) : ExpensesIncomeViewModel(
-    isIncome = false,
+    isIncome = true,
     transactionsRepo = transactionsRepo,
     convertAmountUseCase = convertAmountUseCase,
     loadCurrencyUseCase = loadCurrencyUseCase

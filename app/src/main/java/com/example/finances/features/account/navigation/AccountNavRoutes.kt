@@ -1,9 +1,11 @@
 package com.example.finances.features.account.navigation
 
+import kotlinx.serialization.Serializable
+
 /**
  * Запечатанный класс содержит объекты, соответствующие экранам и используемые для навигации
  */
 sealed interface AccountNavRoutes {
-    data object Account : AccountNavRoutes
-    data object EditAccount : AccountNavRoutes
+    @Serializable data object Account : AccountNavRoutes
+    @Serializable data object EditAccount : AccountNavRoutes
 }
