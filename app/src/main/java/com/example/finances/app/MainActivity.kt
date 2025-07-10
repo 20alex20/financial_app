@@ -5,10 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.CompositionLocalProvider
 import com.example.finances.core.di.ActivityComponent
 import com.example.finances.core.ui.MainScreen
-import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
 
 /**
  * Activity, отвечающая за отображение главного UI и инициализацию/запуск доп функционала
@@ -24,11 +22,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            CompositionLocalProvider(
-                LocalViewModelFactory provides activityComponent.viewModelFactory()
-            ) {
-                MainScreen()
-            }
+            MainScreen(activityComponent.viewModelFactory())
         }
     }
 
