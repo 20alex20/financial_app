@@ -1,10 +1,12 @@
 package com.example.finances.core.di
 
 import android.app.Application
+import android.content.Context
 import com.example.finances.core.di.modules.RetrofitClientModule
 import com.example.finances.core.di.modules.AppModule
 import dagger.BindsInstance
 import dagger.Component
+import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @Singleton
@@ -15,7 +17,8 @@ import javax.inject.Singleton
     ]
 )
 interface AppComponent {
-    fun activityComponent(): ActivityComponent.Factory
+    @ApplicationContext fun applicationContext(): Context
+    fun retrofit(): Retrofit
 
     @Component.Factory
     interface Factory {

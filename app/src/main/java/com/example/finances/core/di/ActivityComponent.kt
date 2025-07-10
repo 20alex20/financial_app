@@ -9,10 +9,11 @@ import com.example.finances.features.account.di.AccountModule
 import com.example.finances.features.categories.di.CategoriesModule
 import com.example.finances.features.transactions.di.TransactionsModule
 import dagger.BindsInstance
-import dagger.Subcomponent
+import dagger.Component
 
 @ActivityScope
-@Subcomponent(
+@Component(
+    dependencies = [AppComponent::class],
     modules = [
         ActivityModule::class,
         AccountModule::class,
@@ -24,11 +25,14 @@ interface ActivityComponent {
     fun networkConnectionObserver(): NetworkConnectionObserver
 
     fun splashScreenAnimator(): SplashScreenAnimator
-    
+
     fun viewModelFactory(): ViewModelProvider.Factory
 
-    @Subcomponent.Factory
+    @Component.Factory
     interface Factory {
-        fun create(@BindsInstance activity: Activity): ActivityComponent
+        fun create(
+            @BindsInstance activity: Activity,
+            appComponent: AppComponent
+        ): ActivityComponent
     }
 }

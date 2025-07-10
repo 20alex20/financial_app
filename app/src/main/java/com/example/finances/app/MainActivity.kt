@@ -6,22 +6,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.finances.core.di.ActivityComponent
+import com.example.finances.core.di.DaggerActivityComponent
 import com.example.finances.core.ui.MainScreen
-import com.example.finances.core.utils.NetworkConnectionObserver
 
 /**
  * Activity, отвечающая за отображение главного UI и инициализацию/запуск доп функционала
  */
 class MainActivity : ComponentActivity() {
     private lateinit var activityComponent: ActivityComponent
-    private lateinit var networkConnectionObserver: NetworkConnectionObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 
-        activityComponent = appComponent.activityComponent().create(this)
-        networkConnectionObserver = activityComponent.networkConnectionObserver()
+        activityComponent = DaggerActivityComponent.factory().create(this, appComponent)
+        activityComponent.networkConnectionObserver()
         activityComponent.splashScreenAnimator()
 
         enableEdgeToEdge()
@@ -32,6 +31,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        networkConnectionObserver.unregister()
+        activityComponent.networkConnectionObserver().unregister()
     }
 }
