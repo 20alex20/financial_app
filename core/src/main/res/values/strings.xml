@@ -3,4 +3,9 @@
     <string name="error_data_loading">Error loading data</string>
     <string name="error_no_internet">No internet connection</string>
     <string name="cancel">Cancel</string>
-</resources> 
+    <string name="expenses">Расходы</string>
+    <string name="income">Доходы</string>
+    <string name="account">Счет</string>
+    <string name="categories">Статьи</string>
+    <string name="settings">Настройки</string>
+</resources>

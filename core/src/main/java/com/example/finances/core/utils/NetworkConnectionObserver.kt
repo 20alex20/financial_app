@@ -6,16 +6,16 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.widget.Toast
-import com.example.finances.R
-import com.example.finances.core.di.ActivityContext
-import com.example.finances.core.di.ActivityScope
-import com.example.finances.core.di.ApplicationContext
+import com.example.finances.core.R
+import com.example.finances.core.di.CoreScope
+import com.example.finances.core.di.common.ActivityContext
+import com.example.finances.core.di.common.ApplicationContext
 import javax.inject.Inject
 
 /**
  * Responsible for subscribing to connection loss events and displaying corresponding messages
  */
-@ActivityScope
+@CoreScope
 class NetworkConnectionObserver @Inject constructor(
     @ApplicationContext appContext: Context,
     @ActivityContext activityContext: Context
@@ -42,4 +42,4 @@ class NetworkConnectionObserver @Inject constructor(
             .build()
         connectivityManager.registerNetworkCallback(request, networkCallback)
     }
-} 
+}

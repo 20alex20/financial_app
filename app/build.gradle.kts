@@ -1,8 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -31,33 +32,26 @@ android {
     }
     
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
     }
     
     buildFeatures {
         compose = true
     }
-    
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
-    }
 }
 
 dependencies {
     implementation(project(":core"))
-    implementation(project(":feature-account"))
     implementation(project(":feature-categories"))
-    implementation(project(":feature-transactions"))
 
     // AndroidX Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.core.splashscreen)
 
     // Compose
@@ -65,13 +59,12 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.navigation)
-    implementation(libs.androidx.compose.lifecycle.runtime)
     implementation(libs.androidx.compose.lifecycle.viewmodel)
     debugImplementation(libs.bundles.compose.debug)
 
     // DI
     implementation(libs.dagger)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
 
     // Networking
     implementation(libs.bundles.networking)

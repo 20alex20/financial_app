@@ -12,4 +12,4 @@ interface FeatureNavigation {
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController
     )
-} 
+}

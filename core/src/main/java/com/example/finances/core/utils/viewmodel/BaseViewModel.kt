@@ -69,4 +69,4 @@ abstract class BaseViewModel : ViewModel() {
             _events.emit(event)
         }
     }
-} 
+}

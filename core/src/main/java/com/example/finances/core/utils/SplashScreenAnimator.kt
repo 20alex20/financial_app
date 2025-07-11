@@ -9,13 +9,13 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
-import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.di.CoreScope
 import javax.inject.Inject
 
 /**
  * Responsible for initializing and launching splash screen animation
  */
-@ActivityScope
+@CoreScope
 class SplashScreenAnimator @Inject constructor(activity: Activity) {
     private var splashViewProvider: SplashScreenViewProvider? = null
 
@@ -49,4 +49,4 @@ class SplashScreenAnimator @Inject constructor(activity: Activity) {
         private const val ALPHA_START = 1f
         private const val ALPHA_END = 0f
     }
-} 
+}

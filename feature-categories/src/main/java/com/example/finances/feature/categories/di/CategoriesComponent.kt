@@ -1,22 +1,30 @@
 package com.example.finances.feature.categories.di
 
-import com.example.finances.core.di.ActivityScope
-import com.example.finances.core.di.FeatureComponent
-import com.example.finances.feature.categories.domain.repository.CategoriesRepository
-import com.example.finances.feature.categories.ui.CategoriesViewModel
+import com.example.finances.feature.categories.di.common.CategoriesDependencies
+import com.example.finances.feature.categories.di.modules.CategoriesRepoModule
+import com.example.finances.feature.categories.di.modules.CategoriesViewModelModule
+import com.example.finances.feature.categories.navigation.CategoriesNavigation
 import dagger.Component
 
-@ActivityScope
+@CategoriesScope
 @Component(
     dependencies = [CategoriesDependencies::class],
-    modules = [CategoriesModule::class]
+    modules = [
+        CategoriesRepoModule::class,
+        CategoriesViewModelModule::class
+    ]
 )
-interface CategoriesComponent : FeatureComponent {
-    fun categoriesViewModel(): CategoriesViewModel
-    fun categoriesRepository(): CategoriesRepository
+interface CategoriesComponent {
+    fun categoriesNavigation(): CategoriesNavigation
 
     @Component.Factory
-    interface Factory : FeatureComponent.Factory<CategoriesComponent> {
-        override fun create(dependencies: CategoriesDependencies): CategoriesComponent
+    interface Factory {
+        fun create(dependencies: CategoriesDependencies): CategoriesComponent
     }
-} 
+
+    companion object {
+        fun create(dependencies: CategoriesDependencies): CategoriesComponent {
+            return DaggerCategoriesComponent.factory().create(dependencies)
+        }
+    }
+}

@@ -2,8 +2,8 @@ package com.example.finances.app
 
 import android.app.Application
 import android.content.Context
-import com.example.finances.core.di.AppComponent
-import com.example.finances.core.di.DaggerAppComponent
+import com.example.finances.app.di.AppComponent
+import com.example.finances.app.di.DaggerAppComponent
 
 class FinancesApplication : Application() {
     lateinit var appComponent: AppComponent
