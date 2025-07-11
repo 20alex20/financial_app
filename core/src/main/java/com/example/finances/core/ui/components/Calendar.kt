@@ -13,7 +13,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.example.finances.R
+import com.example.finances.core.R
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId

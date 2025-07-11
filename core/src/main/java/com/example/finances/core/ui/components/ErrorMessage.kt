@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.finances.R
+import com.example.finances.core.R
 
 @Composable
 fun ErrorMessage(modifier: Modifier = Modifier) {

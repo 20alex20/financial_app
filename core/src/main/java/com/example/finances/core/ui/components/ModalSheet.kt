@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.finances.R
+import com.example.finances.core.R
 import com.example.finances.core.ui.components.models.SheetItem
 
 @OptIn(ExperimentalMaterial3Api::class)

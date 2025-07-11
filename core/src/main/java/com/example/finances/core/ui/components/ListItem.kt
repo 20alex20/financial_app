@@ -27,7 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.finances.R
+import com.example.finances.core.R
 import com.example.finances.core.ui.theme.LightArrowColor
 
 /**
