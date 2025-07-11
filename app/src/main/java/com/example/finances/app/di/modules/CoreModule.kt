@@ -36,12 +36,5 @@ interface CoreModule {
         fun providesConvertAmountUseCase(): ConvertAmountUseCase {
             return CoreComponentAdapter.convertAmountUseCase()
         }
-
-
-        @Provides
-        @ActivityScope
-        fun providesViewModelFactory(): ViewModelProvider.Factory {
-            return CoreComponentAdapter.viewModelFactory()
-        }
     }
 }
