@@ -1,6 +1,5 @@
 package com.example.finances.core.di.common
 
-import androidx.lifecycle.ViewModelProvider
 import com.example.finances.core.di.CoreComponent
 import com.example.finances.core.utils.NetworkConnectionObserver
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
@@ -27,12 +26,6 @@ object CoreComponentAdapter {
 
     fun convertAmountUseCase(): ConvertAmountUseCase {
         return coreComponentReference?.get()?.convertAmountUseCase() ?: throw NullPointerException(
-            NO_CORE_COMPONENT_INSTANCE
-        )
-    }
-
-    fun viewModelFactory(): ViewModelProvider.Factory {
-        return coreComponentReference?.get()?.viewModelFactory() ?: throw NullPointerException(
             NO_CORE_COMPONENT_INSTANCE
         )
     }

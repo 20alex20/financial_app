@@ -28,7 +28,6 @@ interface ActivityComponent : CoreDependencies, CategoriesDependencies {
     fun convertAmountUseCase(): ConvertAmountUseCase
 
     fun networkConnectionObserver(): NetworkConnectionObserver
-    fun viewModelFactory(): ViewModelProvider.Factory
     fun appNavigationCoordinator(): AppNavigationCoordinator
 
     @Component.Factory

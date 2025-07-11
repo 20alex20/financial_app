@@ -3,7 +3,6 @@ package com.example.finances.core.di
 import androidx.lifecycle.ViewModelProvider
 import com.example.finances.core.di.common.CoreDependencies
 import com.example.finances.core.di.modules.RetrofitClientModule
-import com.example.finances.core.di.modules.ViewModelFactoryModule
 import com.example.finances.core.utils.NetworkConnectionObserver
 import com.example.finances.core.utils.SplashScreenAnimator
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
@@ -18,8 +17,7 @@ import retrofit2.Retrofit
 @Component(
     dependencies = [CoreDependencies::class],
     modules = [
-        RetrofitClientModule::class,
-        ViewModelFactoryModule::class
+        RetrofitClientModule::class
     ]
 )
 interface CoreComponent {
@@ -27,7 +25,6 @@ interface CoreComponent {
     fun networkConnectionObserver(): NetworkConnectionObserver
     fun splashScreenAnimator(): SplashScreenAnimator
     fun convertAmountUseCase(): ConvertAmountUseCase
-    fun viewModelFactory(): ViewModelProvider.Factory
 
     @Component.Factory
     interface Factory {
