@@ -1,11 +1,10 @@
 package com.example.finances.core.navigation.models
 
-import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.painter.Painter
 import com.example.finances.core.navigation.NavBarRoutes
 
 data class NavBarItem(
-    val route: NavBarRoutes,
-    @DrawableRes val selectedIcon: Int,
-    @DrawableRes val unselectedIcon: Int,
-    val title: String
-) 
+    val title: String,
+    val image: Painter,
+    val route: NavBarRoutes
+)

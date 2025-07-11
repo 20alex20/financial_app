@@ -7,4 +7,4 @@ enum class Currency(val symbol: String, val shortName: String) {
     RUBLE("₽", "RUB"),
     DOLLAR("$", "USD"),
     EURO("€", "EUR")
-} 
+}

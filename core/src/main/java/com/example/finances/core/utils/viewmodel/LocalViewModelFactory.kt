@@ -5,4 +5,4 @@ import androidx.lifecycle.ViewModelProvider
 
 val LocalViewModelFactory = staticCompositionLocalOf<ViewModelProvider.Factory> {
     error("No ViewModalProviderFactory")
-} 
+}

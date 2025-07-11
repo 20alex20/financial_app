@@ -1,6 +1,6 @@
 package com.example.finances.core.utils.usecases
 
-import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.di.CoreScope
 import com.example.finances.core.utils.models.Currency
 import javax.inject.Inject
 import kotlin.math.roundToLong
@@ -8,7 +8,7 @@ import kotlin.math.roundToLong
 /**
  * Use case for converting amount to a different format/type
  */
-@ActivityScope
+@CoreScope
 class ConvertAmountUseCase @Inject constructor() {
     operator fun invoke(value: String): Double {
         var amount = 0.0
@@ -40,4 +40,4 @@ class ConvertAmountUseCase @Inject constructor() {
     companion object {
         private const val MAX_AMOUNT_LENGTH = 12
     }
-} 
+}

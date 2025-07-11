@@ -2,11 +2,11 @@ package com.example.finances.core.utils.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.di.CoreScope
 import javax.inject.Inject
 import javax.inject.Provider
 
-@ActivityScope
+@CoreScope
 class DaggerViewModelFactory @Inject constructor(
     private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
@@ -18,4 +18,4 @@ class DaggerViewModelFactory @Inject constructor(
 
         return viewModelProvider.get() as T
     }
-} 
+}

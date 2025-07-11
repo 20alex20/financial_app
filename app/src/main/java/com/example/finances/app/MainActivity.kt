@@ -3,29 +3,30 @@ package com.example.finances.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.finances.app.navigation.AppNavigationCoordinator
-import com.example.finances.core.ui.MainScreen
-import com.example.finances.core.ui.theme.FinancesTheme
-import javax.inject.Inject
+import androidx.activity.enableEdgeToEdge
+import com.example.finances.app.di.ActivityComponent
+import com.example.finances.app.navigation.MainScreen
 
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var navigationCoordinator: AppNavigationCoordinator
+    private lateinit var activityComponent: ActivityComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize DI
-        (application as FinancesApplication)
-            .appComponent
-            .activityComponent()
-            .create(this, (application as FinancesApplication).appComponent)
-            .inject(this)
+        activityComponent = DaggerActivityComponent.factory().create(this, appComponent)
+        activityComponent.networkConnectionObserver()
 
+        enableEdgeToEdge()
         setContent {
-            FinancesTheme {
-                MainScreen(navigationCoordinator)
-            }
+            MainScreen(
+                activityComponent.viewModelFactory(),
+                activityComponent.appNavigationCoordinator()
+            )
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activityComponent.networkConnectionObserver().unregister()
     }
 }
