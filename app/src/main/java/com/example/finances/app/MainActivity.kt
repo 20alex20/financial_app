@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.finances.app.di.ActivityComponent
+import com.example.finances.app.di.DaggerActivityComponent
 import com.example.finances.app.navigation.MainScreen
 
 class MainActivity : ComponentActivity() {

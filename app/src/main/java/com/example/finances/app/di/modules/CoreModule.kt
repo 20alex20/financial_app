@@ -1,8 +1,8 @@
 package com.example.finances.app.di.modules
 
 import androidx.lifecycle.ViewModelProvider
+import com.example.finances.app.di.ActivityComponent
 import com.example.finances.app.di.ActivityScope
-import com.example.finances.app.di.AppComponent
 import com.example.finances.core.di.common.CoreComponentAdapter
 import com.example.finances.core.di.common.CoreDependencies
 import com.example.finances.core.utils.NetworkConnectionObserver
@@ -15,7 +15,7 @@ import retrofit2.Retrofit
 @Module
 interface CoreModule {
     @Binds
-    fun bindsAppComponent(dependencies: AppComponent): CoreDependencies
+    fun bindsAppComponent(dependencies: ActivityComponent): CoreDependencies
 
     companion object {
         @Provides
