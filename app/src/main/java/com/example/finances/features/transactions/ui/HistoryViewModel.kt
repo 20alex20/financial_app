@@ -62,8 +62,8 @@ open class HistoryViewModel(
         when (response) {
             is Response.Failure -> setError()
             is Response.Success -> {
-                resetLoadingAndError()
                 val currency = asyncCurrency.await()
+                resetLoadingAndError()
                 _state.value = HistoryViewModelState(
                     total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
                     history = response.data.map { it.toHistoryRecord(currency, _today) }
@@ -84,6 +84,9 @@ open class HistoryViewModel(
                         )
                     }
                 )
+            }
+            ReloadEvent.TransactionCreatedUpdated -> {
+                reloadData()
             }
         }
     }

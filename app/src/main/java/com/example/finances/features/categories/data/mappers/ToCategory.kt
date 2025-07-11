@@ -6,5 +6,6 @@ import com.example.finances.features.categories.domain.models.Category
 fun CategoryResponse.toCategory() = Category(
     id = id,
     name = name,
-    emoji = emoji
+    emoji = emoji,
+    isIncome = isIncome
 )

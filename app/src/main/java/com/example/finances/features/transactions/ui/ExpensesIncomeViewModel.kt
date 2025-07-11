@@ -33,8 +33,8 @@ open class ExpensesIncomeViewModel(
         when (val response = transactionsRepo.getTransactions(today, today, isIncome)) {
             is Response.Failure -> setError()
             is Response.Success -> {
-                resetLoadingAndError()
                 val currency = asyncCurrency.await()
+                resetLoadingAndError()
                 _state.value = ExpensesIncomeViewModelState(
                     total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
                     expensesIncome = response.data.map { it.toExpenseIncome(currency) }
@@ -55,6 +55,9 @@ open class ExpensesIncomeViewModel(
                         )
                     }
                 )
+            }
+            ReloadEvent.TransactionCreatedUpdated -> {
+                reloadData()
             }
         }
     }

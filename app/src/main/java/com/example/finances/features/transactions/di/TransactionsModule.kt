@@ -6,6 +6,7 @@ import com.example.finances.core.utils.viewmodel.ViewModelKey
 import com.example.finances.features.transactions.data.TransactionsApi
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
+import com.example.finances.features.transactions.navigation.ArgsStorage
 import com.example.finances.features.transactions.ui.models.ExpensesHistoryViewModel
 import com.example.finances.features.transactions.ui.models.ExpensesViewModel
 import com.example.finances.features.transactions.ui.models.IncomeHistoryViewModel
@@ -48,5 +49,8 @@ interface TransactionsModule {
         fun providesTransactionsApi(retrofit: Retrofit): TransactionsApi {
             return retrofit.create(TransactionsApi::class.java)
         }
+
+        @Provides
+        fun providesTransactionId(): Int? = ArgsStorage.transactionsId
     }
 }

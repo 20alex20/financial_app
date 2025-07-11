@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.finances.features.transactions.ui.ExpensesIncomeScreen
 import com.example.finances.features.transactions.ui.HistoryScreen
 
@@ -28,6 +29,12 @@ fun TransactionsNavigation(isIncome: Boolean, modifier: Modifier = Modifier) {
             HistoryScreen(true, navController)
         } else composable<TransactionsNavRoutes.ExpensesHistory> {
             HistoryScreen(false, navController)
+        }
+
+        composable<TransactionsNavRoutes.CreateUpdateTransaction> { backStackEntry ->
+            val args = backStackEntry.toRoute<TransactionsNavRoutes.CreateUpdateTransaction>()
+            ArgsStorage.transactionsId = args.transactionId
+
         }
     }
 }

@@ -37,6 +37,7 @@ class AccountViewModel @Inject constructor(
     override suspend fun handleReloadEvent(reloadEvent: ReloadEvent) {
         when (reloadEvent) {
             ReloadEvent.AccountUpdated -> reloadData()
+            ReloadEvent.TransactionCreatedUpdated -> reloadData()
         }
     }
 

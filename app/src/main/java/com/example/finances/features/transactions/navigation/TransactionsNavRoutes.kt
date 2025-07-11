@@ -10,4 +10,7 @@ sealed interface TransactionsNavRoutes {
     @Serializable data object ExpensesHistory : TransactionsNavRoutes
     @Serializable data object Income : TransactionsNavRoutes
     @Serializable data object IncomeHistory : TransactionsNavRoutes
+    @Serializable data class CreateUpdateTransaction(
+        val transactionId: Int?
+    ) : TransactionsNavRoutes
 }

@@ -84,13 +84,27 @@ fun ExpensesIncomeScreen(
                         rightText = transaction.amount,
                         emoji = transaction.categoryEmoji,
                         trail = ListItemTrail.LightArrow,
-                        onClick = { }
+                        onClick = {
+                            navController.navigate(
+                                TransactionsNavRoutes.CreateUpdateTransaction(transaction.id)
+                            ) {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
                 }
             }
         }
 
-        AddButton(onClick = { })
+        AddButton(
+            onClick = {
+                navController.navigate(TransactionsNavRoutes.CreateUpdateTransaction(null)) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        )
 
         if (vm.loading.value)
             LoadingCircular()
