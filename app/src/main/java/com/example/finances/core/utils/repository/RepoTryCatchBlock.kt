@@ -28,15 +28,12 @@ suspend fun <T> repoTryCatchBlock(f: suspend () -> T): Response<T> = withContext
             val res = f()
             return@withContext Response.Success(res)
         } catch (e: IOException) {
-            Log.d("Myyy", "1 " + e.message)
             if (i == RETRY_TIMES)
                 return@withContext Response.Failure(e)
         } catch (e: HttpException) {
-            Log.d("Myyy", "2 " + e.message)
             if (i == RETRY_TIMES || e.code() !in HTTP_ERRORS_WITH_RETRY)
                 return@withContext Response.Failure(e)
         } catch (e: Exception) {
-            Log.d("Myyy", "3 " + e.message)
             return@repeat
         }
         delay(TIMER)

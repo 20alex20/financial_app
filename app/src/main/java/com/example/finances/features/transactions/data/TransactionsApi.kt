@@ -21,7 +21,7 @@ interface TransactionsApi {
         @Query("endDate") endDate: String
     ): List<TransactionResponse>
 
-    @GET("/transactions/{transactionId}")
+    @GET("transactions/{transactionId}")
     suspend fun getTransaction(
         @Path("transactionId") transactionId: Int
     ): TransactionResponse
@@ -31,7 +31,7 @@ interface TransactionsApi {
         @Body transaction: TransactionRequest
     ): ShortTransactionResponse
 
-    @PUT("/transactions/{transactionId}")
+    @PUT("transactions/{transactionId}")
     suspend fun updateTransaction(
         @Path("transactionId") transactionId: Int,
         @Body transaction: TransactionRequest

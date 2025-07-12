@@ -30,7 +30,9 @@ open class CreateUpdateViewModel(
     private val loadCurrencyUseCase: LoadCurrencyUseCase
 ) : BaseViewModel() {
     private val _today = LocalDateTime.now()
-    private val transactionId = if (isIncome) {
+    private val _defaultTransactionId = if (isIncome) 1 else 7
+    private val _defaultTransactionCategoryName = if (isIncome) "Жильё" else "Зарплата"
+    private val _transactionId = if (isIncome) {
         TransactionsRepo.incomeTransactionId
     } else {
         TransactionsRepo.expenseTransactionId
@@ -38,14 +40,17 @@ open class CreateUpdateViewModel(
 
     private var _deferredSaving: Deferred<Boolean>? = null
     private var _currency = Currency.RUBLE
-    private var _transaction = ShortTransaction(null, 1, 0.0, _today, "")
+    private var _transaction = ShortTransaction(null, _defaultTransactionId, 0.0, _today, "")
 
-    private val _categories = mutableStateOf(listOf(ShortCategory(1, "Зарплата")))
+    private val _categories = mutableStateOf(listOf(ShortCategory(
+        id = _defaultTransactionId,
+        name = _defaultTransactionCategoryName
+    )))
     val categories: State<List<ShortCategory>> = _categories
 
     private val _state = mutableStateOf(
         CreateUpdateViewModelState(
-            categoryName = "Зарплата",
+            categoryName = _defaultTransactionCategoryName,
             amount = "0 ₽",
             date = _today.format(DateTimeFormatters.date),
             time = _today.format(DateTimeFormatters.time),
@@ -92,11 +97,11 @@ open class CreateUpdateViewModel(
             if (response is Response.Success)
                 response.data
             else
-                listOf(ShortCategory(1, "Зарплата"))
+                listOf(ShortCategory(_defaultTransactionId, _defaultTransactionCategoryName))
         }
     }
 
-    private fun processSuccess() {
+    private fun processSuccessLoading() {
         resetLoadingAndError()
         val category = _categories.value.find { it.id == _transaction.categoryId }
         if (category == null)
@@ -110,23 +115,29 @@ open class CreateUpdateViewModel(
         )
     }
 
+    private fun processEmptyStart() {
+        resetLoadingAndError()
+        _transaction = _transaction.copy(categoryId = _categories.value.first().id)
+        _state.value = _state.value.copy(categoryName = _categories.value.first().name)
+    }
+
     override suspend fun loadData() {
         val asyncCurrency = viewModelScope.async { loadCurrencyUseCase() }
         val asyncCategories = viewModelScope.async { loadCategories() }
-        if (transactionId != null) when (
-            val response = transactionsRepo.getTransaction(transactionId)
+        if (_transactionId != null) when (
+            val response = transactionsRepo.getTransaction(_transactionId)
         ) {
             is Response.Failure -> setError()
             is Response.Success -> {
                 _transaction = response.data
                 _currency = asyncCurrency.await()
                 _categories.value = asyncCategories.await()
-                processSuccess()
+                processSuccessLoading()
             }
         } else {
             _currency = asyncCurrency.await()
             _categories.value = asyncCategories.await()
-            resetLoadingAndError()
+            processEmptyStart()
         }
     }
 
@@ -140,7 +151,9 @@ open class CreateUpdateViewModel(
                 else
                     transactionsRepo.updateTransaction(_transaction)
                 resetLoadingAndError()
-                if (response is Response.Success && response.data == _transaction) {
+                if (response is Response.Success && response.data.amount == _transaction.amount &&
+                    response.data.categoryId == _transaction.categoryId
+                ) {
                     send(ReloadEvent.TransactionCreatedUpdated)
                     return@async true
                 }

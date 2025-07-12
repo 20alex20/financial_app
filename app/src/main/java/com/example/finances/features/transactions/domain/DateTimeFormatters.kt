@@ -16,7 +16,7 @@ object DateTimeFormatters {
     val date: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     val requestDate: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val replyDateTime: DateTimeFormatter = DateTimeFormatterBuilder()
-        .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        .append(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
         .appendFraction(
             ChronoField.NANO_OF_SECOND,
             MIN_DIGITS_AFTER_POINT,
@@ -26,7 +26,13 @@ object DateTimeFormatters {
         .appendPattern("'Z'")
         .toFormatter()
     val requestDateTime: DateTimeFormatter = DateTimeFormatterBuilder()
-        .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+        .append(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))
+        .appendFraction(
+            ChronoField.NANO_OF_SECOND,
+            REQUEST_DIGITS_AFTER_POINT,
+            REQUEST_DIGITS_AFTER_POINT,
+            true
+        )
         .appendPattern("'Z'")
         .toFormatter()
 }

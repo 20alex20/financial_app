@@ -195,8 +195,7 @@ fun CreateUpdateScreen(isIncome: Boolean, navController: NavController) {
                 coroutineScope.launch {
                     sheetState.hide()
                 }.invokeOnCompletion { isSheetOpen.value = false }
-            },
-            modifier = Modifier.fillMaxHeight(0.5f)
+            }
         ).also { coroutineScope.launch { sheetState.show() } }
 
         Calendar(

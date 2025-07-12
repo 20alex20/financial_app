@@ -72,18 +72,16 @@ class TransactionsRepoImpl @Inject constructor(
         if (account !is Response.Success)
             throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
 
-        val h = TransactionRequest(
-            accountId = account.data.id,
-            categoryId = shortTransaction.categoryId,
-            amount = String.format(null, "%.2f", shortTransaction.amount),
-            transactionDate = shortTransaction.dateTime.format(
-                DateTimeFormatters.requestDateTime
-            ),
-            comment = shortTransaction.comment
-        )
-        Log.d("Myyy", "3 " + h)
         transactionsApi.createTransaction(
-            h
+            TransactionRequest(
+                accountId = account.data.id,
+                categoryId = shortTransaction.categoryId,
+                amount = String.format(null, "%.2f", shortTransaction.amount),
+                comment = shortTransaction.comment,
+                transactionDate = shortTransaction.dateTime.format(
+                    DateTimeFormatters.requestDateTime
+                )
+            )
         ).toShortTransaction()
     }
 
