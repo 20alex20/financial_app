@@ -122,7 +122,7 @@ fun ListItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (comment != null) Text(
+                if (!comment.isNullOrEmpty()) Text(
                     text = comment,
                     style = MaterialTheme.typography.bodyMedium,
                     color = colors.comment,

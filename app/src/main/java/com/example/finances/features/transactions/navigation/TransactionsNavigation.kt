@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.finances.features.transactions.domain.repository.TransactionsRepo
+import com.example.finances.features.transactions.ui.CreateUpdateScreen
 import com.example.finances.features.transactions.ui.ExpensesIncomeScreen
 import com.example.finances.features.transactions.ui.HistoryScreen
 
@@ -31,10 +33,14 @@ fun TransactionsNavigation(isIncome: Boolean, modifier: Modifier = Modifier) {
             HistoryScreen(false, navController)
         }
 
-        composable<TransactionsNavRoutes.CreateUpdateTransaction> { backStackEntry ->
-            val args = backStackEntry.toRoute<TransactionsNavRoutes.CreateUpdateTransaction>()
-            ArgsStorage.transactionsId = args.transactionId
-
+        if (isIncome) composable<TransactionsNavRoutes.IncomeCreateUpdate> { backStackEntry ->
+            val args = backStackEntry.toRoute<TransactionsNavRoutes.IncomeCreateUpdate>()
+            TransactionsRepo.incomeTransactionId = args.transactionId
+            CreateUpdateScreen(true, navController)
+        } else composable<TransactionsNavRoutes.ExpensesCreateUpdate> { backStackEntry ->
+            val args = backStackEntry.toRoute<TransactionsNavRoutes.ExpensesCreateUpdate>()
+            TransactionsRepo.expenseTransactionId = args.transactionId
+            CreateUpdateScreen(false, navController)
         }
     }
 }

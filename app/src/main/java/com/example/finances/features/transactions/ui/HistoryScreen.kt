@@ -27,6 +27,7 @@ import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
 import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
+import com.example.finances.features.transactions.navigation.TransactionsNavRoutes
 import com.example.finances.features.transactions.ui.models.ExpensesHistoryViewModel
 import com.example.finances.features.transactions.ui.models.IncomeHistoryViewModel
 
@@ -91,7 +92,18 @@ fun HistoryScreen(
                         additionalRightText = record.dateTime,
                         emoji = record.categoryEmoji,
                         trail = ListItemTrail.LightArrow,
-                        onClick = { }
+                        onClick = {
+                            navController.navigate(
+                                if (isIncome) {
+                                    TransactionsNavRoutes.IncomeCreateUpdate(record.id)
+                                } else {
+                                    TransactionsNavRoutes.ExpensesCreateUpdate(record.id)
+                                }
+                            ) {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
                 }
             }

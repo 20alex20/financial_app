@@ -11,5 +11,5 @@ fun TransactionResponse.toTransaction() = Transaction(
     categoryEmoji = category.emoji,
     dateTime = LocalDateTime.parse(transactionDate, DateTimeFormatters.replyDateTime),
     amount = amount.toDouble(),
-    comment = comment
+    comment = comment ?: ""
 )

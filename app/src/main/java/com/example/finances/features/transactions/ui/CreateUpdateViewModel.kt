@@ -13,9 +13,11 @@ import com.example.finances.features.transactions.domain.models.ShortCategory
 import com.example.finances.features.transactions.domain.models.ShortTransaction
 import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
+import com.example.finances.features.transactions.ui.mappers.toLocalTime
 import com.example.finances.features.transactions.ui.models.CreateUpdateViewModelState
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -23,26 +25,67 @@ import java.time.LocalDateTime
  */
 open class CreateUpdateViewModel(
     private val isIncome: Boolean,
-    private val transactionId: Int?,
     private val transactionsRepo: TransactionsRepo,
     private val convertAmountUseCase: ConvertAmountUseCase,
     private val loadCurrencyUseCase: LoadCurrencyUseCase
 ) : BaseViewModel() {
-    private var _deferredSaving: Deferred<Boolean>? = null
-    private var _today = LocalDateTime.now()
+    private val _today = LocalDateTime.now()
+    private val transactionId = if (isIncome) {
+        TransactionsRepo.incomeTransactionId
+    } else {
+        TransactionsRepo.expenseTransactionId
+    }
 
-    private var _categories = listOf(ShortCategory(1, "Зарплата"))
+    private var _deferredSaving: Deferred<Boolean>? = null
     private var _currency = Currency.RUBLE
     private var _transaction = ShortTransaction(null, 1, 0.0, _today, "")
 
-    private val _state = mutableStateOf(CreateUpdateViewModelState(
-        categoryName = "Зарплата",
-        amount = "0 ₽",
-        date = _today.format(DateTimeFormatters.date),
-        time = _today.format(DateTimeFormatters.time),
-        comment = ""
-    ))
+    private val _categories = mutableStateOf(listOf(ShortCategory(1, "Зарплата")))
+    val categories: State<List<ShortCategory>> = _categories
+
+    private val _state = mutableStateOf(
+        CreateUpdateViewModelState(
+            categoryName = "Зарплата",
+            amount = "0 ₽",
+            date = _today.format(DateTimeFormatters.date),
+            time = _today.format(DateTimeFormatters.time),
+            comment = ""
+        )
+    )
     val state: State<CreateUpdateViewModelState> = _state
+
+    fun updateAmount(newAmount: String) {
+        val amount = convertAmountUseCase(newAmount)
+        _transaction = _transaction.copy(amount = amount)
+        _state.value = _state.value.copy(amount = convertAmountUseCase(amount, _currency))
+    }
+
+    fun updateDate(newDate: LocalDate) {
+        val dateTime = newDate.atTime(_transaction.dateTime.toLocalTime())
+        _transaction = _transaction.copy(dateTime = dateTime)
+        _state.value = _state.value.copy(date = newDate.format(DateTimeFormatters.date))
+    }
+
+    fun updateTime(newTime: String) {
+        val time = newTime.toLocalTime() ?: return
+        val dateTime = _transaction.dateTime.toLocalDate().atTime(time)
+        _transaction = _transaction.copy(dateTime = dateTime)
+        _state.value = _state.value.copy(time = time.format(DateTimeFormatters.time))
+    }
+
+    fun updateComment(newComment: String) {
+        val comment = newComment.take(MAX_COMMENT_LENGTH)
+        _transaction = _transaction.copy(comment = comment)
+        _state.value = _state.value.copy(comment = comment)
+    }
+
+    fun updateCategory(categoryId: Int) {
+        val category = _categories.value.find { it.id == categoryId }
+        if (category == null)
+            return
+        _transaction = _transaction.copy(categoryId = categoryId)
+        _state.value = _state.value.copy(categoryName = category.name)
+    }
 
     private suspend fun loadCategories(): List<ShortCategory> {
         return transactionsRepo.getCategories(isIncome).let { response ->
@@ -55,7 +98,7 @@ open class CreateUpdateViewModel(
 
     private fun processSuccess() {
         resetLoadingAndError()
-        val category = _categories.find { it.id == _transaction.categoryId }
+        val category = _categories.value.find { it.id == _transaction.categoryId }
         if (category == null)
             setError()
         else _state.value = CreateUpdateViewModelState(
@@ -77,12 +120,13 @@ open class CreateUpdateViewModel(
             is Response.Success -> {
                 _transaction = response.data
                 _currency = asyncCurrency.await()
-                _categories = asyncCategories.await()
+                _categories.value = asyncCategories.await()
                 processSuccess()
             }
         } else {
             _currency = asyncCurrency.await()
-            _categories = asyncCategories.await()
+            _categories.value = asyncCategories.await()
+            resetLoadingAndError()
         }
     }
 
@@ -109,5 +153,9 @@ open class CreateUpdateViewModel(
 
     init {
         reloadData()
+    }
+
+    companion object {
+        private const val MAX_COMMENT_LENGTH = 64
     }
 }

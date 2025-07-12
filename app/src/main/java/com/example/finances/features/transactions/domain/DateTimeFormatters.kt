@@ -27,12 +27,6 @@ object DateTimeFormatters {
         .toFormatter()
     val requestDateTime: DateTimeFormatter = DateTimeFormatterBuilder()
         .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        .appendFraction(
-            ChronoField.NANO_OF_SECOND,
-            REQUEST_DIGITS_AFTER_POINT,
-            REQUEST_DIGITS_AFTER_POINT,
-            true
-        )
         .appendPattern("'Z'")
         .toFormatter()
 }

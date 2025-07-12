@@ -1,5 +1,6 @@
 package com.example.finances.features.transactions.data
 
+import android.util.Log
 import com.example.finances.core.di.ActivityScope
 import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.utils.repository.Response
@@ -71,16 +72,18 @@ class TransactionsRepoImpl @Inject constructor(
         if (account !is Response.Success)
             throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
 
+        val h = TransactionRequest(
+            accountId = account.data.id,
+            categoryId = shortTransaction.categoryId,
+            amount = String.format(null, "%.2f", shortTransaction.amount),
+            transactionDate = shortTransaction.dateTime.format(
+                DateTimeFormatters.requestDateTime
+            ),
+            comment = shortTransaction.comment
+        )
+        Log.d("Myyy", "3 " + h)
         transactionsApi.createTransaction(
-            TransactionRequest(
-                accountId = account.data.id,
-                categoryId = shortTransaction.categoryId,
-                amount = String.format(null, "%.2f", shortTransaction.amount),
-                transactionDate = shortTransaction.dateTime.format(
-                    DateTimeFormatters.requestDateTime
-                ),
-                comment = shortTransaction.comment
-            )
+            h
         ).toShortTransaction()
     }
 

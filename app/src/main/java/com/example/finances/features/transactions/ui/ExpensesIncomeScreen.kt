@@ -86,7 +86,11 @@ fun ExpensesIncomeScreen(
                         trail = ListItemTrail.LightArrow,
                         onClick = {
                             navController.navigate(
-                                TransactionsNavRoutes.CreateUpdateTransaction(transaction.id)
+                                if (isIncome) {
+                                    TransactionsNavRoutes.IncomeCreateUpdate(transaction.id)
+                                } else {
+                                    TransactionsNavRoutes.ExpensesCreateUpdate(transaction.id)
+                                }
                             ) {
                                 launchSingleTop = true
                                 restoreState = true
@@ -99,7 +103,13 @@ fun ExpensesIncomeScreen(
 
         AddButton(
             onClick = {
-                navController.navigate(TransactionsNavRoutes.CreateUpdateTransaction(null)) {
+                navController.navigate(
+                    if (isIncome) {
+                        TransactionsNavRoutes.IncomeCreateUpdate(null)
+                    } else {
+                        TransactionsNavRoutes.ExpensesCreateUpdate(null)
+                    }
+                ) {
                     launchSingleTop = true
                     restoreState = true
                 }

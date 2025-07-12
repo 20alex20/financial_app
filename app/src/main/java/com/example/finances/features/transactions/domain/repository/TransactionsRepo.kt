@@ -26,4 +26,9 @@ interface TransactionsRepo {
     suspend fun createTransaction(shortTransaction: ShortTransaction): Response<ShortTransaction>
 
     suspend fun updateTransaction(shortTransaction: ShortTransaction): Response<ShortTransaction>
+
+    companion object {
+        var expenseTransactionId: Int? = null
+        var incomeTransactionId: Int? = null
+    }
 }

@@ -53,26 +53,22 @@ class IncomeHistoryViewModel @Inject constructor(
 )
 
 class ExpensesCreateUpdateViewModel @Inject constructor(
-    transactionId: Int?,
     transactionsRepo: TransactionsRepo,
     convertAmountUseCase: ConvertAmountUseCase,
     loadCurrencyUseCase: LoadCurrencyUseCase
 ) : CreateUpdateViewModel(
     isIncome = false,
-    transactionId = transactionId,
     transactionsRepo = transactionsRepo,
     convertAmountUseCase = convertAmountUseCase,
     loadCurrencyUseCase = loadCurrencyUseCase
 )
 
 class IncomeCreateUpdateViewModel @Inject constructor(
-    transactionId: Int?,
     transactionsRepo: TransactionsRepo,
     convertAmountUseCase: ConvertAmountUseCase,
     loadCurrencyUseCase: LoadCurrencyUseCase
 ) : CreateUpdateViewModel (
     isIncome = true,
-    transactionId = transactionId,
     transactionsRepo = transactionsRepo,
     convertAmountUseCase = convertAmountUseCase,
     loadCurrencyUseCase = loadCurrencyUseCase

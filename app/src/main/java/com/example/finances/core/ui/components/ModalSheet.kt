@@ -4,13 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -35,14 +40,15 @@ import com.example.finances.core.ui.components.models.SheetItem
 fun ModalSheet(
     sheetState: SheetState,
     sheetItems: List<SheetItem>,
-    closeSheet: (Any?) -> Unit
+    closeSheet: (Any?) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     ModalBottomSheet(
         onDismissRequest = { closeSheet(null) },
         sheetState = sheetState,
         shape = RoundedCornerShape(36.dp, 36.dp, 0.dp, 0.dp),
         containerColor = MaterialTheme.colorScheme.surface,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         dragHandle = {
             BottomSheetDefaults.DragHandle(
                 width = 32.dp,
@@ -52,29 +58,35 @@ fun ModalSheet(
             )
         }
     ) {
-        sheetItems.forEach { currency ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            sheetItems.forEach { sheetItem ->
+                SheetListItem(
+                    text = sheetItem.name,
+                    icon = sheetItem.icon,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.clickable { closeSheet(sheetItem.obj) }
+                )
+            }
             SheetListItem(
-                text = currency.name,
-                icon = currency.icon,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.clickable { closeSheet(currency.obj) }
+                text = stringResource(R.string.cancel),
+                icon = painterResource(R.drawable.modal_cancel),
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable { closeSheet(null) }
             )
         }
-        SheetListItem(
-            text = stringResource(R.string.cancel),
-            icon = painterResource(R.drawable.modal_cancel),
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.secondaryContainer)
-                .clickable { closeSheet(null) }
-        )
     }
 }
 
 @Composable
 fun SheetListItem(
     text: String,
-    icon: Painter,
+    icon: Painter?,
     contentColor: Color,
     modifier: Modifier = Modifier
 ) {
@@ -91,7 +103,7 @@ fun SheetListItem(
                 .fillMaxSize()
                 .padding(16.dp, 0.dp)
         ) {
-            Icon(
+            if (icon != null) Icon(
                 painter = icon,
                 contentDescription = text,
                 tint = contentColor,

@@ -6,9 +6,10 @@ import com.example.finances.core.utils.viewmodel.ViewModelKey
 import com.example.finances.features.transactions.data.TransactionsApi
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
-import com.example.finances.features.transactions.navigation.ArgsStorage
+import com.example.finances.features.transactions.ui.models.ExpensesCreateUpdateViewModel
 import com.example.finances.features.transactions.ui.models.ExpensesHistoryViewModel
 import com.example.finances.features.transactions.ui.models.ExpensesViewModel
+import com.example.finances.features.transactions.ui.models.IncomeCreateUpdateViewModel
 import com.example.finances.features.transactions.ui.models.IncomeHistoryViewModel
 import com.example.finances.features.transactions.ui.models.IncomeViewModel
 import dagger.Binds
@@ -39,6 +40,21 @@ interface TransactionsModule {
     @ViewModelKey(IncomeHistoryViewModel::class)
     fun bindsIncomeHistoryViewModel(incomeHistoryViewModel: IncomeHistoryViewModel): ViewModel
 
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ExpensesCreateUpdateViewModel::class)
+    fun bindsExpensesCreateUpdateViewModel(
+        expensesCreateUpdateViewModel: ExpensesCreateUpdateViewModel
+    ): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(IncomeCreateUpdateViewModel::class)
+    fun bindsIncomeCreateUpdateViewModel(
+        incomeCreateUpdateViewModel: IncomeCreateUpdateViewModel
+    ): ViewModel
+
     @Binds
     @ActivityScope
     fun bindsTransactionsRepoImpl(transactionsRepoImpl: TransactionsRepoImpl): TransactionsRepo
@@ -49,8 +65,5 @@ interface TransactionsModule {
         fun providesTransactionsApi(retrofit: Retrofit): TransactionsApi {
             return retrofit.create(TransactionsApi::class.java)
         }
-
-        @Provides
-        fun providesTransactionId(): Int? = ArgsStorage.transactionsId
     }
 }
