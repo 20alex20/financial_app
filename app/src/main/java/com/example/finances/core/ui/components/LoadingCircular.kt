@@ -20,7 +20,7 @@ fun LoadingCircular(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(0.dp, ListItemHeight.LOW.value * 2, 0.dp, 0.dp)
+            .padding(0.dp, ListItemHeight.LOW.value, 0.dp, 0.dp)
     ) {
         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
     }

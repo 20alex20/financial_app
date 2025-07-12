@@ -2,7 +2,6 @@ package com.example.finances.features.categories.data
 
 import com.example.finances.core.di.ActivityScope
 import com.example.finances.core.utils.repository.repoTryCatchBlock
-import com.example.finances.features.account.domain.models.Account
 import com.example.finances.features.categories.data.mappers.toCategory
 import com.example.finances.features.categories.domain.models.Category
 import com.example.finances.features.categories.domain.repository.CategoriesRepo

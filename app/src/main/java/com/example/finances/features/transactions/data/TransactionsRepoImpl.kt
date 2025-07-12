@@ -1,6 +1,5 @@
 package com.example.finances.features.transactions.data
 
-import android.util.Log
 import com.example.finances.core.di.ActivityScope
 import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.utils.repository.Response

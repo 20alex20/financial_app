@@ -21,7 +21,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
- * Вьюмодель экрана истории
+ * Вьюмодель экрана создания/редактирования счета
  */
 open class CreateUpdateViewModel(
     private val isIncome: Boolean,
@@ -41,6 +41,9 @@ open class CreateUpdateViewModel(
     private var _deferredSaving: Deferred<Boolean>? = null
     private var _currency = Currency.RUBLE
     private var _transaction = ShortTransaction(null, _defaultTransactionId, 0.0, _today, "")
+
+    private val _sendingError = mutableStateOf(false)
+    val sendingError: State<Boolean> = _sendingError
 
     private val _categories = mutableStateOf(listOf(ShortCategory(
         id = _defaultTransactionId,
@@ -144,6 +147,7 @@ open class CreateUpdateViewModel(
     fun saveChanges(): Deferred<Boolean> {
         _deferredSaving?.cancel()
         return viewModelScope.async {
+            _sendingError.value = false
             setLoading()
             try {
                 val response = if (_transaction.id == null)
@@ -160,6 +164,7 @@ open class CreateUpdateViewModel(
             } catch (_: Exception) {
                 resetLoadingAndError()
             }
+            _sendingError.value = true
             false
         }.also { _deferredSaving = it }
     }

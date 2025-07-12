@@ -9,9 +9,6 @@ import com.example.finances.core.di.ActivityComponent
 import com.example.finances.core.di.DaggerActivityComponent
 import com.example.finances.core.ui.MainScreen
 
-/**
- * Activity, отвечающая за отображение главного UI и инициализацию/запуск доп функционала
- */
 class MainActivity : ComponentActivity() {
     private lateinit var activityComponent: ActivityComponent
 

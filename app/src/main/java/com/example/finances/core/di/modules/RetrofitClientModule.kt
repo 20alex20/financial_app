@@ -17,9 +17,6 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.inject.Singleton
 
-/**
- * Генерирует запрос к серверу по заданному API
- */
 @Module
 class RetrofitClientModule {
     @Provides

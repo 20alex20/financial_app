@@ -1,17 +1,21 @@
 package com.example.finances.features.transactions.ui
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -34,12 +39,9 @@ import androidx.navigation.NavController
 import com.example.finances.R
 import com.example.finances.core.ui.components.Calendar
 import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
-import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
 import com.example.finances.core.ui.components.ListItem
-import com.example.finances.core.ui.components.ListItemColorScheme
 import com.example.finances.core.ui.components.ListItemTrail
-import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ModalSheet
 import com.example.finances.core.ui.components.TextInput
 import com.example.finances.core.ui.components.models.HeaderButton
@@ -69,11 +71,6 @@ fun CreateUpdateScreen(isIncome: Boolean, navController: NavController) {
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surfaceContainerLowest)
         ) {
-            val uploadError = Toast.makeText(
-                LocalContext.current,
-                R.string.error_sending_data,
-                Toast.LENGTH_SHORT
-            )
             Header(
                 title = if (isIncome) {
                     stringResource(R.string.my_income)
@@ -95,8 +92,6 @@ fun CreateUpdateScreen(isIncome: Boolean, navController: NavController) {
                         coroutineScope.launch {
                             if (success.await())
                                 navController.popBackStack()
-                            else
-                                uploadError.show()
                         }
                     }
                 )
@@ -171,6 +166,7 @@ fun CreateUpdateScreen(isIncome: Boolean, navController: NavController) {
             )
 
             Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -178,13 +174,42 @@ fun CreateUpdateScreen(isIncome: Boolean, navController: NavController) {
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) { focusManager.clearFocus() }
-            )
+            ) {
+                if (vm.loading.value)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                if (vm.sendingError.value) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.error_sending_data),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                        Button(
+                            onClick = {
+                                val success = vm.saveChanges()
+                                coroutineScope.launch {
+                                    if (success.await())
+                                        navController.popBackStack()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.error_retry_sending),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.inversePrimary
+                            )
+                        }
+                    }
+                }
+            }
         }
-
-        if (vm.loading.value)
-            LoadingCircular()
-        if (vm.error.value)
-            ErrorMessage()
 
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         if (isSheetOpen.value) ModalSheet(

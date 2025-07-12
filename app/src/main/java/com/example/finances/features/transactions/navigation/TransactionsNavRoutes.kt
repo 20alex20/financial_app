@@ -3,7 +3,7 @@ package com.example.finances.features.transactions.navigation
 import kotlinx.serialization.Serializable
 
 /**
- * Запечатанный класс содержит объекты, соответствующие экранам и используемые для навигации
+ * Запечатанный класс содержит объекты, соответствующие экранам транзакций
  */
 sealed interface TransactionsNavRoutes {
     @Serializable data object Expenses : TransactionsNavRoutes

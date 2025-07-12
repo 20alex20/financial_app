@@ -1,6 +1,5 @@
 package com.example.finances.core.utils.repository
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
