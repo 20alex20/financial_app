@@ -11,26 +11,26 @@ fun navBarItems() = listOf(
     NavBarItem(
         title = stringResource(R.string.expenses),
         image = painterResource(R.drawable.expenses),
-        route = NavRoutes.Expenses.route
+        route = NavBarRoutes.Expenses
     ),
     NavBarItem(
         title = stringResource(R.string.income),
         image = painterResource(R.drawable.income),
-        route = NavRoutes.Income.route
+        route = NavBarRoutes.Income
     ),
     NavBarItem(
         title = stringResource(R.string.account),
         image = painterResource(R.drawable.account),
-        route = NavRoutes.Account.route
+        route = NavBarRoutes.Account
     ),
     NavBarItem(
         title = stringResource(R.string.categories),
         image = painterResource(R.drawable.categories),
-        route = NavRoutes.Categories.route
+        route = NavBarRoutes.Categories
     ),
     NavBarItem(
         title = stringResource(R.string.settings),
         image = painterResource(R.drawable.settings),
-        route = NavRoutes.Settings.route
+        route = NavBarRoutes.Settings
     )
 )

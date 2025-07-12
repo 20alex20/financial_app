@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.finances.R
-import com.example.finances.core.domain.models.Currency
+import com.example.finances.core.utils.models.Currency
 import com.example.finances.core.ui.components.models.SheetItem
 
 @Composable

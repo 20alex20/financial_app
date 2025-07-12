@@ -1,17 +1,29 @@
 package com.example.finances.features.categories.data
 
-import com.example.finances.core.data.network.NetworkManager
-import com.example.finances.core.data.repoTryCatchBlock
+import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.utils.repository.repoTryCatchBlock
 import com.example.finances.features.categories.data.mappers.toCategory
+import com.example.finances.features.categories.domain.models.Category
 import com.example.finances.features.categories.domain.repository.CategoriesRepo
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import javax.inject.Inject
 
 /**
  * Имплементация интерфейса репозитория статей
  */
-class CategoriesRepoImpl : CategoriesRepo {
-    private val api = NetworkManager.provideApi(CategoriesApi::class.java)
+@ActivityScope
+class CategoriesRepoImpl @Inject constructor(
+    private val categoriesApi: CategoriesApi
+) : CategoriesRepo {
+    private val mutex = Mutex()
+    private var cachedCategories: List<Category>? = null
 
     override suspend fun getCategories() = repoTryCatchBlock {
-        api.getCategories().map { it.toCategory() }.sortedBy { it.name }
+        cachedCategories ?: mutex.withLock {
+            cachedCategories ?: categoriesApi.getCategories().map {
+                it.toCategory()
+            }.sortedBy { it.name }.also { cachedCategories = it }
+        }
     }
 }

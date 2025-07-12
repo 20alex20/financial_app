@@ -21,6 +21,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.finances.core.navigation.models.NavBarItem
@@ -36,14 +38,16 @@ fun BottomNavigationBar(
         windowInsets = WindowInsets(8.dp, 0.dp, 8.dp, 0.dp),
         modifier = modifier
     ) {
-        val backStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = backStackEntry?.destination?.route
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
 
-        navBarItems.forEach { navItem ->
+        navBarItems.forEach { navBarItem ->
             NavigationBarItem(
-                selected = currentRoute?.startsWith(navItem.route) == true,
+                selected = currentDestination?.hierarchy?.any {
+                    it.hasRoute(navBarItem.route::class)
+                } ?: false,
                 onClick = {
-                    navController.navigate(navItem.route) {
+                    navController.navigate(navBarItem.route) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
@@ -51,21 +55,21 @@ fun BottomNavigationBar(
                 },
                 icon = {
                     Icon(
-                        painter = navItem.image,
-                        contentDescription = navItem.title,
+                        painter = navBarItem.image,
+                        contentDescription = navBarItem.title,
                         modifier = Modifier.size(24.dp)
                     )
                 },
                 label = {
                     val textMeasurer = rememberTextMeasurer()
                     val textWidth = textMeasurer.measure(
-                        text = navItem.title,
+                        text = navBarItem.title,
                         style = MaterialTheme.typography.labelMedium
                     ).size.width
 
                     var offset by remember { mutableIntStateOf(0) }
                     Text(
-                        text = navItem.title,
+                        text = navBarItem.title,
                         style = MaterialTheme.typography.labelMedium,
                         softWrap = false,
                         overflow = TextOverflow.Visible,

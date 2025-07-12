@@ -6,5 +6,5 @@ data class HistoryRecord(
     val categoryEmoji: String,
     val dateTime: String,
     val amount: String,
-    val comment: String?
+    val comment: String
 )

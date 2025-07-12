@@ -5,5 +5,5 @@ data class ExpenseIncome(
     val categoryName: String,
     val categoryEmoji: String,
     val amount: String,
-    val comment: String?
+    val comment: String
 )

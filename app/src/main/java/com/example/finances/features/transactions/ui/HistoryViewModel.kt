@@ -3,16 +3,12 @@ package com.example.finances.features.transactions.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.example.finances.core.buses.ReloadEvent
-import com.example.finances.core.domain.DateTimeFormatters
-import com.example.finances.core.data.Response
-import com.example.finances.core.domain.ConvertAmountUseCase
-import com.example.finances.features.account.data.AccountRepoImpl
-import com.example.finances.core.navigation.NavRoutes
-import com.example.finances.core.ui.viewmodel.BaseViewModel
-import com.example.finances.core.ui.viewmodel.ViewModelFactory
-import com.example.finances.features.transactions.data.TransactionsRepoImpl
-import com.example.finances.features.transactions.domain.LoadCurrencyUseCase
+import com.example.finances.core.utils.viewmodel.ReloadEvent
+import com.example.finances.features.transactions.domain.DateTimeFormatters
+import com.example.finances.core.utils.repository.Response
+import com.example.finances.core.utils.usecases.ConvertAmountUseCase
+import com.example.finances.core.utils.viewmodel.BaseViewModel
+import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
 import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
@@ -24,12 +20,12 @@ import java.time.LocalDateTime
 /**
  * Вьюмодель экрана истории
  */
-class HistoryViewModel private constructor(
+open class HistoryViewModel(
+    private val isIncome: Boolean,
     private val transactionsRepo: TransactionsRepo,
-    private val isIncome: Boolean
+    private val convertAmountUseCase: ConvertAmountUseCase,
+    private val loadCurrencyUseCase: LoadCurrencyUseCase
 ) : BaseViewModel() {
-    private val _convertAmountUseCase = ConvertAmountUseCase()
-    private val _loadCurrencyUseCase = LoadCurrencyUseCase(transactionsRepo)
     private var _today = LocalDate.now()
 
     private val _dates = mutableStateOf(
@@ -57,7 +53,7 @@ class HistoryViewModel private constructor(
     }
 
     override suspend fun loadData() {
-        val asyncCurrency = viewModelScope.async { _loadCurrencyUseCase() }
+        val asyncCurrency = viewModelScope.async { loadCurrencyUseCase() }
         val response = transactionsRepo.getTransactions(
             _dates.value.start,
             _dates.value.end,
@@ -66,10 +62,10 @@ class HistoryViewModel private constructor(
         when (response) {
             is Response.Failure -> setError()
             is Response.Success -> {
-                resetLoadingAndError()
                 val currency = asyncCurrency.await()
+                resetLoadingAndError()
                 _state.value = HistoryViewModelState(
-                    total = _convertAmountUseCase(response.data.sumOf { it.amount }, currency),
+                    total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
                     history = response.data.map { it.toHistoryRecord(currency, _today) }
                 )
             }
@@ -79,15 +75,18 @@ class HistoryViewModel private constructor(
     override suspend fun handleReloadEvent(reloadEvent: ReloadEvent) {
         when (reloadEvent) {
             ReloadEvent.AccountUpdated -> {
-                val newCurrency = _loadCurrencyUseCase()
+                val newCurrency = loadCurrencyUseCase()
                 _state.value = HistoryViewModelState(
-                    total = _convertAmountUseCase(_state.value.total, newCurrency),
+                    total = convertAmountUseCase(_state.value.total, newCurrency),
                     history = _state.value.history.map { expenseIncome ->
                         expenseIncome.copy(
-                            amount = _convertAmountUseCase(expenseIncome.amount, newCurrency)
+                            amount = convertAmountUseCase(expenseIncome.amount, newCurrency)
                         )
                     }
                 )
+            }
+            ReloadEvent.TransactionCreatedUpdated -> {
+                reloadData()
             }
         }
     }
@@ -97,17 +96,4 @@ class HistoryViewModel private constructor(
         reloadData()
         observeReloadEvents()
     }
-
-    /**
-     * Фабрика по созданию вьюмодели экрана истории и прокидывания в нее репозитория
-     */
-    class Factory(parentRoute: String) : ViewModelFactory<HistoryViewModel>(
-        viewModelClass = HistoryViewModel::class.java,
-        viewModelInit = {
-            HistoryViewModel(
-                transactionsRepo = TransactionsRepoImpl(AccountRepoImpl.init()),
-                isIncome = parentRoute == NavRoutes.Income.route
-            )
-        }
-    )
 }

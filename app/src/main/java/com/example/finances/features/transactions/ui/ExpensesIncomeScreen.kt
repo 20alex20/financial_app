@@ -14,7 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.finances.R
-import com.example.finances.core.navigation.NavRoutes
 import com.example.finances.core.ui.components.AddButton
 import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
@@ -24,27 +23,43 @@ import com.example.finances.core.ui.components.ListItemHeight
 import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
 import com.example.finances.core.ui.components.models.HeaderButton
+import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
+import com.example.finances.features.transactions.navigation.TransactionsNavRoutes
+import com.example.finances.features.transactions.ui.models.ExpensesViewModel
+import com.example.finances.features.transactions.ui.models.IncomeViewModel
 
 @Composable
 fun ExpensesIncomeScreen(
-    route: String,
-    navController: NavController,
-    vm: ExpensesIncomeViewModel = viewModel(factory = ExpensesIncomeViewModel.Factory(route))
+    isIncome: Boolean,
+    navController: NavController
 ) {
+    val vm: ExpensesIncomeViewModel = if (isIncome) {
+        viewModel<IncomeViewModel>(factory = LocalViewModelFactory.current)
+    } else {
+        viewModel<ExpensesViewModel>(factory = LocalViewModelFactory.current)
+    }
+
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier.fillMaxSize()
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
-                title = when (route) {
-                    NavRoutes.Income.route -> stringResource(R.string.income_today)
-                    else -> stringResource(R.string.expenses_today)
+                title = if (isIncome) {
+                    stringResource(R.string.income_today)
+                } else {
+                    stringResource(R.string.expenses_today)
                 },
                 rightButton = HeaderButton(
                     icon = painterResource(R.drawable.history),
                     onClick = {
-                        navController.navigate(route + "/" + NavRoutes.History.route) {
+                        navController.navigate(
+                            if (isIncome) {
+                                TransactionsNavRoutes.IncomeHistory
+                            } else {
+                                TransactionsNavRoutes.ExpensesHistory
+                            }
+                        ) {
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -69,13 +84,37 @@ fun ExpensesIncomeScreen(
                         rightText = transaction.amount,
                         emoji = transaction.categoryEmoji,
                         trail = ListItemTrail.LightArrow,
-                        onClick = { }
+                        onClick = {
+                            navController.navigate(
+                                if (isIncome) {
+                                    TransactionsNavRoutes.IncomeCreateUpdate(transaction.id)
+                                } else {
+                                    TransactionsNavRoutes.ExpensesCreateUpdate(transaction.id)
+                                }
+                            ) {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
                 }
             }
         }
 
-        AddButton(onClick = { })
+        AddButton(
+            onClick = {
+                navController.navigate(
+                    if (isIncome) {
+                        TransactionsNavRoutes.IncomeCreateUpdate(null)
+                    } else {
+                        TransactionsNavRoutes.ExpensesCreateUpdate(null)
+                    }
+                ) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+        )
 
         if (vm.loading.value)
             LoadingCircular()

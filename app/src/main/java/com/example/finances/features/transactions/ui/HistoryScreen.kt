@@ -26,13 +26,22 @@ import com.example.finances.core.ui.components.ListItemHeight
 import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
 import com.example.finances.core.ui.components.models.HeaderButton
+import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
+import com.example.finances.features.transactions.navigation.TransactionsNavRoutes
+import com.example.finances.features.transactions.ui.models.ExpensesHistoryViewModel
+import com.example.finances.features.transactions.ui.models.IncomeHistoryViewModel
 
 @Composable
 fun HistoryScreen(
-    parentRoute: String,
-    navController: NavController,
-    vm: HistoryViewModel = viewModel(factory = HistoryViewModel.Factory(parentRoute))
+    isIncome: Boolean,
+    navController: NavController
 ) {
+    val vm: HistoryViewModel = if (isIncome) {
+        viewModel<IncomeHistoryViewModel>(factory = LocalViewModelFactory.current)
+    } else {
+        viewModel<ExpensesHistoryViewModel>(factory = LocalViewModelFactory.current)
+    }
+
     var isStartCalendarOpen by remember { mutableStateOf(false) }
     var isEndCalendarOpen by remember { mutableStateOf(false) }
 
@@ -83,7 +92,18 @@ fun HistoryScreen(
                         additionalRightText = record.dateTime,
                         emoji = record.categoryEmoji,
                         trail = ListItemTrail.LightArrow,
-                        onClick = { }
+                        onClick = {
+                            navController.navigate(
+                                if (isIncome) {
+                                    TransactionsNavRoutes.IncomeCreateUpdate(record.id)
+                                } else {
+                                    TransactionsNavRoutes.ExpensesCreateUpdate(record.id)
+                                }
+                            ) {
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     )
                 }
             }
