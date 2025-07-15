@@ -64,6 +64,14 @@ dependencies {
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)
     
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    
+    // WorkManager
+    implementation(libs.workmanager)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

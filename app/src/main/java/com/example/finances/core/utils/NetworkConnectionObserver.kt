@@ -5,41 +5,47 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.widget.Toast
-import com.example.finances.R
-import com.example.finances.core.di.ActivityContext
-import com.example.finances.core.di.ActivityScope
 import com.example.finances.core.di.ApplicationContext
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
-/**
- * Отвечает за подписку на событие о потере соединения и отображение соответствующего сообщения
- */
-@ActivityScope
+@Singleton
 class NetworkConnectionObserver @Inject constructor(
-    @ApplicationContext appContext: Context,
-    @ActivityContext activityContext: Context
+    @ApplicationContext private val context: Context
 ) {
-    private val connectivityManager = appContext.getSystemService(
-        Context.CONNECTIVITY_SERVICE
-    ) as ConnectivityManager
+    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        private val toast = Toast.makeText(
-            activityContext,
-            R.string.error_no_internet,
-            Toast.LENGTH_SHORT
-        )
+    fun observe(): Flow<Boolean> = callbackFlow {
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                trySend(true)
+            }
 
-        override fun onLost(network: Network) = toast.show()
-    }
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                trySend(false)
+            }
+        }
 
-    fun unregister() = connectivityManager.unregisterNetworkCallback(networkCallback)
-
-    init {
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .build()
-        connectivityManager.registerNetworkCallback(request, networkCallback)
+
+        connectivityManager.registerNetworkCallback(request, callback)
+
+        // Initial state
+        val currentState = connectivityManager.activeNetwork?.let { network ->
+            connectivityManager.getNetworkCapabilities(network)
+                ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        } ?: false
+        trySend(currentState)
+
+        awaitClose {
+            connectivityManager.unregisterNetworkCallback(callback)
+        }
     }
 }
