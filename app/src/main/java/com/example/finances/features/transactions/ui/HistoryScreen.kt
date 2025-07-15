@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.finances.R
@@ -27,20 +28,20 @@ import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
 import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
+import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.navigation.TransactionsNavRoutes
-import com.example.finances.features.transactions.ui.models.ExpensesHistoryViewModel
-import com.example.finances.features.transactions.ui.models.IncomeHistoryViewModel
 
 @Composable
 fun HistoryScreen(
-    isIncome: Boolean,
+    screenType: ScreenType,
     navController: NavController
 ) {
-    val vm: HistoryViewModel = if (isIncome) {
-        viewModel<IncomeHistoryViewModel>(factory = LocalViewModelFactory.current)
-    } else {
-        viewModel<ExpensesHistoryViewModel>(factory = LocalViewModelFactory.current)
-    }
+    val vm: HistoryViewModel = viewModel(
+        factory = LocalViewModelFactory.current,
+        extras = remember {
+            MutableCreationExtras().apply { set(ViewModelParams.Screen, screenType) }
+        }
+    )
 
     var isStartCalendarOpen by remember { mutableStateOf(false) }
     var isEndCalendarOpen by remember { mutableStateOf(false) }
@@ -94,11 +95,7 @@ fun HistoryScreen(
                         trail = ListItemTrail.LightArrow,
                         onClick = {
                             navController.navigate(
-                                if (isIncome) {
-                                    TransactionsNavRoutes.IncomeCreateUpdate(record.id)
-                                } else {
-                                    TransactionsNavRoutes.ExpensesCreateUpdate(record.id)
-                                }
+                                TransactionsNavRoutes.CreateUpdate(screenType.isIncome, record.id)
                             ) {
                                 launchSingleTop = true
                                 restoreState = true

@@ -2,12 +2,14 @@ package com.example.finances.features.account.ui
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.viewmodel.ReloadEvent
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import com.example.finances.features.account.domain.repository.AccountRepo
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.features.account.ui.models.AccountViewModelState
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
 /**
@@ -20,7 +22,7 @@ class AccountViewModel @Inject constructor(
     private val _state = mutableStateOf(AccountViewModelState("Мой счет", "0 ₽", "₽"))
     val state: State<AccountViewModelState> = _state
 
-    override suspend fun loadData() {
+    override suspend fun loadData(scope: CoroutineScope) {
         when (val response = accountRepo.getAccount()) {
             is Response.Failure -> setError()
             is Response.Success -> {
@@ -40,6 +42,8 @@ class AccountViewModel @Inject constructor(
             ReloadEvent.TransactionCreatedUpdated -> reloadData()
         }
     }
+
+    override fun setViewModelParams(extras: CreationExtras) {}
 
     init {
         reloadData()

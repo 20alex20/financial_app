@@ -7,7 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.CreateUpdateScreen
 import com.example.finances.features.transactions.ui.ExpensesIncomeScreen
 import com.example.finances.features.transactions.ui.HistoryScreen
@@ -15,32 +14,26 @@ import com.example.finances.features.transactions.ui.HistoryScreen
 @Composable
 fun TransactionsNavigation(isIncome: Boolean, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    val mainScreen = if (isIncome) TransactionsNavRoutes.Income else TransactionsNavRoutes.Expenses
     NavHost(
         navController = navController,
-        startDestination = mainScreen,
+        startDestination = TransactionsNavRoutes.ExpensesIncome(isIncome),
         modifier = modifier.fillMaxSize()
     ) {
-        if (isIncome) composable<TransactionsNavRoutes.Income> {
-            ExpensesIncomeScreen(true, navController)
-        } else composable<TransactionsNavRoutes.Expenses> {
-            ExpensesIncomeScreen(false, navController)
+        composable<TransactionsNavRoutes.ExpensesIncome> { backStackEntry ->
+            val args = backStackEntry.toRoute<TransactionsNavRoutes.CreateUpdate>()
+            ExpensesIncomeScreen(ScreenType.fromBoolean(args.isIncome), navController)
         }
-
-        if (isIncome) composable<TransactionsNavRoutes.IncomeHistory> {
-            HistoryScreen(true, navController)
-        } else composable<TransactionsNavRoutes.ExpensesHistory> {
-            HistoryScreen(false, navController)
+        composable<TransactionsNavRoutes.History> { backStackEntry ->
+            val args = backStackEntry.toRoute<TransactionsNavRoutes.CreateUpdate>()
+            HistoryScreen(ScreenType.fromBoolean(args.isIncome), navController)
         }
-
-        if (isIncome) composable<TransactionsNavRoutes.IncomeCreateUpdate> { backStackEntry ->
-            val args = backStackEntry.toRoute<TransactionsNavRoutes.IncomeCreateUpdate>()
-            TransactionsRepo.incomeTransactionId = args.transactionId
-            CreateUpdateScreen(true, navController)
-        } else composable<TransactionsNavRoutes.ExpensesCreateUpdate> { backStackEntry ->
-            val args = backStackEntry.toRoute<TransactionsNavRoutes.ExpensesCreateUpdate>()
-            TransactionsRepo.expenseTransactionId = args.transactionId
-            CreateUpdateScreen(false, navController)
+        composable<TransactionsNavRoutes.CreateUpdate> { backStackEntry ->
+            val args = backStackEntry.toRoute<TransactionsNavRoutes.CreateUpdate>()
+            CreateUpdateScreen(
+                screenType = ScreenType.fromBoolean(args.isIncome),
+                transactionId = args.transactionId,
+                navController = navController
+            )
         }
     }
 }

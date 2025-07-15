@@ -2,43 +2,48 @@ package com.example.finances.features.transactions.ui
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.viewmodel.ReloadEvent
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.core.utils.viewmodel.BaseViewModel
+import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.ui.mappers.toExpenseIncome
 import com.example.finances.features.transactions.ui.models.ExpensesIncomeViewModelState
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import java.time.LocalDate
+import javax.inject.Inject
 
 /**
  * Вьюмодель экрана расходов/доходов
  */
-open class ExpensesIncomeViewModel(
-    private val isIncome: Boolean,
+open class ExpensesIncomeViewModel @Inject constructor(
     private val transactionsRepo: TransactionsRepo,
     private val convertAmountUseCase: ConvertAmountUseCase,
     private val loadCurrencyUseCase: LoadCurrencyUseCase
 ) : BaseViewModel() {
+    private val _screenTypeLatch = CompletableDeferred<ScreenType>()
 
     private val _state = mutableStateOf(ExpensesIncomeViewModelState("0 ₽", emptyList()))
     val state: State<ExpensesIncomeViewModelState> = _state
 
-    override suspend fun loadData() {
-        val asyncCurrency = viewModelScope.async { loadCurrencyUseCase() }
+    override suspend fun loadData(scope: CoroutineScope) {
+        val asyncCurrency = scope.async { loadCurrencyUseCase() }
         val today = LocalDate.now()
-        when (val response = transactionsRepo.getTransactions(today, today, isIncome)) {
+        val response = transactionsRepo.getTransactions(today, today, _screenTypeLatch.await())
+        when (response) {
             is Response.Failure -> setError()
             is Response.Success -> {
                 val currency = asyncCurrency.await()
-                resetLoadingAndError()
                 _state.value = ExpensesIncomeViewModelState(
                     total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
                     expensesIncome = response.data.map { it.toExpenseIncome(currency) }
                 )
+                resetLoadingAndError()
             }
         }
     }
@@ -56,9 +61,16 @@ open class ExpensesIncomeViewModel(
                     }
                 )
             }
+
             ReloadEvent.TransactionCreatedUpdated -> {
                 reloadData()
             }
+        }
+    }
+
+    override fun setViewModelParams(extras: CreationExtras) {
+        if (!_screenTypeLatch.isCompleted) {
+            _screenTypeLatch.complete(extras[ViewModelParams.Screen] ?: ScreenType.Expenses)
         }
     }
 

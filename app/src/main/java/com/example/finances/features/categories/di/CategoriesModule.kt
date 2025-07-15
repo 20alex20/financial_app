@@ -1,7 +1,7 @@
 package com.example.finances.features.categories.di
 
-import androidx.lifecycle.ViewModel
 import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.core.utils.viewmodel.ViewModelKey
 import com.example.finances.features.categories.data.CategoriesApi
 import com.example.finances.features.categories.data.CategoriesRepoImpl
@@ -18,7 +18,7 @@ interface CategoriesModule {
     @Binds
     @IntoMap
     @ViewModelKey(CategoriesViewModel::class)
-    fun bindsCategoriesViewModel(categoriesViewModel: CategoriesViewModel): ViewModel
+    fun bindsCategoriesViewModel(categoriesViewModel: CategoriesViewModel): BaseViewModel
 
     @Binds
     @ActivityScope

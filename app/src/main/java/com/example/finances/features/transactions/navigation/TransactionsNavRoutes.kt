@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
  * Запечатанный класс содержит объекты, соответствующие экранам транзакций
  */
 sealed interface TransactionsNavRoutes {
-    @Serializable data object Expenses : TransactionsNavRoutes
-    @Serializable data object ExpensesHistory : TransactionsNavRoutes
-    @Serializable data object Income : TransactionsNavRoutes
-    @Serializable data object IncomeHistory : TransactionsNavRoutes
-    @Serializable data class ExpensesCreateUpdate(val transactionId: Int?) : TransactionsNavRoutes
-    @Serializable data class IncomeCreateUpdate(val transactionId: Int?) : TransactionsNavRoutes
+    @Serializable data class ExpensesIncome(val isIncome: Boolean) : TransactionsNavRoutes
+    @Serializable data class History(val isIncome: Boolean) : TransactionsNavRoutes
+    @Serializable data class CreateUpdate(
+        val isIncome: Boolean,
+        val transactionId: Int? = null
+    ) : TransactionsNavRoutes
 }

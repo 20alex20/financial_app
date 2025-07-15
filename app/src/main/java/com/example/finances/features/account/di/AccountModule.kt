@@ -1,7 +1,7 @@
 package com.example.finances.features.account.di
 
-import androidx.lifecycle.ViewModel
 import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.core.utils.viewmodel.ViewModelKey
 import com.example.finances.features.account.data.AccountApi
 import com.example.finances.features.account.data.AccountRepoImpl
@@ -20,12 +20,12 @@ interface AccountModule {
     @Binds
     @IntoMap
     @ViewModelKey(AccountViewModel::class)
-    fun bindsAccountViewModel(accountViewModel: AccountViewModel): ViewModel
+    fun bindsAccountViewModel(accountViewModel: AccountViewModel): BaseViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(EditAccountViewModel::class)
-    fun bindsEditAccountViewModel(editAccountViewModel: EditAccountViewModel): ViewModel
+    fun bindsEditAccountViewModel(editAccountViewModel: EditAccountViewModel): BaseViewModel
 
     @Binds
     @ActivityScope
