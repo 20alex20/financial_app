@@ -3,6 +3,7 @@ package com.example.finances.features.transactions.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.viewmodel.ReloadEvent
 import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.utils.repository.Response
@@ -90,6 +91,8 @@ open class HistoryViewModel(
             }
         }
     }
+
+    override fun setParams(extras: CreationExtras) {}
 
     init {
         setPeriod(_dates.value.start, _dates.value.end)

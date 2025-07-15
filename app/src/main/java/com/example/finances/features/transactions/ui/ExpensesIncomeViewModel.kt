@@ -3,6 +3,7 @@ package com.example.finances.features.transactions.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.viewmodel.ReloadEvent
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
@@ -56,11 +57,14 @@ open class ExpensesIncomeViewModel(
                     }
                 )
             }
+
             ReloadEvent.TransactionCreatedUpdated -> {
                 reloadData()
             }
         }
     }
+
+    override fun setParams(extras: CreationExtras) {}
 
     init {
         reloadData()

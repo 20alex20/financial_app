@@ -3,6 +3,7 @@ package com.example.finances.features.transactions.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.models.Currency
 import com.example.finances.core.utils.viewmodel.ReloadEvent
 import com.example.finances.features.transactions.domain.DateTimeFormatters
@@ -15,6 +16,7 @@ import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUs
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.mappers.toLocalTime
 import com.example.finances.features.transactions.ui.models.CreateUpdateViewModelState
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import java.time.LocalDate
@@ -32,11 +34,7 @@ open class CreateUpdateViewModel(
     private val _today = LocalDateTime.now()
     private val _defaultTransactionId = if (isIncome) 1 else 7
     private val _defaultTransactionCategoryName = if (isIncome) "Жильё" else "Зарплата"
-    private val _transactionId = if (isIncome) {
-        TransactionsRepo.incomeTransactionId
-    } else {
-        TransactionsRepo.expenseTransactionId
-    }
+    private val _transactionIdLatch = CompletableDeferred<Int?>()
 
     private var _deferredSaving: Deferred<Boolean>? = null
     private var _currency = Currency.RUBLE
@@ -127,8 +125,9 @@ open class CreateUpdateViewModel(
     override suspend fun loadData() {
         val asyncCurrency = viewModelScope.async { loadCurrencyUseCase() }
         val asyncCategories = viewModelScope.async { loadCategories() }
-        if (_transactionId != null) when (
-            val response = transactionsRepo.getTransaction(_transactionId)
+        val transactionId = _transactionIdLatch.await()
+        if (transactionId != null) when (
+            val response = transactionsRepo.getTransaction(transactionId)
         ) {
             is Response.Failure -> setError()
             is Response.Success -> {
@@ -150,14 +149,9 @@ open class CreateUpdateViewModel(
             _sendingError.value = false
             setLoading()
             try {
-                val response = if (_transaction.id == null)
-                    transactionsRepo.createTransaction(_transaction)
-                else
-                    transactionsRepo.updateTransaction(_transaction)
+                val response = transactionsRepo.createUpdateTransaction(_transaction)
                 resetLoadingAndError()
-                if (response is Response.Success && response.data.amount == _transaction.amount &&
-                    response.data.categoryId == _transaction.categoryId
-                ) {
+                if (response is Response.Success) {
                     send(ReloadEvent.TransactionCreatedUpdated)
                     return@async true
                 }
@@ -167,6 +161,12 @@ open class CreateUpdateViewModel(
             _sendingError.value = true
             false
         }.also { _deferredSaving = it }
+    }
+
+    override fun setParams(extras: CreationExtras) {
+        if (!_transactionIdLatch.isCompleted) {
+            _transactionIdLatch.complete(extras[ViewModelParams.TransactionId])
+        }
     }
 
     init {

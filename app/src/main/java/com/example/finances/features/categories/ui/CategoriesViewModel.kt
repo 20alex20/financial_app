@@ -2,6 +2,7 @@ package com.example.finances.features.categories.ui
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.features.categories.domain.models.Category
@@ -40,6 +41,8 @@ class CategoriesViewModel @Inject constructor(
             }
         }
     }
+
+    override fun setParams(extras: CreationExtras) {}
 
     init {
         reloadData()

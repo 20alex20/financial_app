@@ -3,6 +3,7 @@ package com.example.finances.features.account.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.viewmodel.ReloadEvent
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
@@ -84,6 +85,8 @@ class EditAccountViewModel @Inject constructor(
             false
         }.also { _deferredSaving = it }
     }
+
+    override fun setParams(extras: CreationExtras) {}
 
     init {
         reloadData()

@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.finances.R
@@ -24,20 +26,20 @@ import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
 import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
+import com.example.finances.features.transactions.domain.ScreenType
 import com.example.finances.features.transactions.navigation.TransactionsNavRoutes
-import com.example.finances.features.transactions.ui.models.ExpensesViewModel
-import com.example.finances.features.transactions.ui.models.IncomeViewModel
 
 @Composable
 fun ExpensesIncomeScreen(
-    isIncome: Boolean,
+    screenType: ScreenType,
     navController: NavController
 ) {
-    val vm: ExpensesIncomeViewModel = if (isIncome) {
-        viewModel<IncomeViewModel>(factory = LocalViewModelFactory.current)
-    } else {
-        viewModel<ExpensesViewModel>(factory = LocalViewModelFactory.current)
-    }
+    val vm: ExpensesIncomeViewModel = viewModel(
+        factory = LocalViewModelFactory.current,
+        extras = remember {
+            MutableCreationExtras().apply { set(ViewModelParams.Screen, screenType) }
+        }
+    )
 
     Box(
         contentAlignment = Alignment.BottomEnd,
@@ -45,21 +47,14 @@ fun ExpensesIncomeScreen(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Header(
-                title = if (isIncome) {
-                    stringResource(R.string.income_today)
-                } else {
-                    stringResource(R.string.expenses_today)
+                title = when (screenType) {
+                    ScreenType.Expenses -> stringResource(R.string.expenses_today)
+                    ScreenType.Income -> stringResource(R.string.income_today)
                 },
                 rightButton = HeaderButton(
                     icon = painterResource(R.drawable.history),
                     onClick = {
-                        navController.navigate(
-                            if (isIncome) {
-                                TransactionsNavRoutes.IncomeHistory
-                            } else {
-                                TransactionsNavRoutes.ExpensesHistory
-                            }
-                        ) {
+                        navController.navigate(TransactionsNavRoutes.History(screenType)) {
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -86,11 +81,7 @@ fun ExpensesIncomeScreen(
                         trail = ListItemTrail.LightArrow,
                         onClick = {
                             navController.navigate(
-                                if (isIncome) {
-                                    TransactionsNavRoutes.IncomeCreateUpdate(transaction.id)
-                                } else {
-                                    TransactionsNavRoutes.ExpensesCreateUpdate(transaction.id)
-                                }
+                                TransactionsNavRoutes.CreateUpdate(screenType, transaction.id)
                             ) {
                                 launchSingleTop = true
                                 restoreState = true
@@ -103,13 +94,7 @@ fun ExpensesIncomeScreen(
 
         AddButton(
             onClick = {
-                navController.navigate(
-                    if (isIncome) {
-                        TransactionsNavRoutes.IncomeCreateUpdate(null)
-                    } else {
-                        TransactionsNavRoutes.ExpensesCreateUpdate(null)
-                    }
-                ) {
+                navController.navigate(TransactionsNavRoutes.CreateUpdate(screenType)) {
                     launchSingleTop = true
                     restoreState = true
                 }

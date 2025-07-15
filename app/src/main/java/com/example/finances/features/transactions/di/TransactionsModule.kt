@@ -1,7 +1,7 @@
 package com.example.finances.features.transactions.di
 
-import androidx.lifecycle.ViewModel
 import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.core.utils.viewmodel.ViewModelKey
 import com.example.finances.features.transactions.data.TransactionsApi
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
@@ -23,37 +23,38 @@ interface TransactionsModule {
     @Binds
     @IntoMap
     @ViewModelKey(ExpensesViewModel::class)
-    fun bindsExpensesViewModel(expensesViewModel: ExpensesViewModel): ViewModel
+    fun bindsExpensesViewModel(expensesViewModel: ExpensesViewModel): BaseViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(IncomeViewModel::class)
-    fun bindsIncomeViewModel(incomeViewModel: IncomeViewModel): ViewModel
+    fun bindsIncomeViewModel(incomeViewModel: IncomeViewModel): BaseViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(ExpensesHistoryViewModel::class)
-    fun bindsExpensesHistoryViewModel(expensesHistoryViewModel: ExpensesHistoryViewModel): ViewModel
+    fun bindsExpensesHistoryViewModel(
+        expensesHistoryViewModel: ExpensesHistoryViewModel
+    ): BaseViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(IncomeHistoryViewModel::class)
-    fun bindsIncomeHistoryViewModel(incomeHistoryViewModel: IncomeHistoryViewModel): ViewModel
-
+    fun bindsIncomeHistoryViewModel(incomeHistoryViewModel: IncomeHistoryViewModel): BaseViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(ExpensesCreateUpdateViewModel::class)
     fun bindsExpensesCreateUpdateViewModel(
         expensesCreateUpdateViewModel: ExpensesCreateUpdateViewModel
-    ): ViewModel
+    ): BaseViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(IncomeCreateUpdateViewModel::class)
     fun bindsIncomeCreateUpdateViewModel(
         incomeCreateUpdateViewModel: IncomeCreateUpdateViewModel
-    ): ViewModel
+    ): BaseViewModel
 
     @Binds
     @ActivityScope

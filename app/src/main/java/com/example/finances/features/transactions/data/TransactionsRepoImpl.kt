@@ -52,7 +52,6 @@ class TransactionsRepoImpl @Inject constructor(
         val account = accountRepo.getAccount()
         if (account !is Response.Success)
             throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
-
         transactionsApi.getTransactions(
             accountId = account.data.id,
             startDate = startDate.format(DateTimeFormatters.requestDate),
@@ -66,47 +65,29 @@ class TransactionsRepoImpl @Inject constructor(
         transactionsApi.getTransaction(transactionId).toShortTransaction()
     }
 
-    override suspend fun createTransaction(shortTransaction: ShortTransaction) = repoTryCatchBlock {
+    override suspend fun createUpdateTransaction(
+        shortTransaction: ShortTransaction
+    ) = repoTryCatchBlock {
         val account = accountRepo.getAccount()
-        if (account !is Response.Success)
-            throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
-
-        transactionsApi.createTransaction(
-            TransactionRequest(
-                accountId = account.data.id,
-                categoryId = shortTransaction.categoryId,
-                amount = String.format(null, "%.2f", shortTransaction.amount),
-                comment = shortTransaction.comment,
-                transactionDate = shortTransaction.dateTime.format(
-                    DateTimeFormatters.requestDateTime
-                )
-            )
+        if (account !is Response.Success) throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
+        val transactionRequest = TransactionRequest(
+            accountId = account.data.id,
+            categoryId = shortTransaction.categoryId,
+            amount = String.format(null, "%.2f", shortTransaction.amount),
+            transactionDate = shortTransaction.dateTime.format(DateTimeFormatters.requestDateTime),
+            comment = shortTransaction.comment
+        )
+        if (shortTransaction.id == null) transactionsApi.createTransaction(
+            transaction = transactionRequest
         ).toShortTransaction()
-    }
-
-    override suspend fun updateTransaction(shortTransaction: ShortTransaction) = repoTryCatchBlock {
-        val account = accountRepo.getAccount()
-        if (account !is Response.Success)
-            throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
-        if (shortTransaction.id == null)
-            throw NullPointerException(NULL_TRANSACTION_ID)
-        transactionsApi.updateTransaction(
-            shortTransaction.id,
-            TransactionRequest(
-                accountId = account.data.id,
-                categoryId = shortTransaction.categoryId,
-                amount = String.format(null, "%.2f", shortTransaction.amount),
-                transactionDate = shortTransaction.dateTime.format(
-                    DateTimeFormatters.requestDateTime
-                ),
-                comment = shortTransaction.comment
-            )
+        else transactionsApi.updateTransaction(
+            transactionId = shortTransaction.id,
+            transaction = transactionRequest
         ).toShortTransaction()
     }
 
     companion object {
         const val ACCOUNT_LOADING_ERROR = "Account data loading error"
         const val CATEGORIES_LOADING_ERROR = "Categories data loading error"
-        const val NULL_TRANSACTION_ID = "Transaction id is null"
     }
 }

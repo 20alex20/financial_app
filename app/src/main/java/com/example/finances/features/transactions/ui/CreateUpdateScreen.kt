@@ -27,13 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.finances.R
@@ -46,19 +46,22 @@ import com.example.finances.core.ui.components.ModalSheet
 import com.example.finances.core.ui.components.TextInput
 import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.core.ui.components.models.SheetItem
-import com.example.finances.features.transactions.ui.models.ExpensesCreateUpdateViewModel
-import com.example.finances.features.transactions.ui.models.IncomeCreateUpdateViewModel
+import com.example.finances.features.transactions.domain.ScreenType
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateUpdateScreen(isIncome: Boolean, navController: NavController) {
-    val vm: CreateUpdateViewModel = if (isIncome) {
-        viewModel<IncomeCreateUpdateViewModel>(factory = LocalViewModelFactory.current)
-    } else {
-        viewModel<ExpensesCreateUpdateViewModel>(factory = LocalViewModelFactory.current)
-    }
+fun CreateUpdateScreen(screenType: ScreenType, transactionId: Int?, navController: NavController) {
+    val vm: CreateUpdateViewModel = viewModel(
+        factory = LocalViewModelFactory.current,
+        extras = remember {
+            MutableCreationExtras().apply {
+                set(ViewModelParams.Screen, screenType)
+                set(ViewModelParams.TransactionId, transactionId)
+            }
+        }
+    )
 
     val focusManager = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
@@ -72,10 +75,9 @@ fun CreateUpdateScreen(isIncome: Boolean, navController: NavController) {
                 .background(MaterialTheme.colorScheme.surfaceContainerLowest)
         ) {
             Header(
-                title = if (isIncome) {
-                    stringResource(R.string.my_income)
-                } else {
-                    stringResource(R.string.my_expenses)
+                title = when (screenType) {
+                    ScreenType.Expenses -> stringResource(R.string.my_expenses)
+                    ScreenType.Income -> stringResource(R.string.my_income)
                 },
                 leftButton = HeaderButton(
                     icon = painterResource(R.drawable.cancel),
