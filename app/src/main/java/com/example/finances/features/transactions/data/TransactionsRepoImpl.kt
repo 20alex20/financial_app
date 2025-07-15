@@ -20,6 +20,7 @@ import com.example.finances.core.data.local.entities.TransactionEntity
 import com.example.finances.core.utils.NetworkConnectionObserver
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 /**
@@ -96,8 +97,8 @@ class TransactionsRepoImpl @Inject constructor(
             // Offline mode: fetch from local DB
             database.transactionDao().getTransactions(
                 accountId = accountId,
-                startDate = startDateStr,
-                endDate = endDateStr,
+                startDate = LocalDateTime.parse(startDateStr + "T00:00:00", DateTimeFormatters.requestDateTime),
+                endDate = LocalDateTime.parse(endDateStr + "T23:59:59", DateTimeFormatters.requestDateTime),
                 isIncome = isIncome
             ).map { it.toTransaction() }
         }

@@ -25,9 +25,4 @@ class MainActivity : ComponentActivity() {
             MainScreen(activityComponent.viewModelFactory())
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        activityComponent.networkConnectionObserver().unregister()
-    }
 }

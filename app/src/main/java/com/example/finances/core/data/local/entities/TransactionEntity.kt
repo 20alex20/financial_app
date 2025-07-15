@@ -15,18 +15,18 @@ data class TransactionEntity(
     val categoryName: String,
     val categoryEmoji: String,
     val amount: Double,
-    val transactionDate: String,
+    val transactionDate: LocalDateTime,
     val comment: String,
     val isIncome: Boolean,
     val isSynced: Boolean = false,
-    val createdAt: String? = null,
-    val updatedAt: String? = null
+    val createdAt: LocalDateTime? = null,
+    val updatedAt: LocalDateTime? = null
 ) {
     fun toTransaction() = Transaction(
         id = id ?: 0,
         categoryName = categoryName,
         categoryEmoji = categoryEmoji,
-        dateTime = LocalDateTime.parse(transactionDate, DateTimeFormatters.replyDateTime),
+        dateTime = transactionDate,
         amount = amount,
         comment = comment
     )
@@ -34,7 +34,7 @@ data class TransactionEntity(
     fun toShortTransaction() = ShortTransaction(
         id = id,
         categoryId = categoryId,
-        dateTime = LocalDateTime.parse(transactionDate, DateTimeFormatters.replyDateTime),
+        dateTime = transactionDate,
         amount = amount,
         comment = comment
     )
@@ -53,7 +53,7 @@ data class TransactionEntity(
             categoryName = transaction.categoryName,
             categoryEmoji = transaction.categoryEmoji,
             amount = transaction.amount,
-            transactionDate = transaction.dateTime.format(DateTimeFormatters.replyDateTime),
+            transactionDate = transaction.dateTime,
             comment = transaction.comment,
             isIncome = isIncome,
             isSynced = isSynced
@@ -73,7 +73,7 @@ data class TransactionEntity(
             categoryName = categoryName,
             categoryEmoji = categoryEmoji,
             amount = shortTransaction.amount,
-            transactionDate = shortTransaction.dateTime.format(DateTimeFormatters.replyDateTime),
+            transactionDate = shortTransaction.dateTime,
             comment = shortTransaction.comment,
             isIncome = isIncome,
             isSynced = isSynced

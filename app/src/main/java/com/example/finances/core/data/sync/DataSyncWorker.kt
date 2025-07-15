@@ -14,6 +14,7 @@ import com.example.finances.core.data.local.entities.TransactionEntity
 import com.example.finances.features.account.data.mappers.toAccount
 import com.example.finances.features.categories.data.mappers.toCategory
 import com.example.finances.features.transactions.data.mappers.toTransaction
+import com.example.finances.features.transactions.domain.DateTimeFormatters
 import kotlinx.coroutines.flow.first
 import retrofit2.Retrofit
 
@@ -52,7 +53,7 @@ class DataSyncWorker(
                         accountId = transaction.accountId,
                         categoryId = transaction.categoryId,
                         amount = String.format(null, "%.2f", transaction.amount),
-                        transactionDate = transaction.transactionDate,
+                        transactionDate = transaction.transactionDate.format(DateTimeFormatters.requestDateTime),
                         comment = transaction.comment
                     )
 

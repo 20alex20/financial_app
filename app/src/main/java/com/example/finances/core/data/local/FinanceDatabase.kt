@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.finances.core.data.local.converters.DateTimeConverters
 import com.example.finances.core.data.local.dao.AccountDao
 import com.example.finances.core.data.local.dao.CategoryDao
 import com.example.finances.core.data.local.dao.TransactionDao
@@ -20,6 +22,7 @@ import com.example.finances.core.data.local.entities.TransactionEntity
     version = 1,
     exportSchema = false
 )
+@TypeConverters(DateTimeConverters::class)
 abstract class FinanceDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
     abstract fun categoryDao(): CategoryDao

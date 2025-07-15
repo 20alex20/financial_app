@@ -2,12 +2,12 @@ package com.example.finances.core.data.local.dao
 
 import androidx.room.*
 import com.example.finances.core.data.local.entities.TransactionEntity
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Dao
 interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE accountId = :accountId AND transactionDate BETWEEN :startDate AND :endDate AND isIncome = :isIncome ORDER BY transactionDate DESC")
-    suspend fun getTransactions(accountId: Int, startDate: String, endDate: String, isIncome: Boolean): List<TransactionEntity>
+    suspend fun getTransactions(accountId: Int, startDate: LocalDateTime, endDate: LocalDateTime, isIncome: Boolean): List<TransactionEntity>
 
     @Query("SELECT * FROM transactions WHERE id = :transactionId")
     suspend fun getTransaction(transactionId: Int): TransactionEntity?

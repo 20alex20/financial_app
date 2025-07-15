@@ -6,6 +6,7 @@ import com.example.finances.app.FinancesApplication
 import com.example.finances.core.di.modules.RetrofitClientModule
 import com.example.finances.core.di.modules.AppModule
 import com.example.finances.core.di.modules.DatabaseModule
+import com.example.finances.core.data.local.FinanceDatabase
 import dagger.BindsInstance
 import dagger.Component
 import retrofit2.Retrofit
@@ -22,6 +23,7 @@ import javax.inject.Singleton
 interface AppComponent {
     @ApplicationContext fun applicationContext(): Context
     fun retrofit(): Retrofit
+    fun database(): FinanceDatabase
     fun inject(application: FinancesApplication)
 
     @Component.Factory
