@@ -11,6 +11,7 @@ import com.example.finances.features.transactions.data.mappers.toShortCategory
 import com.example.finances.features.transactions.data.mappers.toShortTransaction
 import com.example.finances.features.transactions.data.mappers.toTransaction
 import com.example.finances.features.transactions.data.models.TransactionRequest
+import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.domain.extensions.CategoriesLoadingException
 import com.example.finances.features.transactions.domain.models.ShortTransaction
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
@@ -35,10 +36,12 @@ class TransactionsRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCategories(isIncome: Boolean) = repoTryCatchBlock {
+    override suspend fun getCategories(screenType: ScreenType) = repoTryCatchBlock {
         categoriesRepo.getCategories().let { response ->
             if (response is Response.Success)
-                response.data.filter { it.isIncome == isIncome }.map { it.toShortCategory() }
+                response.data.filter { category ->
+                    category.isIncome == (screenType == ScreenType.Income)
+                }.map { it.toShortCategory() }
             else
                 throw CategoriesLoadingException(CATEGORIES_LOADING_ERROR)
         }
@@ -47,7 +50,7 @@ class TransactionsRepoImpl @Inject constructor(
     override suspend fun getTransactions(
         startDate: LocalDate,
         endDate: LocalDate,
-        isIncome: Boolean
+        screenType: ScreenType
     ) = repoTryCatchBlock {
         val account = accountRepo.getAccount()
         if (account !is Response.Success)
@@ -56,9 +59,9 @@ class TransactionsRepoImpl @Inject constructor(
             accountId = account.data.id,
             startDate = startDate.format(DateTimeFormatters.requestDate),
             endDate = endDate.format(DateTimeFormatters.requestDate)
-        ).filter { it.category.isIncome == isIncome }
-            .sortedByDescending { it.transactionDate }
-            .map { it.toTransaction() }
+        ).filter { category ->
+            category.category.isIncome == (screenType == ScreenType.Income)
+        }.sortedByDescending { it.transactionDate }.map { it.toTransaction() }
     }
 
     override suspend fun getTransaction(transactionId: Int) = repoTryCatchBlock {

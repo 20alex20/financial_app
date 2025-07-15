@@ -26,7 +26,7 @@ import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
 import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
-import com.example.finances.features.transactions.domain.ScreenType
+import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.navigation.TransactionsNavRoutes
 
 @Composable
@@ -54,7 +54,7 @@ fun ExpensesIncomeScreen(
                 rightButton = HeaderButton(
                     icon = painterResource(R.drawable.history),
                     onClick = {
-                        navController.navigate(TransactionsNavRoutes.History(screenType)) {
+                        navController.navigate(TransactionsNavRoutes.History(screenType.isIncome)) {
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -81,7 +81,10 @@ fun ExpensesIncomeScreen(
                         trail = ListItemTrail.LightArrow,
                         onClick = {
                             navController.navigate(
-                                TransactionsNavRoutes.CreateUpdate(screenType, transaction.id)
+                                TransactionsNavRoutes.CreateUpdate(
+                                    screenType.isIncome,
+                                    transaction.id
+                                )
                             ) {
                                 launchSingleTop = true
                                 restoreState = true
@@ -94,7 +97,7 @@ fun ExpensesIncomeScreen(
 
         AddButton(
             onClick = {
-                navController.navigate(TransactionsNavRoutes.CreateUpdate(screenType)) {
+                navController.navigate(TransactionsNavRoutes.CreateUpdate(screenType.isIncome)) {
                     launchSingleTop = true
                     restoreState = true
                 }

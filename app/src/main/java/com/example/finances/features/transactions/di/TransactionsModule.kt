@@ -6,12 +6,9 @@ import com.example.finances.core.utils.viewmodel.ViewModelKey
 import com.example.finances.features.transactions.data.TransactionsApi
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
-import com.example.finances.features.transactions.ui.models.ExpensesCreateUpdateViewModel
-import com.example.finances.features.transactions.ui.models.ExpensesHistoryViewModel
-import com.example.finances.features.transactions.ui.models.ExpensesViewModel
-import com.example.finances.features.transactions.ui.models.IncomeCreateUpdateViewModel
-import com.example.finances.features.transactions.ui.models.IncomeHistoryViewModel
-import com.example.finances.features.transactions.ui.models.IncomeViewModel
+import com.example.finances.features.transactions.ui.CreateUpdateViewModel
+import com.example.finances.features.transactions.ui.ExpensesIncomeViewModel
+import com.example.finances.features.transactions.ui.HistoryViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -22,39 +19,20 @@ import retrofit2.Retrofit
 interface TransactionsModule {
     @Binds
     @IntoMap
-    @ViewModelKey(ExpensesViewModel::class)
-    fun bindsExpensesViewModel(expensesViewModel: ExpensesViewModel): BaseViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(IncomeViewModel::class)
-    fun bindsIncomeViewModel(incomeViewModel: IncomeViewModel): BaseViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(ExpensesHistoryViewModel::class)
-    fun bindsExpensesHistoryViewModel(
-        expensesHistoryViewModel: ExpensesHistoryViewModel
+    @ViewModelKey(ExpensesIncomeViewModel::class)
+    fun bindsExpensesIncomeViewModel(
+        expensesIncomeViewModel: ExpensesIncomeViewModel
     ): BaseViewModel
 
     @Binds
     @IntoMap
-    @ViewModelKey(IncomeHistoryViewModel::class)
-    fun bindsIncomeHistoryViewModel(incomeHistoryViewModel: IncomeHistoryViewModel): BaseViewModel
+    @ViewModelKey(HistoryViewModel::class)
+    fun bindsHistoryViewModel(historyViewModel: HistoryViewModel): BaseViewModel
 
     @Binds
     @IntoMap
-    @ViewModelKey(ExpensesCreateUpdateViewModel::class)
-    fun bindsExpensesCreateUpdateViewModel(
-        expensesCreateUpdateViewModel: ExpensesCreateUpdateViewModel
-    ): BaseViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(IncomeCreateUpdateViewModel::class)
-    fun bindsIncomeCreateUpdateViewModel(
-        incomeCreateUpdateViewModel: IncomeCreateUpdateViewModel
-    ): BaseViewModel
+    @ViewModelKey(CreateUpdateViewModel::class)
+    fun bindsCreateUpdateViewModel(createUpdateViewModel: CreateUpdateViewModel): BaseViewModel
 
     @Binds
     @ActivityScope

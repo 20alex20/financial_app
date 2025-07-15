@@ -9,24 +9,27 @@ import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import com.example.finances.core.utils.viewmodel.BaseViewModel
+import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
 import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
 import com.example.finances.features.transactions.ui.models.HistoryViewModelState
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 /**
  * Вьюмодель экрана истории
  */
-open class HistoryViewModel(
-    private val isIncome: Boolean,
+open class HistoryViewModel @Inject constructor(
     private val transactionsRepo: TransactionsRepo,
     private val convertAmountUseCase: ConvertAmountUseCase,
     private val loadCurrencyUseCase: LoadCurrencyUseCase
 ) : BaseViewModel() {
+    private val _screenTypeLatch = CompletableDeferred<ScreenType>()
     private var _today = LocalDate.now()
 
     private val _dates = mutableStateOf(
@@ -58,7 +61,7 @@ open class HistoryViewModel(
         val response = transactionsRepo.getTransactions(
             _dates.value.start,
             _dates.value.end,
-            isIncome
+            _screenTypeLatch.await()
         )
         when (response) {
             is Response.Failure -> setError()
@@ -92,7 +95,11 @@ open class HistoryViewModel(
         }
     }
 
-    override fun setParams(extras: CreationExtras) {}
+    override fun setParams(extras: CreationExtras) {
+        if (!_screenTypeLatch.isCompleted) {
+            _screenTypeLatch.complete(extras[ViewModelParams.Screen] ?: ScreenType.Expenses)
+        }
+    }
 
     init {
         setPeriod(_dates.value.start, _dates.value.end)

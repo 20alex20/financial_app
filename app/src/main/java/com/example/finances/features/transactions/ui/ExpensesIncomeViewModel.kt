@@ -9,21 +9,24 @@ import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.core.utils.viewmodel.BaseViewModel
+import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.ui.mappers.toExpenseIncome
 import com.example.finances.features.transactions.ui.models.ExpensesIncomeViewModelState
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import java.time.LocalDate
+import javax.inject.Inject
 
 /**
  * Вьюмодель экрана расходов/доходов
  */
-open class ExpensesIncomeViewModel(
-    private val isIncome: Boolean,
+open class ExpensesIncomeViewModel @Inject constructor(
     private val transactionsRepo: TransactionsRepo,
     private val convertAmountUseCase: ConvertAmountUseCase,
     private val loadCurrencyUseCase: LoadCurrencyUseCase
 ) : BaseViewModel() {
+    private val _screenTypeLatch = CompletableDeferred<ScreenType>()
 
     private val _state = mutableStateOf(ExpensesIncomeViewModelState("0 ₽", emptyList()))
     val state: State<ExpensesIncomeViewModelState> = _state
@@ -31,7 +34,7 @@ open class ExpensesIncomeViewModel(
     override suspend fun loadData() {
         val asyncCurrency = viewModelScope.async { loadCurrencyUseCase() }
         val today = LocalDate.now()
-        when (val response = transactionsRepo.getTransactions(today, today, isIncome)) {
+        when (val response = transactionsRepo.getTransactions(today, today, _screenTypeLatch.await())) {
             is Response.Failure -> setError()
             is Response.Success -> {
                 val currency = asyncCurrency.await()
@@ -64,7 +67,11 @@ open class ExpensesIncomeViewModel(
         }
     }
 
-    override fun setParams(extras: CreationExtras) {}
+    override fun setParams(extras: CreationExtras) {
+        if (!_screenTypeLatch.isCompleted) {
+            _screenTypeLatch.complete(extras[ViewModelParams.Screen] ?: ScreenType.Expenses)
+        }
+    }
 
     init {
         reloadData()

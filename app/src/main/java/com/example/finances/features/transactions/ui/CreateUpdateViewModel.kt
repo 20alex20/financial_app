@@ -10,6 +10,7 @@ import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import com.example.finances.core.utils.viewmodel.BaseViewModel
+import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.domain.models.ShortCategory
 import com.example.finances.features.transactions.domain.models.ShortTransaction
 import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
@@ -21,37 +22,36 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import java.time.LocalDate
 import java.time.LocalDateTime
+import javax.inject.Inject
 
 /**
  * Вьюмодель экрана создания/редактирования счета
  */
-open class CreateUpdateViewModel(
-    private val isIncome: Boolean,
+open class CreateUpdateViewModel @Inject constructor(
     private val transactionsRepo: TransactionsRepo,
     private val convertAmountUseCase: ConvertAmountUseCase,
     private val loadCurrencyUseCase: LoadCurrencyUseCase
 ) : BaseViewModel() {
     private val _today = LocalDateTime.now()
-    private val _defaultTransactionId = if (isIncome) 1 else 7
-    private val _defaultTransactionCategoryName = if (isIncome) "Жильё" else "Зарплата"
+    private val _screenTypeLatch = CompletableDeferred<ScreenType>()
     private val _transactionIdLatch = CompletableDeferred<Int?>()
 
     private var _deferredSaving: Deferred<Boolean>? = null
     private var _currency = Currency.RUBLE
-    private var _transaction = ShortTransaction(null, _defaultTransactionId, 0.0, _today, "")
+    private var _transaction = ShortTransaction(null, 1, 0.0, _today, "")
 
     private val _sendingError = mutableStateOf(false)
     val sendingError: State<Boolean> = _sendingError
 
     private val _categories = mutableStateOf(listOf(ShortCategory(
-        id = _defaultTransactionId,
-        name = _defaultTransactionCategoryName
+        id = 1,
+        name = "Зарплата"
     )))
     val categories: State<List<ShortCategory>> = _categories
 
     private val _state = mutableStateOf(
         CreateUpdateViewModelState(
-            categoryName = _defaultTransactionCategoryName,
+            categoryName = "Зарплата",
             amount = "0 ₽",
             date = _today.format(DateTimeFormatters.date),
             time = _today.format(DateTimeFormatters.time),
@@ -94,11 +94,14 @@ open class CreateUpdateViewModel(
     }
 
     private suspend fun loadCategories(): List<ShortCategory> {
-        return transactionsRepo.getCategories(isIncome).let { response ->
+        val screenType = _screenTypeLatch.await()
+        return transactionsRepo.getCategories(screenType).let { response ->
             if (response is Response.Success)
                 response.data
+            else if (screenType == ScreenType.Expenses)
+                _defaultExpensesCategories
             else
-                listOf(ShortCategory(_defaultTransactionId, _defaultTransactionCategoryName))
+                _defaultIncomeCategories
         }
     }
 
@@ -164,7 +167,8 @@ open class CreateUpdateViewModel(
     }
 
     override fun setParams(extras: CreationExtras) {
-        if (!_transactionIdLatch.isCompleted) {
+        if (!_transactionIdLatch.isCompleted && !_screenTypeLatch.isCompleted) {
+            _screenTypeLatch.complete(extras[ViewModelParams.Screen] ?: ScreenType.Expenses)
             _transactionIdLatch.complete(extras[ViewModelParams.TransactionId])
         }
     }
@@ -175,5 +179,8 @@ open class CreateUpdateViewModel(
 
     companion object {
         private const val MAX_COMMENT_LENGTH = 64
+
+        private val _defaultExpensesCategories = listOf(ShortCategory(1, "Зарплата"))
+        private val _defaultIncomeCategories = listOf(ShortCategory(7, "Жильё"))
     }
 }

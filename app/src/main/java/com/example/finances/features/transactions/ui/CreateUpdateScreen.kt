@@ -46,7 +46,7 @@ import com.example.finances.core.ui.components.ModalSheet
 import com.example.finances.core.ui.components.TextInput
 import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.core.ui.components.models.SheetItem
-import com.example.finances.features.transactions.domain.ScreenType
+import com.example.finances.features.transactions.navigation.ScreenType
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 

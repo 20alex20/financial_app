@@ -28,7 +28,7 @@ import com.example.finances.core.ui.components.LoadingCircular
 import com.example.finances.core.ui.components.ListItemTrail
 import com.example.finances.core.ui.components.models.HeaderButton
 import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
-import com.example.finances.features.transactions.domain.ScreenType
+import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.navigation.TransactionsNavRoutes
 
 @Composable
@@ -95,7 +95,7 @@ fun HistoryScreen(
                         trail = ListItemTrail.LightArrow,
                         onClick = {
                             navController.navigate(
-                                TransactionsNavRoutes.CreateUpdate(screenType, record.id)
+                                TransactionsNavRoutes.CreateUpdate(screenType.isIncome, record.id)
                             ) {
                                 launchSingleTop = true
                                 restoreState = true

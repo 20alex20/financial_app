@@ -1,7 +1,7 @@
 package com.example.finances.features.transactions.ui
 
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.finances.features.transactions.domain.ScreenType
+import com.example.finances.features.transactions.navigation.ScreenType
 
 sealed interface ViewModelParams {
     data object Screen : CreationExtras.Key<ScreenType>, ViewModelParams
