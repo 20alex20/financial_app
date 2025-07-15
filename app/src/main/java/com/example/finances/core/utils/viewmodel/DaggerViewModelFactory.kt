@@ -16,6 +16,6 @@ class DaggerViewModelFactory @Inject constructor(
         val viewModelProvider = creators[modelClass] ?: creators.entries.firstOrNull {
             modelClass.isAssignableFrom(it.key)
         }?.value ?: throw IllegalArgumentException("Unknown model class $modelClass")
-        return viewModelProvider.get().also { it.setParams(extras) } as T
+        return viewModelProvider.get().also { it.setViewModelParams(extras) } as T
     }
 }

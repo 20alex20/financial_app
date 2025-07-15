@@ -2,7 +2,6 @@ package com.example.finances.features.transactions.ui
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.viewmodel.ReloadEvent
 import com.example.finances.features.transactions.domain.DateTimeFormatters
@@ -16,6 +15,7 @@ import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
 import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
 import com.example.finances.features.transactions.ui.models.HistoryViewModelState
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -56,8 +56,8 @@ open class HistoryViewModel @Inject constructor(
         )
     }
 
-    override suspend fun loadData() {
-        val asyncCurrency = viewModelScope.async { loadCurrencyUseCase() }
+    override suspend fun loadData(scope: CoroutineScope) {
+        val asyncCurrency = scope.async { loadCurrencyUseCase() }
         val response = transactionsRepo.getTransactions(
             _dates.value.start,
             _dates.value.end,
@@ -67,11 +67,11 @@ open class HistoryViewModel @Inject constructor(
             is Response.Failure -> setError()
             is Response.Success -> {
                 val currency = asyncCurrency.await()
-                resetLoadingAndError()
                 _state.value = HistoryViewModelState(
                     total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
                     history = response.data.map { it.toHistoryRecord(currency, _today) }
                 )
+                resetLoadingAndError()
             }
         }
     }
@@ -95,7 +95,7 @@ open class HistoryViewModel @Inject constructor(
         }
     }
 
-    override fun setParams(extras: CreationExtras) {
+    override fun setViewModelParams(extras: CreationExtras) {
         if (!_screenTypeLatch.isCompleted) {
             _screenTypeLatch.complete(extras[ViewModelParams.Screen] ?: ScreenType.Expenses)
         }

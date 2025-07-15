@@ -11,12 +11,9 @@ import javax.inject.Inject
  */
 @ActivityScope
 class LoadCurrencyUseCase @Inject constructor(private val transactionsRepo: TransactionsRepo) {
-    suspend operator fun invoke() : Currency {
+    suspend operator fun invoke(): Currency {
         return transactionsRepo.getCurrency().let { response ->
-            if (response is Response.Success)
-                response.data
-            else
-                Currency.RUBLE
+            if (response is Response.Success) response.data else Currency.RUBLE
         }
     }
 }

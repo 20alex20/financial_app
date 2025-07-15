@@ -18,8 +18,10 @@ import com.example.finances.features.transactions.domain.repository.Transactions
 import com.example.finances.features.transactions.ui.mappers.toLocalTime
 import com.example.finances.features.transactions.ui.models.CreateUpdateViewModelState
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -43,10 +45,7 @@ open class CreateUpdateViewModel @Inject constructor(
     private val _sendingError = mutableStateOf(false)
     val sendingError: State<Boolean> = _sendingError
 
-    private val _categories = mutableStateOf(listOf(ShortCategory(
-        id = 1,
-        name = "Зарплата"
-    )))
+    private val _categories = mutableStateOf(listOf(ShortCategory(1, "Зарплата")))
     val categories: State<List<ShortCategory>> = _categories
 
     private val _state = mutableStateOf(
@@ -96,54 +95,46 @@ open class CreateUpdateViewModel @Inject constructor(
     private suspend fun loadCategories(): List<ShortCategory> {
         val screenType = _screenTypeLatch.await()
         return transactionsRepo.getCategories(screenType).let { response ->
-            if (response is Response.Success)
-                response.data
-            else if (screenType == ScreenType.Expenses)
-                _defaultExpensesCategories
-            else
-                _defaultIncomeCategories
+            if (response is Response.Success) response.data else getDefaultCategories(screenType)
         }
     }
 
-    private fun processSuccessLoading() {
-        resetLoadingAndError()
-        val category = _categories.value.find { it.id == _transaction.categoryId }
-        if (category == null)
-            setError()
-        else _state.value = CreateUpdateViewModelState(
-            categoryName = category.name,
-            amount = convertAmountUseCase(_transaction.amount, _currency),
-            date = _transaction.dateTime.format(DateTimeFormatters.date),
-            time = _transaction.dateTime.format(DateTimeFormatters.time),
-            comment = _transaction.comment
+    private fun updateStartCategory() {
+        _transaction = _transaction.copy(categoryId = _categories.value.first().id)
+        _state.value = _state.value.copy(
+            categoryName = _categories.value.first().name,
+            amount = convertAmountUseCase(_state.value.amount, _currency)
         )
     }
 
-    private fun processEmptyStart() {
-        resetLoadingAndError()
-        _transaction = _transaction.copy(categoryId = _categories.value.first().id)
-        _state.value = _state.value.copy(categoryName = _categories.value.first().name)
+    private fun processSuccessLoading(transaction: ShortTransaction) {
+        _categories.value.find { it.id == transaction.categoryId }?.let { category ->
+            _transaction = transaction
+            _state.value = CreateUpdateViewModelState(
+                categoryName = category.name,
+                amount = convertAmountUseCase(_transaction.amount, _currency),
+                date = _transaction.dateTime.format(DateTimeFormatters.date),
+                time = _transaction.dateTime.format(DateTimeFormatters.time),
+                comment = _transaction.comment
+            )
+        }
     }
 
-    override suspend fun loadData() {
-        val asyncCurrency = viewModelScope.async { loadCurrencyUseCase() }
-        val asyncCategories = viewModelScope.async { loadCategories() }
-        val transactionId = _transactionIdLatch.await()
-        if (transactionId != null) when (
+    override suspend fun loadData(scope: CoroutineScope) {
+        _categories.value = getDefaultCategories(_screenTypeLatch.await())
+        updateStartCategory()
+        val launchCurrencyAndCategories = scope.launch {
+            launch { _currency = loadCurrencyUseCase() }
+            launch { _categories.value = loadCategories() }
+        }.apply { invokeOnCompletion { updateStartCategory() } }
+        val responseData = _transactionIdLatch.await()?.let { transactionId ->
             val response = transactionsRepo.getTransaction(transactionId)
-        ) {
-            is Response.Failure -> setError()
-            is Response.Success -> {
-                _transaction = response.data
-                _currency = asyncCurrency.await()
-                _categories.value = asyncCategories.await()
-                processSuccessLoading()
-            }
-        } else {
-            _currency = asyncCurrency.await()
-            _categories.value = asyncCategories.await()
-            processEmptyStart()
+            if (response is Response.Success) response.data else null
         }
+        launchCurrencyAndCategories.join()
+        if (responseData != null)
+            processSuccessLoading(responseData)
+        resetLoadingAndError()
     }
 
     fun saveChanges(): Deferred<Boolean> {
@@ -166,7 +157,7 @@ open class CreateUpdateViewModel @Inject constructor(
         }.also { _deferredSaving = it }
     }
 
-    override fun setParams(extras: CreationExtras) {
+    override fun setViewModelParams(extras: CreationExtras) {
         if (!_transactionIdLatch.isCompleted && !_screenTypeLatch.isCompleted) {
             _screenTypeLatch.complete(extras[ViewModelParams.Screen] ?: ScreenType.Expenses)
             _transactionIdLatch.complete(extras[ViewModelParams.TransactionId])
@@ -180,7 +171,9 @@ open class CreateUpdateViewModel @Inject constructor(
     companion object {
         private const val MAX_COMMENT_LENGTH = 64
 
-        private val _defaultExpensesCategories = listOf(ShortCategory(1, "Зарплата"))
-        private val _defaultIncomeCategories = listOf(ShortCategory(7, "Жильё"))
+        private fun getDefaultCategories(screenType: ScreenType) = when(screenType) {
+            ScreenType.Income -> listOf(ShortCategory(1, "Зарплата"))
+            ScreenType.Expenses -> listOf(ShortCategory(7, "Жильё"))
+        }
     }
 }

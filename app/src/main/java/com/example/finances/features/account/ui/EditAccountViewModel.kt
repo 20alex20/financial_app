@@ -13,6 +13,7 @@ import com.example.finances.features.account.domain.models.ShortAccount
 import com.example.finances.features.account.domain.repository.AccountRepo
 import com.example.finances.features.account.ui.mappers.toShortAccount
 import com.example.finances.features.account.ui.models.AccountViewModelState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import javax.inject.Inject
@@ -52,7 +53,7 @@ class EditAccountViewModel @Inject constructor(
         )
     }
 
-    override suspend fun loadData() {
+    override suspend fun loadData(scope: CoroutineScope) {
         when (val response = accountRepo.getAccount()) {
             is Response.Failure -> setError()
             is Response.Success -> {
@@ -86,7 +87,7 @@ class EditAccountViewModel @Inject constructor(
         }.also { _deferredSaving = it }
     }
 
-    override fun setParams(extras: CreationExtras) {}
+    override fun setViewModelParams(extras: CreationExtras) {}
 
     init {
         reloadData()

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -37,21 +38,21 @@ abstract class BaseViewModel : ViewModel() {
         _error.value = false
     }
 
-    protected abstract suspend fun loadData()
+    protected abstract suspend fun loadData(scope: CoroutineScope)
 
     fun reloadData() {
         _loadedJob?.cancel()
         _loadedJob = viewModelScope.launch {
             setLoading()
             try {
-                loadData()
+                loadData(this)
             } catch (_: Exception) {
                 setError()
             }
         }
     }
 
-    abstract fun setParams(extras: CreationExtras)
+    abstract fun setViewModelParams(extras: CreationExtras)
 
     protected open suspend fun handleReloadEvent(reloadEvent: ReloadEvent) {}
 

@@ -4,7 +4,6 @@ import com.example.finances.core.di.ActivityScope
 import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.repository.repoTryCatchBlock
-import com.example.finances.features.account.domain.extensions.AccountLoadingException
 import com.example.finances.features.account.domain.repository.ExternalAccountRepo
 import com.example.finances.features.categories.domain.repository.CategoriesRepo
 import com.example.finances.features.transactions.data.mappers.toShortCategory
@@ -12,9 +11,10 @@ import com.example.finances.features.transactions.data.mappers.toShortTransactio
 import com.example.finances.features.transactions.data.mappers.toTransaction
 import com.example.finances.features.transactions.data.models.TransactionRequest
 import com.example.finances.features.transactions.navigation.ScreenType
-import com.example.finances.features.transactions.domain.extensions.CategoriesLoadingException
+import com.example.finances.features.transactions.data.extensions.CategoriesLoadingException
 import com.example.finances.features.transactions.domain.models.ShortTransaction
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
+import com.example.finances.features.transactions.data.extensions.AccountLoadingException
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -32,7 +32,7 @@ class TransactionsRepoImpl @Inject constructor(
             if (response is Response.Success)
                 response.data.currency
             else
-                throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
+                throw AccountLoadingException()
         }
     }
 
@@ -43,7 +43,7 @@ class TransactionsRepoImpl @Inject constructor(
                     category.isIncome == (screenType == ScreenType.Income)
                 }.map { it.toShortCategory() }
             else
-                throw CategoriesLoadingException(CATEGORIES_LOADING_ERROR)
+                throw CategoriesLoadingException()
         }
     }
 
@@ -54,7 +54,7 @@ class TransactionsRepoImpl @Inject constructor(
     ) = repoTryCatchBlock {
         val account = accountRepo.getAccount()
         if (account !is Response.Success)
-            throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
+            throw AccountLoadingException()
         transactionsApi.getTransactions(
             accountId = account.data.id,
             startDate = startDate.format(DateTimeFormatters.requestDate),
@@ -72,7 +72,7 @@ class TransactionsRepoImpl @Inject constructor(
         shortTransaction: ShortTransaction
     ) = repoTryCatchBlock {
         val account = accountRepo.getAccount()
-        if (account !is Response.Success) throw AccountLoadingException(ACCOUNT_LOADING_ERROR)
+        if (account !is Response.Success) throw AccountLoadingException()
         val transactionRequest = TransactionRequest(
             accountId = account.data.id,
             categoryId = shortTransaction.categoryId,
@@ -87,10 +87,5 @@ class TransactionsRepoImpl @Inject constructor(
             transactionId = shortTransaction.id,
             transaction = transactionRequest
         ).toShortTransaction()
-    }
-
-    companion object {
-        const val ACCOUNT_LOADING_ERROR = "Account data loading error"
-        const val CATEGORIES_LOADING_ERROR = "Categories data loading error"
     }
 }

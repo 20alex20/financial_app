@@ -5,7 +5,7 @@ import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.repository.repoTryCatchBlock
 import com.example.finances.features.account.data.mappers.toAccount
 import com.example.finances.features.account.data.mappers.toAccountUpdateRequest
-import com.example.finances.features.account.domain.extensions.AccountLoadingException
+import com.example.finances.features.account.data.extensions.AccountIdLoadingException
 import com.example.finances.features.account.domain.models.Account
 import com.example.finances.features.account.domain.models.ShortAccount
 import com.example.finances.features.account.domain.repository.AccountRepo
@@ -35,15 +35,11 @@ class AccountRepoImpl @Inject constructor(
     override suspend fun updateAccount(account: ShortAccount, accountId: Int?) = repoTryCatchBlock {
         val id = accountId ?: getAccount().let { accountForId ->
             if (accountForId !is Response.Success)
-                throw AccountLoadingException(ACCOUNT_ID_LOADING_ERROR)
+                throw AccountIdLoadingException()
             accountForId.data.id
         }
         accountApi.updateAccount(id, account.toAccountUpdateRequest()).toAccount().also { account ->
             cachedAccount = account
         }
-    }
-
-    companion object {
-        private const val ACCOUNT_ID_LOADING_ERROR = "Account id loading error"
     }
 }

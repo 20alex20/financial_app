@@ -8,6 +8,7 @@ import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.features.categories.domain.models.Category
 import com.example.finances.features.categories.domain.repository.CategoriesRepo
 import com.example.finances.features.categories.ui.models.CategoriesViewModelState
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
 /**
@@ -31,7 +32,7 @@ class CategoriesViewModel @Inject constructor(
         )
     }
 
-    override suspend fun loadData() {
+    override suspend fun loadData(scope: CoroutineScope) {
         when (val response = categoriesRepo.getCategories()) {
             is Response.Failure -> setError()
             is Response.Success -> {
@@ -42,7 +43,7 @@ class CategoriesViewModel @Inject constructor(
         }
     }
 
-    override fun setParams(extras: CreationExtras) {}
+    override fun setViewModelParams(extras: CreationExtras) {}
 
     init {
         reloadData()
