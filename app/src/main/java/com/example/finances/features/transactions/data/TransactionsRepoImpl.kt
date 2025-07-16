@@ -97,8 +97,8 @@ class TransactionsRepoImpl @Inject constructor(
             // Offline mode: fetch from local DB
             database.transactionDao().getTransactions(
                 accountId = accountId,
-                startDate = LocalDateTime.parse(startDateStr + "T00:00:00", DateTimeFormatters.requestDateTime),
-                endDate = LocalDateTime.parse(endDateStr + "T23:59:59", DateTimeFormatters.requestDateTime),
+                startDate = LocalDateTime.parse(startDateStr + "T00:00:00.000Z", DateTimeFormatters.replyDateTime),
+                endDate = LocalDateTime.parse(endDateStr + "T23:59:59.999Z", DateTimeFormatters.replyDateTime),
                 isIncome = isIncome
             ).map { it.toTransaction() }
         }
