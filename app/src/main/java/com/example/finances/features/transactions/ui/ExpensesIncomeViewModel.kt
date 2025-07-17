@@ -41,7 +41,9 @@ open class ExpensesIncomeViewModel @Inject constructor(
                 val currency = asyncCurrency.await()
                 _state.value = ExpensesIncomeViewModelState(
                     total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
-                    expensesIncome = response.data.map { it.toExpenseIncome(currency) }
+                    expensesIncome = response.data.map { transaction ->
+                        transaction.toExpenseIncome(currency, convertAmountUseCase)
+                    }
                 )
                 resetLoadingAndError()
             }

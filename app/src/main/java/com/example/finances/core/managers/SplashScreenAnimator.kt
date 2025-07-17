@@ -1,4 +1,4 @@
-package com.example.finances.core.utils
+package com.example.finances.core.managers
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter

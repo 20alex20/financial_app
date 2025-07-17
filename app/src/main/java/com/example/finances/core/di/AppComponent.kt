@@ -1,30 +1,22 @@
 package com.example.finances.core.di
 
 import android.app.Application
-import android.content.Context
-import com.example.finances.app.FinancesApplication
 import com.example.finances.core.di.modules.RetrofitClientModule
 import com.example.finances.core.di.modules.AppModule
-import com.example.finances.core.di.modules.DatabaseModule
-import com.example.finances.core.data.local.FinanceDatabase
+import com.example.finances.core.managers.NetworkConnectionObserver
 import dagger.BindsInstance
 import dagger.Component
-import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [
         AppModule::class,
-        RetrofitClientModule::class,
-        DatabaseModule::class
+        RetrofitClientModule::class
     ]
 )
 interface AppComponent {
-    @ApplicationContext fun applicationContext(): Context
-    fun retrofit(): Retrofit
-    fun database(): FinanceDatabase
-    fun inject(application: FinancesApplication)
+    fun networkConnectionObserver(): NetworkConnectionObserver
 
     @Component.Factory
     interface Factory {

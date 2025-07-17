@@ -69,7 +69,9 @@ open class HistoryViewModel @Inject constructor(
                 val currency = asyncCurrency.await()
                 _state.value = HistoryViewModelState(
                     total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
-                    history = response.data.map { it.toHistoryRecord(currency, _today) }
+                    history = response.data.map { transaction ->
+                        transaction.toHistoryRecord(currency, _today, convertAmountUseCase)
+                    }
                 )
                 resetLoadingAndError()
             }
@@ -89,6 +91,7 @@ open class HistoryViewModel @Inject constructor(
                     }
                 )
             }
+
             ReloadEvent.TransactionCreatedUpdated -> {
                 reloadData()
             }

@@ -7,9 +7,11 @@ import com.example.finances.features.transactions.domain.models.Transaction
 import com.example.finances.features.transactions.ui.models.HistoryRecord
 import java.time.LocalDate
 
-private val convertAmountUseCase = ConvertAmountUseCase()
-
-fun Transaction.toHistoryRecord(currency: Currency, today: LocalDate) = HistoryRecord(
+fun Transaction.toHistoryRecord(
+    currency: Currency,
+    today: LocalDate,
+    convertAmountUseCase: ConvertAmountUseCase
+) = HistoryRecord(
     id = id,
     categoryName = categoryName,
     categoryEmoji = categoryEmoji,

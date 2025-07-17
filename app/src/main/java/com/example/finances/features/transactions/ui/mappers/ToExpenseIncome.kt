@@ -5,9 +5,10 @@ import com.example.finances.core.utils.models.Currency
 import com.example.finances.features.transactions.domain.models.Transaction
 import com.example.finances.features.transactions.ui.models.ExpenseIncome
 
-private val convertAmountUseCase = ConvertAmountUseCase()
-
-fun Transaction.toExpenseIncome(currency: Currency) = ExpenseIncome(
+fun Transaction.toExpenseIncome(
+    currency: Currency,
+    convertAmountUseCase: ConvertAmountUseCase
+) = ExpenseIncome(
     id = id,
     categoryName = categoryName,
     categoryEmoji = categoryEmoji,

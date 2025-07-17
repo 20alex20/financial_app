@@ -1,4 +1,4 @@
-package com.example.finances.features.transactions.data
+package com.example.finances.features.transactions.data.database
 
 import com.example.finances.features.transactions.data.models.TransactionResponse
 import com.example.finances.features.transactions.data.models.TransactionRequest

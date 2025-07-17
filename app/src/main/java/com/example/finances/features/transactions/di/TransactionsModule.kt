@@ -3,7 +3,7 @@ package com.example.finances.features.transactions.di
 import com.example.finances.core.di.ActivityScope
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.core.utils.viewmodel.ViewModelKey
-import com.example.finances.features.transactions.data.TransactionsApi
+import com.example.finances.features.transactions.data.database.TransactionsApi
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.CreateUpdateViewModel
@@ -36,7 +36,7 @@ interface TransactionsModule {
 
     @Binds
     @ActivityScope
-    fun bindsTransactionsRepoImpl(transactionsRepoImpl: TransactionsRepoImpl): TransactionsRepo
+    fun bindsTransactionsRepo(transactionsRepoImpl: TransactionsRepoImpl): TransactionsRepo
 
     companion object {
         @Provides

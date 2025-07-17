@@ -1,4 +1,4 @@
-package com.example.finances.features.account.data
+package com.example.finances.features.account.data.database
 
 import com.example.finances.features.account.data.models.AccountResponse
 import com.example.finances.features.account.data.models.AccountUpdateRequest
