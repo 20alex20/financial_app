@@ -2,10 +2,13 @@ package com.example.finances.core.managers
 
 import android.content.Context
 import android.util.Log
+import androidx.room.Room
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.finances.features.transactions.data.database.TransactionsApi
 import com.example.finances.features.transactions.data.models.TransactionRequest
+import com.example.finances.features.transactions.data.models.TransactionEntity
+import com.example.finances.features.transactions.domain.DateTimeFormatters
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
@@ -24,6 +27,10 @@ class TransactionWorker(
     companion object {
         private const val TAG = "TransactionWorker"
         private const val BASE_URL = "https://shmr-finance.ru/api/v1/"
+    }
+
+    private val database by lazy {
+        Room.databaseBuilder(applicationContext, FinanceDatabase::class.java, "finance_db").build()
     }
 
     private val transactionsApi: TransactionsApi by lazy {
@@ -55,22 +62,69 @@ class TransactionWorker(
         retrofit.create(TransactionsApi::class.java)
     }
 
-    override suspend fun doWork(): Result {
+    private suspend fun syncTransaction(transaction: TransactionEntity) {
+        val transactionRequest = TransactionRequest(
+            accountId = 49, // Using the same accountId as before
+            categoryId = transaction.categoryId,
+            amount = String.format(null, "%.2f", transaction.amount),
+            transactionDate = transaction.dateTime.format(DateTimeFormatters.requestDateTime),
+            comment = transaction.comment
+        )
+
         try {
-            val transaction = TransactionRequest(
-                accountId = 49,
-                categoryId = 1,
-                amount = "500.00",
-                transactionDate = "2025-07-18T22:59:46.599Z",
-                comment = "Yeeeeesssssss"
-            )
+            val responseId = if (transaction.remoteId == null) {
+                // Create new transaction on server
+                val createResponse = transactionsApi.createTransaction(transactionRequest)
+                Log.d(TAG, "Created transaction on server with ID: ${createResponse.id}")
+                
+                // Update local transaction with remote ID and synced status
+                database.transactionDao().insertTransaction(
+                    transaction.copy(
+                        remoteId = createResponse.id,
+                        isSynced = true
+                    )
+                )
+                createResponse.id
+            } else {
+                // Update existing transaction on server
+                val updateResponse = transactionsApi.updateTransaction(
+                    transactionId = transaction.remoteId,
+                    transaction = transactionRequest
+                )
+                Log.d(TAG, "Updated transaction on server with ID: ${transaction.remoteId}")
+                
+                // Update local transaction with synced status
+                database.transactionDao().insertTransaction(
+                    transaction.copy(isSynced = true)
+                )
+                updateResponse.id
+            }
             
-            transactionsApi.createTransaction(transaction)
-            Log.d(TAG, "Transaction sent successfully!")
-            return Result.success()
+            Log.d(TAG, "Successfully synced transaction $responseId")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to send transaction", e)
-            return Result.failure()
+            Log.e(TAG, "Failed to sync transaction ${transaction.id}", e)
+            throw e
+        }
+    }
+
+    override suspend fun doWork(): Result {
+        return try {
+            val unsyncedTransactions = database.transactionDao().getNotSyncedTransactions()
+            Log.d(TAG, "Found ${unsyncedTransactions.size} unsynced transactions")
+
+            unsyncedTransactions.forEach { transaction ->
+                try {
+                    syncTransaction(transaction)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to sync transaction ${transaction.id}", e)
+                    // Continue with next transaction even if this one failed
+                }
+            }
+
+            Result.success()
+        } catch (e: Exception) {
+            Log.e(TAG, "Worker failed", e)
+            Result.failure()
         }
     }
 } 

@@ -30,8 +30,8 @@ class FinancesApplication : Application(), Configuration.Provider {
     
     private fun scheduleTransaction() {
         val targetTime = LocalDateTime.now()
-            .withHour(23)
-            .withMinute(41)
+            .withHour(0)
+            .withMinute(15)
             .withSecond(0)
         
         val currentTime = LocalDateTime.now()
