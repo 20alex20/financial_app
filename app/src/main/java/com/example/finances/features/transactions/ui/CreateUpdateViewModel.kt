@@ -86,11 +86,12 @@ open class CreateUpdateViewModel @Inject constructor(
     }
 
     fun updateCategory(categoryId: Int) {
-        val category = _categories.value.find { it.id == categoryId }
-        if (category == null)
-            return
+        val category = _categories.value.find { it.id == categoryId } ?: return
         _transaction = _transaction.copy(categoryId = categoryId)
-        _state.value = _state.value.copy(categoryName = category.name)
+        _state.value = _state.value.copy(
+            categoryName = category.name,
+            categoryEmoji = category.emoji
+        )
     }
 
     private suspend fun loadCategories(): List<ShortCategory> {

@@ -64,9 +64,12 @@ class TransactionsRepoImpl @Inject constructor(
         transactionResponse: TransactionResponse,
         screenType: ScreenType
     ) = transactionResponse.toTransaction().also { transaction ->
-        database.transactionDao().insertTransaction(
-            transaction.toTransactionEntity(transactionResponse.category.isIncome)
-        )
+        database.transactionDao().run {
+            val localId = getTransactionLocalId(transaction.id) ?: 0
+            insertTransaction(
+                transaction.toTransactionEntity(localId, transactionResponse.category.isIncome)
+            )
+        }
     }.takeIf { transactionResponse.category.isIncome == screenType.isIncome }
 
     override suspend fun getTransactions(
@@ -116,9 +119,10 @@ class TransactionsRepoImpl @Inject constructor(
         } else {
             updateTransaction(transactionId, transactionRequest).toTransaction()
         }
-        database.transactionDao().insertTransaction(
-            transaction.toTransactionEntity(screenType.isIncome)
-        )
+        database.transactionDao().run {
+            val localId = getTransactionLocalId(transaction.id) ?: 0
+            insertTransaction(transaction.toTransactionEntity(localId, screenType.isIncome))
+        }
         transaction
     }
 
@@ -139,7 +143,7 @@ class TransactionsRepoImpl @Inject constructor(
             isIncome = screenType.isIncome
         )
         getTransaction(
-            transactionId = -insertTransaction(transactionEntity)
+            transactionId = -insertTransaction(transactionEntity).toInt()
         )?.toTransaction() ?: throw NoLocalDatabaseTransactionException()
     }
 

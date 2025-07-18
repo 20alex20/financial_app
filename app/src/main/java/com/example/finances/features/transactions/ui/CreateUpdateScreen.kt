@@ -179,7 +179,7 @@ fun CreateUpdateScreen(screenType: ScreenType, transactionId: Int?, navControlle
             ) {
                 if (vm.loading.value)
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                if (vm.sendingError.value) {
+                if (vm.error.value) {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally

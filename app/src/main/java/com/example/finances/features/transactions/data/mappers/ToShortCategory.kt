@@ -5,5 +5,6 @@ import com.example.finances.features.transactions.domain.models.ShortCategory
 
 fun Category.toShortCategory() = ShortCategory(
     id = id,
-    name = name
+    name = name,
+    emoji = emoji
 )

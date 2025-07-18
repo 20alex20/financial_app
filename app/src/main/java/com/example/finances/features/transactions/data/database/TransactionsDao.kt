@@ -27,8 +27,11 @@ interface TransactionsDao {
     )
     suspend fun getTransaction(transactionId: Int): TransactionEntity?
 
+    @Query("SELECT localId FROM transactions WHERE id = :transactionId")
+    suspend fun getTransactionLocalId(transactionId: Int): Int?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTransaction(transaction: TransactionEntity): Int
+    suspend fun insertTransaction(transaction: TransactionEntity): Long
 
     @Query(
         "DELETE FROM transactions " +

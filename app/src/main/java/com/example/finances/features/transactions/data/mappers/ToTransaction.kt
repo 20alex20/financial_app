@@ -31,11 +31,11 @@ fun ShortTransactionResponse.toTransaction(
 )
 
 fun TransactionEntity.toTransaction() = Transaction(
-    id = id ?: -localId,
+    id = id ?: -localId.toInt(),
     categoryId = categoryId,
     categoryName = categoryName,
     categoryEmoji = categoryEmoji,
-    dateTime = LocalDateTime.parse(dateTime, DateTimeFormatters.requestDateTime),
+    dateTime = dateTime,
     amount = amount,
     comment = comment
 )
