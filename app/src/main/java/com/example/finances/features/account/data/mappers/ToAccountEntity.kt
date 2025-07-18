@@ -8,12 +8,14 @@ fun Account.toAccountEntity() = AccountEntity(
     id = id,
     name = name,
     balance = balance,
-    currency = currency.name
+    currency = currency.name,
+    isSynced = true
 )
 
 fun ShortAccount.toAccountEntity(id: Int) = AccountEntity(
     id = id,
     name = name,
     balance = balance,
-    currency = currency.name
+    currency = currency.name,
+    isSynced = false
 )

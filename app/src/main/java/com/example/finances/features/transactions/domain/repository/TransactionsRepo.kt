@@ -27,8 +27,6 @@ interface TransactionsRepo {
     suspend fun createUpdateTransaction(
         transaction: ShortTransaction,
         transactionId: Int?,
-        categoryName: String,
-        categoryEmoji: String,
         screenType: ScreenType
-    ): Response<Transaction>
+    ): Response<ShortTransaction>
 }

@@ -45,7 +45,14 @@ open class CreateUpdateViewModel @Inject constructor(
     private val _categories = mutableStateOf(getDefaultCategories(ScreenType.Expenses))
     val categories: State<List<ShortCategory>> = _categories
 
-    private var _transaction = ShortTransaction(1, 0.0, _today, "")
+    private var _transaction = ShortTransaction(
+        categoryId = 1,
+        categoryName = getDefaultCategories(ScreenType.Expenses)[0].name,
+        categoryEmoji = getDefaultCategories(ScreenType.Expenses)[0].emoji,
+        amount = 0.0,
+        dateTime = _today,
+        comment = ""
+    )
     private var _transactionId: Int? = null
 
     private val _state = mutableStateOf(
@@ -87,7 +94,11 @@ open class CreateUpdateViewModel @Inject constructor(
 
     fun updateCategory(categoryId: Int) {
         val category = _categories.value.find { it.id == categoryId } ?: return
-        _transaction = _transaction.copy(categoryId = categoryId)
+        _transaction = _transaction.copy(
+            categoryId = categoryId,
+            categoryName = category.name,
+            categoryEmoji = category.emoji
+        )
         _state.value = _state.value.copy(
             categoryName = category.name,
             categoryEmoji = category.emoji
@@ -148,8 +159,6 @@ open class CreateUpdateViewModel @Inject constructor(
             transactionsRepo.createUpdateTransaction(
                 transaction = _transaction,
                 transactionId = _transactionId,
-                categoryName = _state.value.categoryName,
-                categoryEmoji = _state.value.categoryEmoji,
                 screenType = _screenTypeLatch.await()
             ).takeIf { it is Response.Success }?.also {
                 resetLoadingAndError()

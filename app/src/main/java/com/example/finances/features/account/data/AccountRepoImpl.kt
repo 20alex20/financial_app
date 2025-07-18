@@ -55,7 +55,9 @@ class AccountRepoImpl @Inject constructor(
         }
         if (localLoading) database.accountDao().run {
             updateAccount(account.toAccountEntity(id))
-            getAccount()?.toAccount() ?: throw NoLocalAccountDataException()
+            getAccount()?.toAccount().also { newAccount ->
+                cachedAccount = newAccount
+            } ?: throw NoLocalAccountDataException()
         } else accountApi.updateAccount(id, account.toAccountUpdateRequest()).toAccount().also {
             cachedAccount = it
             database.accountDao().updateAccount(it.toAccountEntity())

@@ -17,7 +17,7 @@ private val HTTP_ERRORS_WITH_RETRY = listOf(
 )
 
 suspend fun <T> repoTryCatchBlock(
-    isOnline: Boolean,
+    isOnline: Boolean = false,
     func: suspend (Boolean) -> T
 ): Response<T> = withContext(Dispatchers.IO) {
     var networkExceptionMessage: String? = null

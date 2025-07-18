@@ -8,5 +8,6 @@ data class AccountEntity(
     @PrimaryKey val id: Int,
     val name: String,
     val balance: Double,
-    val currency: String
+    val currency: String,
+    val isSynced: Boolean
 )

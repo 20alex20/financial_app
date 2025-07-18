@@ -3,6 +3,7 @@ package com.example.finances.core.di
 import android.app.Activity
 import androidx.lifecycle.ViewModelProvider
 import com.example.finances.core.di.modules.ActivityModule
+import com.example.finances.core.managers.DataSync
 import com.example.finances.core.managers.SplashScreenAnimator
 import com.example.finances.features.account.di.AccountModule
 import com.example.finances.features.categories.di.CategoriesModule
@@ -23,6 +24,7 @@ import dagger.Component
 interface ActivityComponent {
     fun splashScreenAnimator(): SplashScreenAnimator
     fun viewModelFactory(): ViewModelProvider.Factory
+    fun dataSync(): DataSync
 
     @Component.Factory
     interface Factory {

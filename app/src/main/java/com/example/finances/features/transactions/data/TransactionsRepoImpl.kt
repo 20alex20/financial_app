@@ -18,6 +18,7 @@ import com.example.finances.core.managers.FinanceDatabase
 import com.example.finances.core.managers.NetworkConnectionObserver
 import com.example.finances.features.transactions.data.database.TransactionsApi
 import com.example.finances.features.transactions.data.extensions.NoLocalDatabaseTransactionException
+import com.example.finances.features.transactions.data.mappers.toShortTransaction
 import com.example.finances.features.transactions.data.mappers.toTransactionEntity
 import com.example.finances.features.transactions.data.models.TransactionResponse
 import kotlinx.coroutines.flow.first
@@ -35,9 +36,7 @@ class TransactionsRepoImpl @Inject constructor(
     private val database: FinanceDatabase,
     private val networkObserver: NetworkConnectionObserver
 ) : TransactionsRepo {
-    override suspend fun getCurrency() = repoTryCatchBlock(
-        isOnline = networkObserver.observe().first()
-    ) {
+    override suspend fun getCurrency() = repoTryCatchBlock {
         accountRepo.getAccount().let { response ->
             if (response is Response.Success)
                 response.data.currency
@@ -46,9 +45,7 @@ class TransactionsRepoImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCategories(screenType: ScreenType) = repoTryCatchBlock(
-        isOnline = networkObserver.observe().first()
-    ) {
+    override suspend fun getCategories(screenType: ScreenType) = repoTryCatchBlock {
         categoriesRepo.getCategories().let { response ->
             if (response is Response.Success) response.data.filter { category ->
                 category.isIncome == screenType.isIncome
@@ -63,14 +60,20 @@ class TransactionsRepoImpl @Inject constructor(
     private suspend fun toTransactionWithFilter(
         transactionResponse: TransactionResponse,
         screenType: ScreenType
-    ) = transactionResponse.toTransaction().also { transaction ->
+    ) = transactionResponse.toShortTransaction().let { transaction ->
         database.transactionDao().run {
-            val localId = getTransactionLocalId(transaction.id) ?: 0
             insertTransaction(
-                transaction.toTransactionEntity(localId, transactionResponse.category.isIncome)
+                transaction.toTransactionEntity(
+                    id = getTransactionId(transactionResponse.id) ?: 0L,
+                    remoteId = transactionResponse.id,
+                    isIncome = transactionResponse.category.isIncome,
+                    isSynced = true
+                )
             )
+        }.takeIf { transactionResponse.category.isIncome == screenType.isIncome }?.let { localId ->
+            transaction.toTransaction(localId.toInt())
         }
-    }.takeIf { transactionResponse.category.isIncome == screenType.isIncome }
+    }
 
     override suspend fun getTransactions(
         startDate: LocalDate,
@@ -93,81 +96,70 @@ class TransactionsRepoImpl @Inject constructor(
         ).map { it.toTransaction() }
     }
 
-    override suspend fun getTransaction(transactionId: Int) = repoTryCatchBlock(
-        isOnline = networkObserver.observe().first()
-    ) { localLoading ->
-        if (transactionId < 0 || localLoading) {
-            database.transactionDao().getTransaction(
-                transactionId
-            )?.toTransaction() ?: throw NoLocalDatabaseTransactionException()
-        } else {
-            transactionsApi.getTransaction(transactionId).toTransaction()
-        }
+    override suspend fun getTransaction(transactionId: Int) = repoTryCatchBlock {
+        database.transactionDao().getTransaction(
+            transactionId.toLong()
+        )?.toTransaction() ?: throw NoLocalDatabaseTransactionException()
     }
 
     private suspend fun remoteSaving(
         transactionRequest: TransactionRequest,
         transactionId: Int?,
-        categoryName: String,
-        categoryEmoji: String,
+        oldTransaction: ShortTransaction,
         screenType: ScreenType
-    ) = transactionsApi.run {
-        val transaction = if (transactionId == null || transactionId < 0) {
-            if (transactionId != null)
-                database.transactionDao().deleteTransaction(transactionId)
-            createTransaction(transactionRequest).toTransaction(categoryName, categoryEmoji)
-        } else {
-            updateTransaction(transactionId, transactionRequest).toTransaction()
+    ) = database.transactionDao().run {
+        var remoteId = 0
+        val transaction = transactionsApi.run {
+            if (transactionId != null && database.transactionDao().getTransactionRemoteId(
+                    transactionId.toLong()
+                )?.also { remoteId = it } != null
+            ) {
+                updateTransaction(remoteId, transactionRequest).toShortTransaction()
+            } else createTransaction(transactionRequest).also { response ->
+                remoteId = response.id
+            }.toShortTransaction(oldTransaction.categoryName, oldTransaction.categoryEmoji)
         }
-        database.transactionDao().run {
-            val localId = getTransactionLocalId(transaction.id) ?: 0
-            insertTransaction(transaction.toTransactionEntity(localId, screenType.isIncome))
-        }
+        val id = transactionId?.toLong() ?: 0L
+        insertTransaction(transaction.toTransactionEntity(id, remoteId, screenType.isIncome, true))
         transaction
     }
 
     private suspend fun localSaving(
         transaction: ShortTransaction,
         transactionId: Int?,
-        categoryName: String,
-        categoryEmoji: String,
         screenType: ScreenType
     ) = database.transactionDao().run {
-        if (transactionId != null && transactionId > 0)
-            deleteTransaction(transactionId)
         val transactionEntity = transaction.toTransactionEntity(
-            localId = if (transactionId != null && transactionId < 0) -transactionId else 0,
-            transactionId = transactionId.takeIf { it != null && it > 0 },
-            categoryName = categoryName,
-            categoryEmoji = categoryEmoji,
-            isIncome = screenType.isIncome
+            id = transactionId?.toLong() ?: 0L,
+            isIncome = screenType.isIncome,
+            isSynced = false,
+            remoteId = transactionId?.let { id ->
+                database.transactionDao().getTransactionRemoteId(id.toLong())
+            }
         )
         getTransaction(
-            transactionId = -insertTransaction(transactionEntity).toInt()
-        )?.toTransaction() ?: throw NoLocalDatabaseTransactionException()
+            id = insertTransaction(transactionEntity)
+        )?.toShortTransaction() ?: throw NoLocalDatabaseTransactionException()
     }
 
     override suspend fun createUpdateTransaction(
         transaction: ShortTransaction,
         transactionId: Int?,
-        categoryName: String,
-        categoryEmoji: String,
         screenType: ScreenType
     ) = repoTryCatchBlock(isOnline = networkObserver.observe().first()) { localLoading ->
         if (!localLoading) {
             val account = accountRepo.getAccount()
             if (account !is Response.Success)
                 throw AccountLoadingException()
-            val transactionRequest = TransactionRequest(
+            TransactionRequest(
                 accountId = account.data.id,
                 categoryId = transaction.categoryId,
                 amount = String.format(null, "%.2f", transaction.amount),
                 transactionDate = transaction.dateTime.format(DateTimeFormatters.requestDateTime),
                 comment = transaction.comment
-            )
-            remoteSaving(transactionRequest, transactionId, categoryName, categoryEmoji, screenType)
+            ).let { remoteSaving(it, transactionId, transaction, screenType) }
         } else {
-            localSaving(transaction, transactionId, categoryName, categoryEmoji, screenType)
+            localSaving(transaction, transactionId, screenType)
         }
     }
 }

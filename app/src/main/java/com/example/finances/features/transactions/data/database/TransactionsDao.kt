@@ -20,23 +20,19 @@ interface TransactionsDao {
         isIncome: Boolean
     ): List<TransactionEntity>
 
-    @Query(
-        "SELECT * FROM transactions " +
-                "WHERE (:transactionId > 0 AND id = :transactionId) OR " +
-                "(:transactionId < 0 AND localId = -:transactionId)"
-    )
-    suspend fun getTransaction(transactionId: Int): TransactionEntity?
 
-    @Query("SELECT localId FROM transactions WHERE id = :transactionId")
-    suspend fun getTransactionLocalId(transactionId: Int): Int?
+    @Query("SELECT * FROM transactions WHERE isSynced = 0 ORDER BY dateTime DESC")
+    suspend fun getNotSyncedTransactions(): List<TransactionEntity>
+
+    @Query("SELECT * FROM transactions WHERE id = :id")
+    suspend fun getTransaction(id: Long): TransactionEntity?
+
+    @Query("SELECT remoteId FROM transactions WHERE id = :id")
+    suspend fun getTransactionRemoteId(id: Long): Int?
+
+    @Query("SELECT id FROM transactions WHERE remoteId = :remoteId")
+    suspend fun getTransactionId(remoteId: Int): Long?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: TransactionEntity): Long
-
-    @Query(
-        "DELETE FROM transactions " +
-                "WHERE (:transactionId > 0 AND id = :transactionId) OR " +
-                "(:transactionId < 0 AND localId = -:transactionId)"
-    )
-    suspend fun deleteTransaction(transactionId: Int)
 }

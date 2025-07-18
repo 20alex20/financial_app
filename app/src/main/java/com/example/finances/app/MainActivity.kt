@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 
         activityComponent = DaggerActivityComponent.factory().create(this, appComponent)
+        activityComponent.dataSync()
         activityComponent.splashScreenAnimator()
 
         enableEdgeToEdge()
