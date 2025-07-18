@@ -18,26 +18,28 @@ class FinancesApplication : Application(), Configuration.Provider {
         super.onCreate()
         appComponent = DaggerAppComponent.factory().create(this)
         appComponent.networkConnectionObserver()
-        
-        scheduleTransaction()
+
+        launchTransactionWorker()
     }
-    
+
+    private fun launchTransactionWorker() {
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            WORKER_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            PeriodicWorkRequestBuilder<TransactionWorker>(
+                20, TimeUnit.MINUTES,
+                5, TimeUnit.MINUTES
+            ).build()
+        )
+    }
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(appComponent.workerFactory())
             .build()
-    
-    private fun scheduleTransaction() {
-        val workRequest = PeriodicWorkRequestBuilder<TransactionWorker>(
-            20, TimeUnit.MINUTES,  // Repeat every 20 minutes
-            5, TimeUnit.MINUTES    // Flex interval of 5 minutes
-        ).build()
-        
-        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "transaction_sync",                      // Unique work name
-            ExistingPeriodicWorkPolicy.KEEP,        // Keep existing work if present
-            workRequest
-        )
+
+    companion object {
+        private const val WORKER_NAME = "transaction_sync"
     }
 }
 
