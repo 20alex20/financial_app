@@ -56,6 +56,7 @@ class TransactionWorker(
     }
 
     private suspend fun syncTransaction(transaction: TransactionEntity) {
+        Log.d(TAG, transaction.toString())
         val transactionRequest = TransactionRequest(
             accountId = 49,
             categoryId = transaction.categoryId,
@@ -63,6 +64,7 @@ class TransactionWorker(
             transactionDate = transaction.dateTime.format(DateTimeFormatters.requestDateTime),
             comment = transaction.comment
         )
+        Log.d(TAG, transactionRequest.toString())
         if (transaction.remoteId == null) {
             val responseId = transactionsApi.createTransaction(transactionRequest).id
             Log.d(TAG, "Created transaction on server with ID: $responseId")
@@ -84,6 +86,7 @@ class TransactionWorker(
                 try {
                     syncTransaction(transaction)
                 } catch (e: Exception) {
+                    Log.d(TAG, e.message ?: "1234")
                     Log.e(TAG, "Failed to sync transaction with local ID: ${transaction.id}", e)
                 }
             }
