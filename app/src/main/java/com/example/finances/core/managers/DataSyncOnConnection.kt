@@ -1,6 +1,10 @@
 package com.example.finances.core.managers
 
+import android.content.Context
+import com.example.finances.core.di.ActivityContext
 import com.example.finances.core.di.ActivityScope
+import com.example.finances.core.di.ApplicationContext
+import com.example.finances.core.utils.SyncTimeManager
 import com.example.finances.features.account.data.mappers.toShortAccount
 import com.example.finances.features.account.domain.repository.AccountRepo
 import com.example.finances.features.transactions.data.mappers.toShortTransaction
@@ -15,6 +19,7 @@ import javax.inject.Inject
 
 @ActivityScope
 class DataSyncOnConnection @Inject constructor(
+    @ActivityContext private val context: Context,
     private val networkObserver: NetworkConnectionObserver,
     private val accountRepo: AccountRepo,
     private val transactionsRepo: TransactionsRepo,
@@ -29,14 +34,11 @@ class DataSyncOnConnection @Inject constructor(
     private fun observeNetworkState() = scope.launch {
         networkObserver.observe().distinctUntilChanged().collect { isOnline ->
             if (isOnline) {
-                syncData()
+                syncAccount()
+                if (syncTransactions())
+                    SyncTimeManager.updateLastSyncTime(context.applicationContext)
             }
         }
-    }
-
-    private suspend fun syncData() {
-        syncAccount()
-        syncTransactions()
     }
 
     private suspend fun syncAccount() {
@@ -49,7 +51,8 @@ class DataSyncOnConnection @Inject constructor(
         }
     }
 
-    private suspend fun syncTransactions() {
+    private suspend fun syncTransactions(): Boolean {
+        var anySynced = false
         val localTransactions = database.transactionDao().getNotSyncedTransactions()
         for (transaction in localTransactions) {
             transactionsRepo.createUpdateTransaction(
@@ -57,6 +60,8 @@ class DataSyncOnConnection @Inject constructor(
                 transactionId = transaction.id.toInt(),
                 screenType = ScreenType.fromBoolean(transaction.isIncome)
             )
+            anySynced = true
         }
+        return anySynced
     }
 }

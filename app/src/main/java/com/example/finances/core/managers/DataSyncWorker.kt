@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.room.Room
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.finances.core.utils.SyncTimeManager
 import com.example.finances.core.utils.models.Currency
 import com.example.finances.features.account.data.database.AccountApi
 import com.example.finances.features.account.data.models.AccountUpdateRequest
@@ -69,7 +70,6 @@ class DataSyncWorker(
     private suspend fun syncAccount() {
         val account = database.accountDao().getAccount()
         if (account != null && !account.isSynced) {
-            Log.d(TAG, "Found unsynced account with ID: ${account.id}")
             try {
                 val accountRequest = AccountUpdateRequest(
                     name = account.name,
@@ -91,16 +91,8 @@ class DataSyncWorker(
     ): Boolean {
         return try {
             val remoteTransaction = transactionsApi.getTransaction(transactionId)
-            val remoteAccountId = remoteTransaction.account.id
-            val matches = remoteAccountId == expectedAccountId
-            if (!matches) Log.d(
-                TAG,
-                "Transaction $transactionId belongs to account $remoteAccountId, " +
-                        "not $expectedAccountId"
-            )
-            matches
+            remoteTransaction.account.id == expectedAccountId
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to verify transaction $transactionId ownership", e)
             false
         }
     }
@@ -133,15 +125,17 @@ class DataSyncWorker(
             syncAccount()
             val unsyncedTransactions = database.transactionDao().getNotSyncedTransactions()
             Log.d(TAG, "Found ${unsyncedTransactions.size} unsynced transactions")
-
             database.accountDao().getAccount()?.also { account ->
+                var synced = false
                 unsyncedTransactions.forEach { transaction ->
                     try {
                         syncTransaction(transaction, account.id)
+                        synced = true
                     } catch (e: Exception) {
                         Log.e(TAG, "Failed to sync transaction with local ID: ${transaction.id}", e)
                     }
                 }
+                if (synced) SyncTimeManager.updateLastSyncTime(applicationContext)
             }
             Result.success()
         } catch (e: Exception) {
@@ -151,7 +145,7 @@ class DataSyncWorker(
     }
 
     companion object {
-        private const val TAG = "TransactionWorker"
+        private const val TAG = "DataSyncWorker"
         private const val BASE_URL = "https://shmr-finance.ru/api/v1/"
     }
 }
