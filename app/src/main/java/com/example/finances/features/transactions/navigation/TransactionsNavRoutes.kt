@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 sealed interface TransactionsNavRoutes {
     @Serializable data class ExpensesIncome(val isIncome: Boolean) : TransactionsNavRoutes
     @Serializable data class History(val isIncome: Boolean) : TransactionsNavRoutes
+    @Serializable data class Analysis(val isIncome: Boolean) : TransactionsNavRoutes
     @Serializable data class CreateUpdate(
         val isIncome: Boolean,
         val transactionId: Int? = null

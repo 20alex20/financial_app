@@ -11,23 +11,23 @@ import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
-import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
+import com.example.finances.features.transactions.domain.usecases.GroupByCategoriesUseCase
+import com.example.finances.features.transactions.ui.models.AnalysisViewModelState
 import com.example.finances.features.transactions.ui.models.DatesViewModelState
-import com.example.finances.features.transactions.ui.models.HistoryViewModelState
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.inject.Inject
 
 /**
  * Вьюмодель экрана истории
  */
-open class HistoryViewModel @Inject constructor(
+open class AnalysisViewModel @Inject constructor(
     private val transactionsRepo: TransactionsRepo,
     private val convertAmountUseCase: ConvertAmountUseCase,
-    private val loadCurrencyUseCase: LoadCurrencyUseCase
+    private val loadCurrencyUseCase: LoadCurrencyUseCase,
+    private val groupByCategoriesUseCase: GroupByCategoriesUseCase
 ) : BaseViewModel() {
     private val _screenTypeLatch = CompletableDeferred<ScreenType>()
     private var _today = LocalDate.now()
@@ -37,8 +37,8 @@ open class HistoryViewModel @Inject constructor(
     )
     val dates: State<DatesViewModelState> = _dates
 
-    private val _state = mutableStateOf(HistoryViewModelState("0 ₽", emptyList()))
-    val state: State<HistoryViewModelState> = _state
+    private val _state = mutableStateOf(AnalysisViewModelState("0 ₽", emptyList()))
+    val state: State<AnalysisViewModelState> = _state
 
     fun setPeriod(start: LocalDate, end: LocalDate) {
         _today = LocalDate.now()
@@ -49,10 +49,7 @@ open class HistoryViewModel @Inject constructor(
             start = startDate,
             end = endDate,
             strStart = startDate.format(DateTimeFormatters.date),
-            strEnd = when (endDate) {
-                _today -> LocalDateTime.now().format(DateTimeFormatters.time)
-                else -> endDate.format(DateTimeFormatters.date)
-            }
+            strEnd = endDate.format(DateTimeFormatters.date)
         )
     }
 
@@ -67,11 +64,10 @@ open class HistoryViewModel @Inject constructor(
             is Response.Failure -> setError()
             is Response.Success -> {
                 val currency = asyncCurrency.await()
-                _state.value = HistoryViewModelState(
-                    total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
-                    history = response.data.map { transaction ->
-                        transaction.toHistoryRecord(currency, _today, convertAmountUseCase)
-                    }
+                val total = response.data.sumOf { it.amount }
+                _state.value = AnalysisViewModelState(
+                    total = convertAmountUseCase(total, asyncCurrency.await()),
+                    analysis = groupByCategoriesUseCase(response.data, total, currency)
                 )
                 resetLoadingAndError()
             }
@@ -82,11 +78,11 @@ open class HistoryViewModel @Inject constructor(
         when (reloadEvent) {
             ReloadEvent.AccountUpdated -> {
                 val newCurrency = loadCurrencyUseCase()
-                _state.value = HistoryViewModelState(
+                _state.value = AnalysisViewModelState(
                     total = convertAmountUseCase(_state.value.total, newCurrency),
-                    history = _state.value.history.map { expenseIncome ->
-                        expenseIncome.copy(
-                            amount = convertAmountUseCase(expenseIncome.amount, newCurrency)
+                    analysis = _state.value.analysis.map { analysisCategory ->
+                        analysisCategory.copy(
+                            amount = convertAmountUseCase(analysisCategory.amount, newCurrency)
                         )
                     }
                 )

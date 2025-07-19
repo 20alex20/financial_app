@@ -27,6 +27,10 @@ fun TransactionsNavigation(isIncome: Boolean, modifier: Modifier = Modifier) {
             val args = backStackEntry.toRoute<TransactionsNavRoutes.CreateUpdate>()
             HistoryScreen(ScreenType.fromBoolean(args.isIncome), navController)
         }
+        composable<TransactionsNavRoutes.Analysis> { backStackEntry ->
+            val args = backStackEntry.toRoute<TransactionsNavRoutes.Analysis>()
+            HistoryScreen(ScreenType.fromBoolean(args.isIncome), navController)
+        }
         composable<TransactionsNavRoutes.CreateUpdate> { backStackEntry ->
             val args = backStackEntry.toRoute<TransactionsNavRoutes.CreateUpdate>()
             CreateUpdateScreen(
