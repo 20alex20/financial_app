@@ -25,6 +25,7 @@ class TransactionWorker(
     appContext: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
+
     private val database by lazy {
         Room.databaseBuilder(applicationContext, FinanceDatabase::class.java, "finance_db").build()
     }
@@ -83,6 +84,26 @@ class TransactionWorker(
         }
     }
 
+    private suspend fun verifyTransactionOwnership(
+        transactionId: Int,
+        expectedAccountId: Int
+    ): Boolean {
+        return try {
+            val remoteTransaction = transactionsApi.getTransaction(transactionId)
+            val remoteAccountId = remoteTransaction.account.id
+            val matches = remoteAccountId == expectedAccountId
+            if (!matches) Log.d(
+                TAG,
+                "Transaction $transactionId belongs to account $remoteAccountId, " +
+                        "not $expectedAccountId"
+            )
+            matches
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to verify transaction $transactionId ownership", e)
+            false
+        }
+    }
+
     private suspend fun syncTransaction(transaction: TransactionEntity, accountId: Int) {
         val transactionRequest = TransactionRequest(
             accountId = accountId,
@@ -91,16 +112,18 @@ class TransactionWorker(
             transactionDate = transaction.dateTime.format(DateTimeFormatters.requestDateTime),
             comment = transaction.comment
         )
-        if (transaction.remoteId == null) {
+        if (transaction.remoteId != null &&
+            verifyTransactionOwnership(transaction.remoteId, accountId)
+        ) {
+            transactionsApi.updateTransaction(transaction.remoteId, transactionRequest)
+            Log.d(TAG, "Updated transaction on server with ID: ${transaction.remoteId}")
+            database.transactionDao().insertTransaction(transaction.copy(isSynced = true))
+        } else {
             val responseId = transactionsApi.createTransaction(transactionRequest).id
             Log.d(TAG, "Created transaction on server with ID: $responseId")
             database.transactionDao().insertTransaction(
                 transaction.copy(remoteId = responseId, isSynced = true)
             )
-        } else {
-            transactionsApi.updateTransaction(transaction.remoteId, transactionRequest)
-            Log.d(TAG, "Updated transaction on server with ID: ${transaction.remoteId}")
-            database.transactionDao().insertTransaction(transaction.copy(isSynced = true))
         }
     }
 
@@ -109,6 +132,7 @@ class TransactionWorker(
             syncAccount()
             val unsyncedTransactions = database.transactionDao().getNotSyncedTransactions()
             Log.d(TAG, "Found ${unsyncedTransactions.size} unsynced transactions")
+
             database.accountDao().getAccount()?.also { account ->
                 unsyncedTransactions.forEach { transaction ->
                     try {
