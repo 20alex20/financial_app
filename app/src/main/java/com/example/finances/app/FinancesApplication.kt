@@ -28,7 +28,7 @@ class FinancesApplication : Application(), Configuration.Provider {
             ExistingPeriodicWorkPolicy.KEEP,
             PeriodicWorkRequestBuilder<TransactionWorker>(
                 15, TimeUnit.MINUTES,
-                5, TimeUnit.MINUTES
+                2, TimeUnit.MINUTES
             ).build()
         )
     }

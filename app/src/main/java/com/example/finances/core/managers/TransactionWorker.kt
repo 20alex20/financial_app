@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.room.Room
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.finances.features.account.data.database.AccountApi
+import com.example.finances.features.account.data.models.AccountUpdateRequest
 import com.example.finances.features.transactions.data.database.TransactionsApi
 import com.example.finances.features.transactions.data.models.TransactionRequest
 import com.example.finances.features.transactions.data.models.TransactionEntity
@@ -33,7 +35,7 @@ class TransactionWorker(
         )
     ).readLine().trim()
 
-    private val transactionsApi: TransactionsApi by lazy {
+    private val retrofit by lazy {
         val client = OkHttpClient.Builder()
             .addInterceptor(Interceptor { chain ->
                 chain.proceed(
@@ -47,24 +49,48 @@ class TransactionWorker(
         val moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
-        val retrofit = Retrofit.Builder()
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
+    }
+
+    private val transactionsApi: TransactionsApi by lazy {
         retrofit.create(TransactionsApi::class.java)
     }
 
-    private suspend fun syncTransaction(transaction: TransactionEntity) {
-        Log.d(TAG, transaction.toString())
+    private val accountApi: AccountApi by lazy {
+        retrofit.create(AccountApi::class.java)
+    }
+
+    private suspend fun syncAccount() {
+        val account = database.accountDao().getAccount()
+        if (account != null && !account.isSynced) {
+            Log.d(TAG, "Found unsynced account with ID: ${account.id}")
+            try {
+                val accountRequest = AccountUpdateRequest(
+                    name = account.name,
+                    balance = String.format(null, "%.2f", account.balance),
+                    currency = account.currency
+                )
+                accountApi.updateAccount(account.id, accountRequest)
+                Log.d(TAG, "Successfully updated account ${account.id}")
+                database.accountDao().insertAccount(account.copy(isSynced = true))
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to sync account ${account.id}", e)
+            }
+        }
+    }
+
+    private suspend fun syncTransaction(transaction: TransactionEntity, accountId: Int) {
         val transactionRequest = TransactionRequest(
-            accountId = 49,
+            accountId = accountId,
             categoryId = transaction.categoryId,
             amount = String.format(null, "%.2f", transaction.amount),
             transactionDate = transaction.dateTime.format(DateTimeFormatters.requestDateTime),
             comment = transaction.comment
         )
-        Log.d(TAG, transactionRequest.toString())
         if (transaction.remoteId == null) {
             val responseId = transactionsApi.createTransaction(transactionRequest).id
             Log.d(TAG, "Created transaction on server with ID: $responseId")
@@ -80,14 +106,16 @@ class TransactionWorker(
 
     override suspend fun doWork(): Result {
         return try {
+            syncAccount()
             val unsyncedTransactions = database.transactionDao().getNotSyncedTransactions()
             Log.d(TAG, "Found ${unsyncedTransactions.size} unsynced transactions")
-            unsyncedTransactions.forEach { transaction ->
-                try {
-                    syncTransaction(transaction)
-                } catch (e: Exception) {
-                    Log.d(TAG, e.message ?: "1234")
-                    Log.e(TAG, "Failed to sync transaction with local ID: ${transaction.id}", e)
+            database.accountDao().getAccount()?.also { account ->
+                unsyncedTransactions.forEach { transaction ->
+                    try {
+                        syncTransaction(transaction, account.id)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to sync transaction with local ID: ${transaction.id}", e)
+                    }
                 }
             }
             Result.success()
