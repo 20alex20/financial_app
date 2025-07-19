@@ -9,7 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import com.example.finances.core.di.ActivityComponent
 import com.example.finances.core.di.DaggerActivityComponent
 import com.example.finances.core.ui.MainScreen
-import com.example.finances.core.utils.SyncTimeManager
+import com.example.finances.core.managers.SyncTimeManager
 
 class MainActivity : ComponentActivity() {
     private lateinit var activityComponent: ActivityComponent

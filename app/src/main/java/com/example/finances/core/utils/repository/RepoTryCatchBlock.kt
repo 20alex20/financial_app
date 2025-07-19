@@ -1,6 +1,5 @@
 package com.example.finances.core.utils.repository
 
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -24,22 +23,17 @@ suspend fun <T> repoTryCatchBlock(
     var attempt = if (isOnline) 0 else ATTEMPTS_NUMBER
     while (attempt <= ATTEMPTS_NUMBER) {
         try {
-            Log.d("MyTag", "1")
             val res = func(attempt == ATTEMPTS_NUMBER)
-            Log.d("MyTag", "2 $res")
             return@withContext Response.Success(res)
         } catch (e: IOException) {
-            Log.d("MyTag", "3")
             networkExceptionMessage = e.message
         } catch (e: HttpException) {
-            Log.d("MyTag", "4")
             networkExceptionMessage = e.message
             if (e.code() !in HTTP_ERRORS_WITH_RETRY) {
                 attempt = ATTEMPTS_NUMBER
                 continue
             }
         } catch (_: Exception) {
-            Log.d("MyTag", "5")
             if (attempt < ATTEMPTS_NUMBER)
                 attempt = ATTEMPTS_NUMBER - 1
         }
@@ -47,7 +41,6 @@ suspend fun <T> repoTryCatchBlock(
         if (attempt < ATTEMPTS_NUMBER)
             delay(TIMER)
     }
-    Log.d("MyTag", "6")
     Response.Failure(
         if (networkExceptionMessage != null)
             LocalLoadingWithNetworkException(networkExceptionMessage)

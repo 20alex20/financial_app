@@ -1,11 +1,10 @@
 package com.example.finances.core.managers
 
 import android.content.Context
-import android.util.Log
+//import android.util.Log
 import androidx.room.Room
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.finances.core.utils.SyncTimeManager
 import com.example.finances.core.utils.models.Currency
 import com.example.finances.features.account.data.database.AccountApi
 import com.example.finances.features.account.data.models.AccountUpdateRequest
@@ -77,10 +76,10 @@ class DataSyncWorker(
                     currency = Currency.valueOf(account.currency).shortName
                 )
                 accountApi.updateAccount(account.id, accountRequest)
-                Log.d(TAG, "Successfully updated account ${account.id}")
+//                Log.d(TAG, "Successfully updated account ${account.id}")
                 database.accountDao().insertAccount(account.copy(isSynced = true))
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to sync account ${account.id}", e)
+//                Log.e(TAG, "Failed to sync account ${account.id}", e)
             }
         }
     }
@@ -109,11 +108,11 @@ class DataSyncWorker(
             verifyTransactionOwnership(transaction.remoteId, accountId)
         ) {
             transactionsApi.updateTransaction(transaction.remoteId, transactionRequest)
-            Log.d(TAG, "Updated transaction on server with ID: ${transaction.remoteId}")
+//            Log.d(TAG, "Updated transaction on server with ID: ${transaction.remoteId}")
             database.transactionDao().insertTransaction(transaction.copy(isSynced = true))
         } else {
             val responseId = transactionsApi.createTransaction(transactionRequest).id
-            Log.d(TAG, "Created transaction on server with ID: $responseId")
+//            Log.d(TAG, "Created transaction on server with ID: $responseId")
             database.transactionDao().insertTransaction(
                 transaction.copy(remoteId = responseId, isSynced = true)
             )
@@ -124,7 +123,7 @@ class DataSyncWorker(
         return try {
             syncAccount()
             val unsyncedTransactions = database.transactionDao().getNotSyncedTransactions()
-            Log.d(TAG, "Found ${unsyncedTransactions.size} unsynced transactions")
+//            Log.d(TAG, "Found ${unsyncedTransactions.size} unsynced transactions")
             database.accountDao().getAccount()?.also { account ->
                 var synced = false
                 unsyncedTransactions.forEach { transaction ->
@@ -132,20 +131,21 @@ class DataSyncWorker(
                         syncTransaction(transaction, account.id)
                         synced = true
                     } catch (e: Exception) {
-                        Log.e(TAG, "Failed to sync transaction with local ID: ${transaction.id}", e)
+//                        Log.e(TAG, "Failed to sync transaction with local ID: ${transaction.id}", e)
                     }
                 }
-                if (synced) SyncTimeManager.updateLastSyncTime(applicationContext)
+                if (synced)
+                    SyncTimeManager.updateLastSyncTime(applicationContext)
             }
             Result.success()
         } catch (e: Exception) {
-            Log.e(TAG, "Worker failed", e)
+//            Log.e(TAG, "Worker failed", e)
             Result.failure()
         }
     }
 
     companion object {
-        private const val TAG = "DataSyncWorker"
+        private const val TAG = "TransactionWorker"
         private const val BASE_URL = "https://shmr-finance.ru/api/v1/"
     }
 }

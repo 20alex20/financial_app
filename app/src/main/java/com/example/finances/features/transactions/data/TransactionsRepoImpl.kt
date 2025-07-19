@@ -88,7 +88,9 @@ class TransactionsRepoImpl @Inject constructor(
                 accountId = account.data.id,
                 startDate = startDate.format(DateTimeFormatters.requestDate),
                 endDate = endDate.format(DateTimeFormatters.requestDate)
-            ).mapNotNull { toTransactionWithFilter(it, screenType) }
+            ).mapNotNull { transactionResponse ->
+                toTransactionWithFilter(transactionResponse, screenType)
+            }.sortedByDescending { it.dateTime }
         } else database.transactionDao().getTransactions(
             startDate = startDate.atTime(0, 0, 0),
             endDate = endDate.atTime(23, 59, 59, 999),

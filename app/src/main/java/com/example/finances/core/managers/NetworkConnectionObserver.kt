@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 @Singleton
 class NetworkConnectionObserver @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext context: Context
 ) {
     private val _isOnline = MutableSharedFlow<Boolean>(replay = 1)
     private val isOnline: SharedFlow<Boolean> = _isOnline.asSharedFlow()

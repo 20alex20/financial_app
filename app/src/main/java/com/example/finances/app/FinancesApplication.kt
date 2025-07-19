@@ -27,7 +27,7 @@ class FinancesApplication : Application(), Configuration.Provider {
             WORKER_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
             PeriodicWorkRequestBuilder<DataSyncWorker>(
-                15, TimeUnit.MINUTES,
+                120, TimeUnit.MINUTES,
                 2, TimeUnit.MINUTES
             ).build()
         )

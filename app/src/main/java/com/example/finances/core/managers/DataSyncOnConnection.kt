@@ -3,8 +3,6 @@ package com.example.finances.core.managers
 import android.content.Context
 import com.example.finances.core.di.ActivityContext
 import com.example.finances.core.di.ActivityScope
-import com.example.finances.core.di.ApplicationContext
-import com.example.finances.core.utils.SyncTimeManager
 import com.example.finances.features.account.data.mappers.toShortAccount
 import com.example.finances.features.account.domain.repository.AccountRepo
 import com.example.finances.features.transactions.data.mappers.toShortTransaction
