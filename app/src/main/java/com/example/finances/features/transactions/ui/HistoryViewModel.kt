@@ -12,7 +12,7 @@ import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.mappers.toHistoryRecord
-import com.example.finances.features.transactions.ui.models.HistoryDatesViewModelState
+import com.example.finances.features.transactions.ui.models.DatesViewModelState
 import com.example.finances.features.transactions.ui.models.HistoryViewModelState
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -33,9 +33,9 @@ open class HistoryViewModel @Inject constructor(
     private var _today = LocalDate.now()
 
     private val _dates = mutableStateOf(
-        HistoryDatesViewModelState(_today.withDayOfMonth(1), _today, "01.01.2025", "00:00")
+        DatesViewModelState(_today.withDayOfMonth(1), _today, "01.01.2025", "00:00")
     )
-    val dates: State<HistoryDatesViewModelState> = _dates
+    val dates: State<DatesViewModelState> = _dates
 
     private val _state = mutableStateOf(HistoryViewModelState("0 ₽", emptyList()))
     val state: State<HistoryViewModelState> = _state
@@ -45,7 +45,7 @@ open class HistoryViewModel @Inject constructor(
         val endDate = if (end <= _today) end else _today
         val startDate = if (start <= endDate) start else endDate
 
-        _dates.value = HistoryDatesViewModelState(
+        _dates.value = DatesViewModelState(
             start = startDate,
             end = endDate,
             strStart = startDate.format(DateTimeFormatters.date),
@@ -69,7 +69,9 @@ open class HistoryViewModel @Inject constructor(
                 val currency = asyncCurrency.await()
                 _state.value = HistoryViewModelState(
                     total = convertAmountUseCase(response.data.sumOf { it.amount }, currency),
-                    history = response.data.map { it.toHistoryRecord(currency, _today) }
+                    history = response.data.map { transaction ->
+                        transaction.toHistoryRecord(currency, _today, convertAmountUseCase)
+                    }
                 )
                 resetLoadingAndError()
             }
@@ -89,6 +91,7 @@ open class HistoryViewModel @Inject constructor(
                     }
                 )
             }
+
             ReloadEvent.TransactionCreatedUpdated -> {
                 reloadData()
             }

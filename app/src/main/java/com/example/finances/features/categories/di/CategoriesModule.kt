@@ -3,7 +3,7 @@ package com.example.finances.features.categories.di
 import com.example.finances.core.di.ActivityScope
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.core.utils.viewmodel.ViewModelKey
-import com.example.finances.features.categories.data.CategoriesApi
+import com.example.finances.features.categories.data.database.CategoriesApi
 import com.example.finances.features.categories.data.CategoriesRepoImpl
 import com.example.finances.features.categories.domain.repository.CategoriesRepo
 import com.example.finances.features.categories.ui.CategoriesViewModel
@@ -22,7 +22,7 @@ interface CategoriesModule {
 
     @Binds
     @ActivityScope
-    fun bindsCategoriesRepoImpl(categoriesRepoImpl: CategoriesRepoImpl): CategoriesRepo
+    fun bindsCategoriesRepo(categoriesRepoImpl: CategoriesRepoImpl): CategoriesRepo
 
     companion object {
         @Provides

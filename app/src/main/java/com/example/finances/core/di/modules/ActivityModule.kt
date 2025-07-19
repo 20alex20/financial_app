@@ -12,11 +12,10 @@ import dagger.Module
 @Module
 interface ActivityModule {
     @Binds
-    @ActivityScope
     @ActivityContext
     fun bindsActivityContext(activity: Activity): Context
 
     @Binds
     @ActivityScope
-    fun bindsDaggerViewModelFactory(factory: DaggerViewModelFactory): ViewModelProvider.Factory
+    fun bindsViewModelFactory(factory: DaggerViewModelFactory): ViewModelProvider.Factory
 }

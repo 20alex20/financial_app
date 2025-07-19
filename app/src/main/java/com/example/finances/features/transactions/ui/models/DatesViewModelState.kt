@@ -2,7 +2,7 @@ package com.example.finances.features.transactions.ui.models
 
 import java.time.LocalDate
 
-data class HistoryDatesViewModelState(
+data class DatesViewModelState(
     val start: LocalDate,
     val end: LocalDate,
     val strStart: String,

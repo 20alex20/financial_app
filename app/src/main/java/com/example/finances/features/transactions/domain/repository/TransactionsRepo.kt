@@ -22,9 +22,11 @@ interface TransactionsRepo {
         screenType: ScreenType
     ): Response<List<Transaction>>
 
-    suspend fun getTransaction(transactionId: Int): Response<ShortTransaction>
+    suspend fun getTransaction(transactionId: Int): Response<Transaction>
 
     suspend fun createUpdateTransaction(
-        shortTransaction: ShortTransaction
+        transaction: ShortTransaction,
+        transactionId: Int?,
+        screenType: ScreenType
     ): Response<ShortTransaction>
 }

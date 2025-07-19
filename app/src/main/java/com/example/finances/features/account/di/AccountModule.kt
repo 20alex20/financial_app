@@ -3,7 +3,7 @@ package com.example.finances.features.account.di
 import com.example.finances.core.di.ActivityScope
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.core.utils.viewmodel.ViewModelKey
-import com.example.finances.features.account.data.AccountApi
+import com.example.finances.features.account.data.database.AccountApi
 import com.example.finances.features.account.data.AccountRepoImpl
 import com.example.finances.features.account.domain.repository.AccountRepo
 import com.example.finances.features.account.domain.repository.ExternalAccountRepo
@@ -29,11 +29,11 @@ interface AccountModule {
 
     @Binds
     @ActivityScope
-    fun bindsAccountRepoImpl(accountRepoImpl: AccountRepoImpl): AccountRepo
+    fun bindsAccountRepo(accountRepoImpl: AccountRepoImpl): AccountRepo
 
     @Binds
     @ActivityScope
-    fun bindsExternalAccountRepoImpl(accountRepoImpl: AccountRepoImpl): ExternalAccountRepo
+    fun bindsExternalAccountRepo(accountRepoImpl: AccountRepoImpl): ExternalAccountRepo
 
     companion object {
         @Provides

@@ -12,10 +12,12 @@ import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.features.transactions.navigation.ScreenType
 import com.example.finances.features.transactions.domain.models.ShortCategory
+import com.example.finances.features.transactions.domain.models.Transaction
 import com.example.finances.features.transactions.domain.models.ShortTransaction
 import com.example.finances.features.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
 import com.example.finances.features.transactions.ui.mappers.toLocalTime
+import com.example.finances.features.transactions.ui.mappers.toShortTransaction
 import com.example.finances.features.transactions.ui.models.CreateUpdateViewModelState
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -37,20 +39,26 @@ open class CreateUpdateViewModel @Inject constructor(
     private val _today = LocalDateTime.now()
     private val _screenTypeLatch = CompletableDeferred<ScreenType>()
     private val _transactionIdLatch = CompletableDeferred<Int?>()
-
     private var _deferredSaving: Deferred<Boolean>? = null
     private var _currency = Currency.RUBLE
-    private var _transaction = ShortTransaction(null, 1, 0.0, _today, "")
 
-    private val _sendingError = mutableStateOf(false)
-    val sendingError: State<Boolean> = _sendingError
-
-    private val _categories = mutableStateOf(listOf(ShortCategory(1, "Зарплата")))
+    private val _categories = mutableStateOf(getDefaultCategories(ScreenType.Expenses))
     val categories: State<List<ShortCategory>> = _categories
+
+    private var _transaction = ShortTransaction(
+        categoryId = 1,
+        categoryName = getDefaultCategories(ScreenType.Expenses)[0].name,
+        categoryEmoji = getDefaultCategories(ScreenType.Expenses)[0].emoji,
+        amount = 0.0,
+        dateTime = _today,
+        comment = ""
+    )
+    private var _transactionId: Int? = null
 
     private val _state = mutableStateOf(
         CreateUpdateViewModelState(
-            categoryName = "Зарплата",
+            categoryName = getDefaultCategories(ScreenType.Expenses)[0].name,
+            categoryEmoji = getDefaultCategories(ScreenType.Expenses)[0].emoji,
             amount = "0 ₽",
             date = _today.format(DateTimeFormatters.date),
             time = _today.format(DateTimeFormatters.time),
@@ -85,11 +93,16 @@ open class CreateUpdateViewModel @Inject constructor(
     }
 
     fun updateCategory(categoryId: Int) {
-        val category = _categories.value.find { it.id == categoryId }
-        if (category == null)
-            return
-        _transaction = _transaction.copy(categoryId = categoryId)
-        _state.value = _state.value.copy(categoryName = category.name)
+        val category = _categories.value.find { it.id == categoryId } ?: return
+        _transaction = _transaction.copy(
+            categoryId = categoryId,
+            categoryName = category.name,
+            categoryEmoji = category.emoji
+        )
+        _state.value = _state.value.copy(
+            categoryName = category.name,
+            categoryEmoji = category.emoji
+        )
     }
 
     private suspend fun loadCategories(): List<ShortCategory> {
@@ -107,11 +120,13 @@ open class CreateUpdateViewModel @Inject constructor(
         )
     }
 
-    private fun processSuccessLoading(transaction: ShortTransaction) {
+    private fun processSuccessLoading(transaction: Transaction) {
         _categories.value.find { it.id == transaction.categoryId }?.let { category ->
-            _transaction = transaction
+            _transactionId = transaction.id
+            _transaction = transaction.toShortTransaction()
             _state.value = CreateUpdateViewModelState(
                 categoryName = category.name,
+                categoryEmoji = category.emoji,
                 amount = convertAmountUseCase(_transaction.amount, _currency),
                 date = _transaction.dateTime.format(DateTimeFormatters.date),
                 time = _transaction.dateTime.format(DateTimeFormatters.time),
@@ -137,25 +152,24 @@ open class CreateUpdateViewModel @Inject constructor(
         resetLoadingAndError()
     }
 
-    fun saveChanges(): Deferred<Boolean> {
+    fun saveChanges() = viewModelScope.async {
         _deferredSaving?.cancel()
-        return viewModelScope.async {
-            _sendingError.value = false
-            setLoading()
-            try {
-                val response = transactionsRepo.createUpdateTransaction(_transaction)
+        setLoading()
+        try {
+            transactionsRepo.createUpdateTransaction(
+                transaction = _transaction,
+                transactionId = _transactionId,
+                screenType = _screenTypeLatch.await()
+            ).takeIf { it is Response.Success }?.also {
                 resetLoadingAndError()
-                if (response is Response.Success) {
-                    send(ReloadEvent.TransactionCreatedUpdated)
-                    return@async true
-                }
-            } catch (_: Exception) {
-                resetLoadingAndError()
+                send(ReloadEvent.TransactionCreatedUpdated)
+                return@async true
             }
-            _sendingError.value = true
-            false
-        }.also { _deferredSaving = it }
-    }
+        } catch (_: Exception) {
+        }
+        setError()
+        false
+    }.also { _deferredSaving = it }
 
     override fun setViewModelParams(extras: CreationExtras) {
         if (!_transactionIdLatch.isCompleted && !_screenTypeLatch.isCompleted) {
@@ -171,9 +185,9 @@ open class CreateUpdateViewModel @Inject constructor(
     companion object {
         private const val MAX_COMMENT_LENGTH = 64
 
-        private fun getDefaultCategories(screenType: ScreenType) = when(screenType) {
-            ScreenType.Income -> listOf(ShortCategory(1, "Зарплата"))
-            ScreenType.Expenses -> listOf(ShortCategory(7, "Жильё"))
+        private fun getDefaultCategories(screenType: ScreenType) = when (screenType) {
+            ScreenType.Income -> listOf(ShortCategory(1, "Зарплата", "\uD83D\uDCB0"))
+            ScreenType.Expenses -> listOf(ShortCategory(7, "Жильё", "\uD83C\uDFE0"))
         }
     }
 }
