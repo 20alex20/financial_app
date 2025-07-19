@@ -19,10 +19,10 @@ class FinancesApplication : Application(), Configuration.Provider {
         appComponent = DaggerAppComponent.factory().create(this)
         appComponent.networkConnectionObserver()
 
-        launchTransactionWorker()
+        launchDataSyncWorker()
     }
 
-    private fun launchTransactionWorker() {
+    private fun launchDataSyncWorker() {
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             WORKER_NAME,
             ExistingPeriodicWorkPolicy.KEEP,

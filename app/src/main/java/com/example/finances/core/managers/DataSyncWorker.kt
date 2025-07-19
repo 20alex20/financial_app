@@ -145,7 +145,7 @@ class DataSyncWorker(
     }
 
     companion object {
-        private const val TAG = "TransactionWorker"
+//        private const val TAG = "DataSyncWorker"
         private const val BASE_URL = "https://shmr-finance.ru/api/v1/"
     }
 }
