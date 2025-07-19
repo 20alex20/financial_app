@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.room.Room
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.finances.core.utils.models.Currency
 import com.example.finances.features.account.data.database.AccountApi
 import com.example.finances.features.account.data.models.AccountUpdateRequest
 import com.example.finances.features.transactions.data.database.TransactionsApi
@@ -21,7 +22,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-class TransactionWorker(
+class DataSyncWorker(
     appContext: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
@@ -73,7 +74,7 @@ class TransactionWorker(
                 val accountRequest = AccountUpdateRequest(
                     name = account.name,
                     balance = String.format(null, "%.2f", account.balance),
-                    currency = account.currency
+                    currency = Currency.valueOf(account.currency).shortName
                 )
                 accountApi.updateAccount(account.id, accountRequest)
                 Log.d(TAG, "Successfully updated account ${account.id}")

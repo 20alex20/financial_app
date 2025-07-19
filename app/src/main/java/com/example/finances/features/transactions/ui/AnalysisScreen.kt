@@ -71,9 +71,9 @@ fun AnalysisScreen(
                     Box(
                         modifier = Modifier
                             .height(36.dp)
-                            .padding(horizontal = 20.dp)
                             .clip(RoundedCornerShape(18.dp))
-                            .background(MaterialTheme.colorScheme.primary),
+                            .background(MaterialTheme.colorScheme.primary)
+                            .padding(horizontal = 20.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -110,7 +110,6 @@ fun AnalysisScreen(
             ListItem(
                 mainText = stringResource(R.string.sum),
                 height = ListItemHeight.LOW,
-                dividerEnabled = false,
                 rightText = vm.state.value.total
             )
 

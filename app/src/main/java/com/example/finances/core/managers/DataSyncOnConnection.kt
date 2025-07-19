@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ActivityScope
-class DataSync @Inject constructor(
+class DataSyncOnConnection @Inject constructor(
     private val networkObserver: NetworkConnectionObserver,
     private val accountRepo: AccountRepo,
     private val transactionsRepo: TransactionsRepo,

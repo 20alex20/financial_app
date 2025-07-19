@@ -8,7 +8,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.finances.core.di.AppComponent
 import com.example.finances.core.di.DaggerAppComponent
-import com.example.finances.core.managers.TransactionWorker
+import com.example.finances.core.managers.DataSyncWorker
 import java.util.concurrent.TimeUnit
 
 class FinancesApplication : Application(), Configuration.Provider {
@@ -26,7 +26,7 @@ class FinancesApplication : Application(), Configuration.Provider {
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             WORKER_NAME,
             ExistingPeriodicWorkPolicy.KEEP,
-            PeriodicWorkRequestBuilder<TransactionWorker>(
+            PeriodicWorkRequestBuilder<DataSyncWorker>(
                 15, TimeUnit.MINUTES,
                 2, TimeUnit.MINUTES
             ).build()

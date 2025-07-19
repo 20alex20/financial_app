@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.finances.core.managers.FinanceDatabase
 import com.example.finances.core.di.ApplicationContext
-import com.example.finances.core.managers.DataSync
+import com.example.finances.core.managers.DataSyncOnConnection
 import com.example.finances.core.managers.NetworkConnectionObserver
 import com.example.finances.features.account.domain.repository.AccountRepo
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
@@ -34,8 +34,8 @@ interface AppModule {
             accountRepo: AccountRepo,
             transactionsRepo: TransactionsRepo,
             database: FinanceDatabase
-        ): DataSync {
-            return DataSync(networkObserver, accountRepo, transactionsRepo, database)
+        ): DataSyncOnConnection {
+            return DataSyncOnConnection(networkObserver, accountRepo, transactionsRepo, database)
         }
     }
 }

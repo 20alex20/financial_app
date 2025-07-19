@@ -26,7 +26,7 @@ class GroupByCategoriesUseCase @Inject constructor(
             AnalysisCategory(
                 name = categoryTransactions.first().categoryName,
                 emoji = categoryTransactions.first().categoryEmoji,
-                percent = if (percent < 0) "<1 %" else "${percent.roundToInt()} %",
+                percent = if (percent < 1.0) "<1 %" else "${percent.roundToInt()} %",
                 amount = convertAmountUseCase(amount, currency)
             )
         }

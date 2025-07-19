@@ -6,6 +6,7 @@ import com.example.finances.core.utils.viewmodel.ViewModelKey
 import com.example.finances.features.transactions.data.database.TransactionsApi
 import com.example.finances.features.transactions.data.TransactionsRepoImpl
 import com.example.finances.features.transactions.domain.repository.TransactionsRepo
+import com.example.finances.features.transactions.ui.AnalysisViewModel
 import com.example.finances.features.transactions.ui.CreateUpdateViewModel
 import com.example.finances.features.transactions.ui.ExpensesIncomeViewModel
 import com.example.finances.features.transactions.ui.HistoryViewModel
@@ -28,6 +29,11 @@ interface TransactionsModule {
     @IntoMap
     @ViewModelKey(HistoryViewModel::class)
     fun bindsHistoryViewModel(historyViewModel: HistoryViewModel): BaseViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(AnalysisViewModel::class)
+    fun bindsAnalysisViewModel(analysisViewModel: AnalysisViewModel): BaseViewModel
 
     @Binds
     @IntoMap

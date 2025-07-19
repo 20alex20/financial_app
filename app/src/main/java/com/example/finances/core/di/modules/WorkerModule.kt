@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.example.finances.core.managers.TransactionWorker
+import com.example.finances.core.managers.DataSyncWorker
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -21,8 +21,8 @@ class WorkerModule {
                 workerParameters: WorkerParameters
             ): ListenableWorker? {
                 return when (workerClassName) {
-                    TransactionWorker::class.java.name -> {
-                        TransactionWorker(appContext, workerParameters)
+                    DataSyncWorker::class.java.name -> {
+                        DataSyncWorker(appContext, workerParameters)
                     }
                     else -> null
                 }
