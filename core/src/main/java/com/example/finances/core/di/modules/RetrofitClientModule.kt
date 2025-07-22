@@ -48,7 +48,6 @@ class RetrofitClientModule {
     }
 
     @Provides
-    @CoreScope
     @ApiKey
     fun providesApiKey(@ApplicationContext context: Context) = BufferedReader(
         InputStreamReader(context.resources.openRawResource(R.raw.api_key))

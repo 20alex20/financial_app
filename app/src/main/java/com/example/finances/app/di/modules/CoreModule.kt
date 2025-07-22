@@ -1,11 +1,11 @@
 package com.example.finances.app.di.modules
 
-import com.example.finances.app.di.ActivityComponent
+import com.example.finances.app.di.AppComponent
 import com.example.finances.core.api.CoreAdapter
 import com.example.finances.core.api.CoreComponentFactory
 import com.example.finances.core.api.CoreDependencies
 import com.example.finances.core.managers.NetworkConnectionObserver
-import com.example.finances.core.utils.usecases.ConvertAmountUseCase
+import com.example.finances.core.managers.ConvertAmountUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -15,12 +15,12 @@ import javax.inject.Singleton
 @Module
 interface CoreModule {
     @Binds
-    fun bindsAppComponent(dependencies: ActivityComponent): CoreDependencies
+    fun bindsCoreDependencies(dependencies: AppComponent): CoreDependencies
 
     companion object {
         @Provides
         @Singleton
-        fun providesNetworkConnectionObserver(dependencies: CoreDependencies): CoreAdapter {
+        fun providesCoreAdapter(dependencies: CoreDependencies): CoreAdapter {
             return CoreComponentFactory.create(dependencies)
         }
 

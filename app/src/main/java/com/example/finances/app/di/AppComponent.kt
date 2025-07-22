@@ -5,7 +5,7 @@ import com.example.finances.app.di.modules.AppModule
 import com.example.finances.app.di.modules.CoreModule
 import com.example.finances.core.api.CoreDependencies
 import com.example.finances.core.managers.NetworkConnectionObserver
-import com.example.finances.core.utils.usecases.ConvertAmountUseCase
+import com.example.finances.core.managers.ConvertAmountUseCase
 import dagger.BindsInstance
 import dagger.Component
 import retrofit2.Retrofit

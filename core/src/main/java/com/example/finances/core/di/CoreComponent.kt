@@ -12,9 +12,7 @@ import dagger.Component
 @CoreScope
 @Component(
     dependencies = [CoreDependencies::class],
-    modules = [
-        RetrofitClientModule::class
-    ]
+    modules = [RetrofitClientModule::class]
 )
 interface CoreComponent {
     fun coreAdapter(): CoreAdapter
