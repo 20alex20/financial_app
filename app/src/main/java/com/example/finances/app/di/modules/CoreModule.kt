@@ -4,7 +4,7 @@ import com.example.finances.app.di.ActivityComponent
 import com.example.finances.core.api.CoreAdapter
 import com.example.finances.core.api.CoreComponentFactory
 import com.example.finances.core.api.CoreDependencies
-import com.example.finances.core.utils.NetworkConnectionObserver
+import com.example.finances.core.managers.NetworkConnectionObserver
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import dagger.Binds
 import dagger.Module
@@ -25,19 +25,16 @@ interface CoreModule {
         }
 
         @Provides
-        @Singleton
         fun providesRetrofit(coreAdapter: CoreAdapter): Retrofit {
             return coreAdapter.retrofit
         }
 
         @Provides
-        @Singleton
         fun providesNetworkConnectionObserver(coreAdapter: CoreAdapter): NetworkConnectionObserver {
             return coreAdapter.networkConnectionObserver
         }
 
         @Provides
-        @Singleton
         fun providesConvertAmountUseCase(coreAdapter: CoreAdapter): ConvertAmountUseCase {
             return coreAdapter.convertAmountUseCase
         }

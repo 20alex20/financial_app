@@ -2,13 +2,18 @@ package com.example.finances.feature.categories.ui
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewmodel.CreationExtras
 import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.feature.categories.domain.models.Category
 import com.example.finances.feature.categories.domain.repository.CategoriesRepo
 import com.example.finances.feature.categories.ui.models.CategoriesViewModelState
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Inject
 
+/**
+ * Вьюмодель экрана статей
+ */
 class CategoriesViewModel @Inject constructor(
     private val categoriesRepo: CategoriesRepo
 ) : BaseViewModel() {
@@ -27,7 +32,7 @@ class CategoriesViewModel @Inject constructor(
         )
     }
 
-    override suspend fun loadData() {
+    override suspend fun loadData(scope: CoroutineScope) {
         when (val response = categoriesRepo.getCategories()) {
             is Response.Failure -> setError()
             is Response.Success -> {
@@ -37,6 +42,8 @@ class CategoriesViewModel @Inject constructor(
             }
         }
     }
+
+    override fun setViewModelParams(extras: CreationExtras) {}
 
     init {
         reloadData()

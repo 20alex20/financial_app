@@ -1,6 +1,6 @@
 package com.example.finances.core.api
 
-import com.example.finances.core.utils.NetworkConnectionObserver
+import com.example.finances.core.managers.NetworkConnectionObserver
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import retrofit2.Retrofit
 import javax.inject.Inject

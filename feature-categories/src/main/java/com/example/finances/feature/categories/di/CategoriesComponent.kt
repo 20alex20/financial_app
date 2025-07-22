@@ -1,21 +1,17 @@
 package com.example.finances.feature.categories.di
 
 import com.example.finances.feature.categories.di.common.CategoriesDependencies
-import com.example.finances.feature.categories.di.modules.CategoriesRepoModule
-import com.example.finances.feature.categories.di.modules.CategoriesViewModelModule
-import com.example.finances.feature.categories.navigation.CategoriesNavigation
+import com.example.finances.feature.categories.di.modules.CategoriesModule
+import com.example.finances.feature.categories.navigation.CategoriesFeature
 import dagger.Component
 
 @CategoriesScope
 @Component(
     dependencies = [CategoriesDependencies::class],
-    modules = [
-        CategoriesRepoModule::class,
-        CategoriesViewModelModule::class
-    ]
+    modules = [CategoriesModule::class]
 )
 interface CategoriesComponent {
-    fun categoriesNavigation(): CategoriesNavigation
+    fun categoriesFeature(): CategoriesFeature
 
     @Component.Factory
     interface Factory {

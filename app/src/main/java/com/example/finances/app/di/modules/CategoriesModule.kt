@@ -4,7 +4,7 @@ import com.example.finances.app.di.ActivityComponent
 import com.example.finances.app.di.ActivityScope
 import com.example.finances.feature.categories.di.common.CategoriesComponentFactory
 import com.example.finances.feature.categories.di.common.CategoriesDependencies
-import com.example.finances.feature.categories.navigation.CategoriesNavigation
+import com.example.finances.feature.categories.navigation.CategoriesFeature
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -19,7 +19,7 @@ interface CategoriesModule {
         @ActivityScope
         fun providesCategoriesNavigation(
             dependencies: CategoriesDependencies
-        ): CategoriesNavigation {
+        ): CategoriesFeature {
             return CategoriesComponentFactory.create(dependencies)
         }
     }
