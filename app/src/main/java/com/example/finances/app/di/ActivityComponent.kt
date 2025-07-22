@@ -1,11 +1,12 @@
 package com.example.finances.app.di
 
 import android.app.Activity
+import androidx.lifecycle.ViewModelProvider
 import com.example.finances.app.di.modules.ActivityModule
 import com.example.finances.app.di.modules.CategoriesModule
+import com.example.finances.app.managers.SplashScreenAnimator
 import com.example.finances.app.navigation.AppNavigationCoordinator
-import com.example.finances.core.managers.NetworkConnectionObserver
-import com.example.finances.feature.categories.di.common.CategoriesDependencies
+import com.example.finances.feature.categories.api.CategoriesDependencies
 import dagger.BindsInstance
 import dagger.Component
 
@@ -18,7 +19,8 @@ import dagger.Component
     ]
 )
 interface ActivityComponent : CategoriesDependencies {
-    fun networkConnectionObserver(): NetworkConnectionObserver
+    fun splashScreenAnimator(): SplashScreenAnimator
+    fun viewModelFactory(): ViewModelProvider.Factory
     fun appNavigationCoordinator(): AppNavigationCoordinator
 
     @Component.Factory

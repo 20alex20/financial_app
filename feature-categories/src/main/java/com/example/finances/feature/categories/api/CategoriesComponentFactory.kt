@@ -1,7 +1,6 @@
-package com.example.finances.feature.categories.di.common
+package com.example.finances.feature.categories.api
 
 import com.example.finances.feature.categories.di.CategoriesComponent
-import com.example.finances.feature.categories.navigation.CategoriesFeature
 
 object CategoriesComponentFactory {
     fun create(dependencies: CategoriesDependencies): CategoriesFeature {

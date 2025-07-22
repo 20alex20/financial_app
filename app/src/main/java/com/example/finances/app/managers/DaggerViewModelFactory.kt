@@ -1,4 +1,4 @@
-package com.example.finances.app
+package com.example.finances.app.managers
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -10,7 +10,7 @@ import javax.inject.Provider
 
 @ActivityScope
 class DaggerViewModelFactory @Inject constructor(
-    private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<BaseViewModel>>
+    private val creators: Map<Class<out ViewModel>, Provider<BaseViewModel>>
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {

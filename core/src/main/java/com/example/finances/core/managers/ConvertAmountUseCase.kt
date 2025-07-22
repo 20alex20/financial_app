@@ -1,4 +1,4 @@
-package com.example.finances.core.utils.usecases
+package com.example.finances.core.managers
 
 import com.example.finances.core.di.CoreScope
 import com.example.finances.core.utils.models.Currency

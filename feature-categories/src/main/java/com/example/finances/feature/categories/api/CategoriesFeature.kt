@@ -1,0 +1,25 @@
+package com.example.finances.feature.categories.api
+
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
+import com.example.finances.core.navigation.NavBarRoutes
+import com.example.finances.core.Feature
+import com.example.finances.core.utils.viewmodel.ViewModelMapProvider
+import com.example.finances.feature.categories.di.CategoriesViewModelMapProvider
+import com.example.finances.feature.categories.ui.CategoriesScreen
+import javax.inject.Inject
+
+class CategoriesFeature @Inject constructor(
+    private val categoriesViewModelMapProvider: CategoriesViewModelMapProvider
+) : Feature {
+    override fun getViewModelMapProvider(): ViewModelMapProvider = categoriesViewModelMapProvider
+
+    override fun registerGraph(navGraphBuilder: NavGraphBuilder, navController: NavHostController) {
+        navGraphBuilder.apply {
+            composable<NavBarRoutes.Categories> {
+                CategoriesScreen()
+            }
+        }
+    }
+}
