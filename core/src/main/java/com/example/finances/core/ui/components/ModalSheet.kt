@@ -28,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.finances.core.R
-import com.example.finances.core.ui.components.models.SheetItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,4 +110,10 @@ fun SheetListItem(
             color = MaterialTheme.colorScheme.outlineVariant
         )
     }
-} 
+}
+
+data class SheetItem(
+    val obj: Any,
+    val name: String,
+    val icon: Painter
+)
