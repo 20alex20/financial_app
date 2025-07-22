@@ -1,4 +1,4 @@
-package com.example.finances.feature.categories.data
+package com.example.finances.feature.categories.data.database
 
 import com.example.finances.feature.categories.data.models.CategoryResponse
 import retrofit2.http.GET

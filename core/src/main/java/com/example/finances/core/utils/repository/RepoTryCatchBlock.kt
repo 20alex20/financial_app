@@ -7,35 +7,44 @@ import retrofit2.HttpException
 import java.io.IOException
 import java.net.HttpURLConnection
 
-private const val RETRY_TIMES = 3
+private const val ATTEMPTS_NUMBER = 3
 private const val TIMER = 2000L
-private const val ERROR_MESSAGE = "Data loading error"
 private val HTTP_ERRORS_WITH_RETRY = listOf(
     HttpURLConnection.HTTP_NOT_FOUND,
     HttpURLConnection.HTTP_INTERNAL_ERROR,
     HttpURLConnection.HTTP_GATEWAY_TIMEOUT
 )
 
-/**
- * Exception for unexpected errors
- */
-class UnexpectedException(message: String) : Exception(message)
-
-suspend fun <T> repoTryCatchBlock(f: suspend () -> T): Response<T> = withContext(Dispatchers.IO) {
-    repeat (RETRY_TIMES + 1) { i ->
+suspend fun <T> repoTryCatchBlock(
+    isOnline: Boolean = false,
+    func: suspend (Boolean) -> T
+): Response<T> = withContext(Dispatchers.IO) {
+    var networkExceptionMessage: String? = null
+    var attempt = if (isOnline) 0 else ATTEMPTS_NUMBER
+    while (attempt <= ATTEMPTS_NUMBER) {
         try {
-            val res = f()
+            val res = func(attempt == ATTEMPTS_NUMBER)
             return@withContext Response.Success(res)
         } catch (e: IOException) {
-            if (i == RETRY_TIMES)
-                return@withContext Response.Failure(e)
+            networkExceptionMessage = e.message
         } catch (e: HttpException) {
-            if (i == RETRY_TIMES || e.code() !in HTTP_ERRORS_WITH_RETRY)
-                return@withContext Response.Failure(e)
+            networkExceptionMessage = e.message
+            if (e.code() !in HTTP_ERRORS_WITH_RETRY) {
+                attempt = ATTEMPTS_NUMBER
+                continue
+            }
         } catch (_: Exception) {
-            return@repeat
+            if (attempt < ATTEMPTS_NUMBER)
+                attempt = ATTEMPTS_NUMBER - 1
         }
-        delay(TIMER)
+        attempt += 1
+        if (attempt < ATTEMPTS_NUMBER)
+            delay(TIMER)
     }
-    Response.Failure(UnexpectedException(ERROR_MESSAGE))
+    Response.Failure(
+        if (networkExceptionMessage != null)
+            LocalLoadingWithNetworkException(networkExceptionMessage)
+        else
+            LocalLoadingWithNetworkException()
+    )
 }

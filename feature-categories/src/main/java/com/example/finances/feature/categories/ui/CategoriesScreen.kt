@@ -13,26 +13,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
 import com.example.finances.core.ui.components.ListItem
 import com.example.finances.core.ui.components.LoadingCircular
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.example.finances.core.ui.components.TextInput
-import com.example.finances.core.utils.viewmodel.ViewModelProvider
-import com.example.finances.core.utils.viewmodel.createViewModel
+import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
 import com.example.finances.feature.categories.R
 
 @Composable
-fun CategoriesScreen(categoriesViewModelProvider: ViewModelProvider<CategoriesViewModel>) {
-    val vm = createViewModel { categoriesViewModelProvider.get() }
+fun CategoriesScreen() {
+    val vm: CategoriesViewModel = viewModel(factory = LocalViewModelFactory.current)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
