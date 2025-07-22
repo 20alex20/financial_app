@@ -1,13 +1,9 @@
 package com.example.finances.core.di
 
-import androidx.lifecycle.ViewModelProvider
-import com.example.finances.core.di.common.CoreDependencies
+import com.example.finances.core.api.CoreAdapter
+import com.example.finances.core.api.CoreDependencies
 import com.example.finances.core.di.modules.RetrofitClientModule
-import com.example.finances.core.utils.NetworkConnectionObserver
-import com.example.finances.core.utils.SplashScreenAnimator
-import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import dagger.Component
-import retrofit2.Retrofit
 
 /**
  * Core component that provides basic dependencies for the application.
@@ -21,10 +17,7 @@ import retrofit2.Retrofit
     ]
 )
 interface CoreComponent {
-    fun retrofit(): Retrofit
-    fun networkConnectionObserver(): NetworkConnectionObserver
-    fun splashScreenAnimator(): SplashScreenAnimator
-    fun convertAmountUseCase(): ConvertAmountUseCase
+    fun coreAdapter(): CoreAdapter
 
     @Component.Factory
     interface Factory {

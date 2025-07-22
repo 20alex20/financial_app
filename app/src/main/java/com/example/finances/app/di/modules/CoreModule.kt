@@ -1,16 +1,16 @@
 package com.example.finances.app.di.modules
 
-import androidx.lifecycle.ViewModelProvider
 import com.example.finances.app.di.ActivityComponent
-import com.example.finances.app.di.ActivityScope
-import com.example.finances.core.di.common.CoreComponentAdapter
-import com.example.finances.core.di.common.CoreDependencies
+import com.example.finances.core.api.CoreAdapter
+import com.example.finances.core.api.CoreComponentFactory
+import com.example.finances.core.api.CoreDependencies
 import com.example.finances.core.utils.NetworkConnectionObserver
 import com.example.finances.core.utils.usecases.ConvertAmountUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
+import javax.inject.Singleton
 
 @Module
 interface CoreModule {
@@ -19,22 +19,27 @@ interface CoreModule {
 
     companion object {
         @Provides
-        @ActivityScope
-        fun providesNetworkConnectionObserver(
-            dependencies: CoreDependencies
-        ): NetworkConnectionObserver {
-            return CoreComponentAdapter.networkConnectionObserver(dependencies)
+        @Singleton
+        fun providesNetworkConnectionObserver(dependencies: CoreDependencies): CoreAdapter {
+            return CoreComponentFactory.create(dependencies)
         }
 
         @Provides
-        fun providesRetrofit(): Retrofit {
-            return CoreComponentAdapter.retrofit()
+        @Singleton
+        fun providesRetrofit(coreAdapter: CoreAdapter): Retrofit {
+            return coreAdapter.retrofit
         }
 
         @Provides
-        @ActivityScope
-        fun providesConvertAmountUseCase(): ConvertAmountUseCase {
-            return CoreComponentAdapter.convertAmountUseCase()
+        @Singleton
+        fun providesNetworkConnectionObserver(coreAdapter: CoreAdapter): NetworkConnectionObserver {
+            return coreAdapter.networkConnectionObserver
+        }
+
+        @Provides
+        @Singleton
+        fun providesConvertAmountUseCase(coreAdapter: CoreAdapter): ConvertAmountUseCase {
+            return coreAdapter.convertAmountUseCase
         }
     }
 }

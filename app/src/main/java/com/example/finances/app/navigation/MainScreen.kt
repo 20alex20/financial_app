@@ -10,18 +10,16 @@ import androidx.compose.ui.unit.dp
 import com.example.finances.core.ui.theme.FinancesTheme
 
 @Composable
-fun MainScreen(
-    appNavigationCoordinator: AppNavigationCoordinator
-) {
+fun MainScreen(appNavigationCoordinator: AppNavigationCoordinator) {
     FinancesTheme(dynamicColor = false) {
         Scaffold(
             containerColor = MaterialTheme.colorScheme.surface,
             modifier = Modifier.fillMaxSize()
         ) { padding ->
-                AppNavigation(
-                    appNavigationCoordinator = appNavigationCoordinator,
-                    modifier = Modifier.padding(0.dp, 0.dp, 0.dp, padding.calculateBottomPadding())
-                )
+            AppNavigation(
+                appNavigationCoordinator = appNavigationCoordinator,
+                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, padding.calculateBottomPadding())
+            )
         }
     }
 }

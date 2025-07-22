@@ -1,4 +1,4 @@
-package com.example.finances.core.di.common
+package com.example.finances.core.di
 
 import javax.inject.Qualifier
 

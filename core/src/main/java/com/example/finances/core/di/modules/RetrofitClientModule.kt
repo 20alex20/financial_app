@@ -2,7 +2,7 @@ package com.example.finances.core.di.modules
 
 import android.content.Context
 import com.example.finances.core.R
-import com.example.finances.core.di.common.ApplicationContext
+import com.example.finances.core.di.ApplicationContext
 import com.example.finances.core.di.CoreScope
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -23,6 +23,7 @@ import javax.inject.Qualifier
 @Module
 class RetrofitClientModule {
     @Provides
+    @CoreScope
     fun providesRetrofit(@ApiKey token: String): Retrofit {
         val client = OkHttpClient.Builder()
             .addInterceptor(Interceptor { chain ->

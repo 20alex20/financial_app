@@ -3,7 +3,7 @@ package com.example.finances.app.di.modules
 import android.app.Activity
 import android.content.Context
 import com.example.finances.app.di.ActivityScope
-import com.example.finances.core.di.common.ActivityContext
+import com.example.finances.core.di.ActivityContext
 import dagger.Binds
 import dagger.Module
 

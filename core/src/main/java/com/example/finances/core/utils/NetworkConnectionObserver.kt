@@ -8,28 +8,20 @@ import android.net.NetworkRequest
 import android.widget.Toast
 import com.example.finances.core.R
 import com.example.finances.core.di.CoreScope
-import com.example.finances.core.di.common.ActivityContext
-import com.example.finances.core.di.common.ApplicationContext
+import com.example.finances.core.di.ApplicationContext
 import javax.inject.Inject
 
 /**
  * Responsible for subscribing to connection loss events and displaying corresponding messages
  */
 @CoreScope
-class NetworkConnectionObserver @Inject constructor(
-    @ApplicationContext appContext: Context,
-    @ActivityContext activityContext: Context
-) {
-    private val connectivityManager = appContext.getSystemService(
+class NetworkConnectionObserver @Inject constructor(@ApplicationContext context: Context) {
+    private val connectivityManager = context.getSystemService(
         Context.CONNECTIVITY_SERVICE
     ) as ConnectivityManager
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        private val toast = Toast.makeText(
-            activityContext,
-            R.string.error_no_internet,
-            Toast.LENGTH_SHORT
-        )
+        private val toast = Toast.makeText(context, R.string.error_no_internet, Toast.LENGTH_SHORT)
 
         override fun onLost(network: Network) = toast.show()
     }
