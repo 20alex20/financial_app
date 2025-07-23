@@ -4,5 +4,5 @@ import androidx.lifecycle.ViewModel
 import javax.inject.Provider
 
 interface ViewModelMapProvider {
-    fun provide(): Map<Class<out ViewModel>, Provider<BaseViewModel>>
+    fun provide(): Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<BaseViewModel>>
 }
