@@ -2,10 +2,12 @@ package com.example.finances.app.di
 
 import android.app.Activity
 import androidx.lifecycle.ViewModelProvider
+import com.example.finances.app.di.modules.AccountModule
 import com.example.finances.app.di.modules.ActivityModule
 import com.example.finances.app.di.modules.CategoriesModule
 import com.example.finances.app.managers.SplashScreenAnimator
 import com.example.finances.app.navigation.AppNavigationCoordinator
+import com.example.finances.feature.account.api.AccountDependencies
 import com.example.finances.feature.categories.api.CategoriesDependencies
 import dagger.BindsInstance
 import dagger.Component
@@ -15,10 +17,11 @@ import dagger.Component
     dependencies = [AppComponent::class],
     modules = [
         ActivityModule::class,
-        CategoriesModule::class
+        CategoriesModule::class,
+        AccountModule::class
     ]
 )
-interface ActivityComponent : CategoriesDependencies {
+interface ActivityComponent : CategoriesDependencies, AccountDependencies {
     fun splashScreenAnimator(): SplashScreenAnimator
     fun viewModelFactory(): ViewModelProvider.Factory
     fun appNavigationCoordinator(): AppNavigationCoordinator
