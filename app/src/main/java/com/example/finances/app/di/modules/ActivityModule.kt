@@ -28,7 +28,7 @@ interface ActivityModule {
         @Provides
         fun providesViewModelProviders(
             providers: Set<@JvmSuppressWildcards ViewModelMapProvider>
-        ): Map<Class<out ViewModel>, Provider<BaseViewModel>> {
+        ): Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<BaseViewModel>> {
             return providers.flatMap { it.provide().entries }.associate { it.toPair() }
         }
     }

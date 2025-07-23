@@ -10,7 +10,7 @@ import javax.inject.Provider
 
 @ActivityScope
 class DaggerViewModelFactory @Inject constructor(
-    private val creators: Map<Class<out ViewModel>, Provider<BaseViewModel>>
+    private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<BaseViewModel>>
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {

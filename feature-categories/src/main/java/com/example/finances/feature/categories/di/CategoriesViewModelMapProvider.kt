@@ -9,5 +9,6 @@ import javax.inject.Provider
 class CategoriesViewModelMapProvider @Inject constructor(
     private val viewModels: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<BaseViewModel>>
 ) : ViewModelMapProvider {
-    override fun provide(): Map<Class<out ViewModel>, Provider<BaseViewModel>> = viewModels
+    override fun provide(): Map<Class<out ViewModel>,
+            @JvmSuppressWildcards Provider<BaseViewModel>> = viewModels
 }
