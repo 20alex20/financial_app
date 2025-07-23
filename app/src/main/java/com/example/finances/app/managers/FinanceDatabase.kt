@@ -4,6 +4,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.example.finances.feature.account.api.AccountDatabase
+import com.example.finances.feature.account.data.database.AccountDao
+import com.example.finances.feature.account.data.models.AccountEntity
 import com.example.finances.feature.categories.api.CategoriesDatabase
 import com.example.finances.feature.categories.data.database.CategoriesDao
 import com.example.finances.feature.categories.data.models.CategoryEntity
@@ -14,16 +17,16 @@ import java.time.format.DateTimeFormatter
     entities = [
         //TransactionEntity::class,
         CategoryEntity::class,
-        //AccountEntity::class
+        AccountEntity::class
     ],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(DateTimeConverters::class)
-abstract class FinanceDatabase : RoomDatabase(), CategoriesDatabase {
+abstract class FinanceDatabase : RoomDatabase(), CategoriesDatabase, AccountDatabase {
     //abstract fun transactionDao(): TransactionsDao
     abstract override fun categoryDao(): CategoriesDao
-    //abstract fun accountDao(): AccountDao
+    abstract override fun accountDao(): AccountDao
 }
 
 class DateTimeConverters {

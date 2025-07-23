@@ -32,7 +32,7 @@ interface CategoriesModule {
 
         @Provides
         @IntoSet
-        fun providesViewModelsProviders(
+        fun providesCategoriesViewModelProviders(
             categoriesFeature: CategoriesFeature
         ): ViewModelMapProvider {
             return categoriesFeature.getViewModelMapProvider()
