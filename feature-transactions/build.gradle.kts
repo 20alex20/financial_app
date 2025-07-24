@@ -41,6 +41,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    implementation(project(":core:charts"))
     implementation(project(":feature-account"))
     implementation(project(":feature-categories"))
 

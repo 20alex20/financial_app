@@ -3,13 +3,17 @@ package com.example.finances.feature.transactions.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.finances.core.charts.analysis.PieChart
 import com.example.finances.core.ui.components.Calendar
 import com.example.finances.core.ui.components.ErrorMessage
 import com.example.finances.core.ui.components.Header
@@ -112,6 +117,24 @@ fun AnalysisScreen(
                 height = ListItemHeight.LOW,
                 rightText = vm.state.value.total
             )
+            Box(
+                contentAlignment = Alignment.BottomCenter,
+                modifier = Modifier.height(200.dp)
+            ) {
+                PieChart(
+                    data = vm.state.value.pieChartData,
+                    modifier = Modifier
+                        .width(140.dp)
+                        .fillMaxHeight()
+                        .padding(vertical = 30.dp)
+                )
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
 
             Box(
                 contentAlignment = Alignment.Center,

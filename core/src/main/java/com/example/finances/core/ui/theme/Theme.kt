@@ -23,6 +23,8 @@ private val LightColorScheme = lightColorScheme(
     secondaryContainer = Red,
     onSecondaryContainer = RealWhite,
 
+    tertiary = Orange,
+
     surface = White,
     onSurface = Black,
     onSurfaceVariant = DarkestGray,

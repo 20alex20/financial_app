@@ -12,6 +12,8 @@ import com.example.finances.feature.transactions.domain.repository.TransactionsR
 import com.example.finances.feature.transactions.domain.usecases.GroupByCategoriesUseCase
 import com.example.finances.feature.transactions.domain.usecases.LoadCurrencyUseCase
 import com.example.finances.feature.transactions.navigation.ScreenType
+import com.example.finances.feature.transactions.ui.mappers.toAnalysisCategory
+import com.example.finances.feature.transactions.ui.mappers.toShortAnalysisRecord
 import com.example.finances.feature.transactions.ui.models.AnalysisViewModelState
 import com.example.finances.feature.transactions.ui.models.DatesViewModelState
 import kotlinx.coroutines.CompletableDeferred
@@ -37,7 +39,7 @@ open class AnalysisViewModel @Inject constructor(
     )
     val dates: State<DatesViewModelState> = _dates
 
-    private val _state = mutableStateOf(AnalysisViewModelState("0 ₽", emptyList()))
+    private val _state = mutableStateOf(AnalysisViewModelState("0 ₽", emptyList(), emptyList()))
     val state: State<AnalysisViewModelState> = _state
 
     fun setPeriod(start: LocalDate, end: LocalDate) {
@@ -55,19 +57,19 @@ open class AnalysisViewModel @Inject constructor(
 
     override suspend fun loadData(scope: CoroutineScope) {
         val asyncCurrency = scope.async { loadCurrencyUseCase() }
-        val response = transactionsRepo.getTransactions(
-            _dates.value.start,
-            _dates.value.end,
-            _screenTypeLatch.await()
-        )
+        val type = _screenTypeLatch.await()
+        val response = transactionsRepo.getTransactions(_dates.value.start, _dates.value.end, type)
         when (response) {
             is Response.Failure -> setError()
             is Response.Success -> {
-                val currency = asyncCurrency.await()
                 val total = response.data.sumOf { it.amount }
+                val analysisGroups = groupByCategoriesUseCase(response.data, total)
                 _state.value = AnalysisViewModelState(
                     total = convertAmountUseCase(total, asyncCurrency.await()),
-                    analysis = groupByCategoriesUseCase(response.data, total, currency)
+                    pieChartData = analysisGroups.map { it.toShortAnalysisRecord() },
+                    analysis = analysisGroups.map {
+                        it.toAnalysisCategory(convertAmountUseCase, asyncCurrency.await())
+                    }
                 )
                 resetLoadingAndError()
             }
@@ -80,6 +82,7 @@ open class AnalysisViewModel @Inject constructor(
                 val newCurrency = loadCurrencyUseCase()
                 _state.value = AnalysisViewModelState(
                     total = convertAmountUseCase(_state.value.total, newCurrency),
+                    pieChartData = _state.value.pieChartData,
                     analysis = _state.value.analysis.map { analysisCategory ->
                         analysisCategory.copy(
                             amount = convertAmountUseCase(analysisCategory.amount, newCurrency)

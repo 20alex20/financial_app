@@ -4,6 +4,7 @@ import com.example.finances.core.utils.repository.Response
 import com.example.finances.core.utils.repository.repoTryCatchBlock
 import com.example.finances.core.managers.NetworkConnectionObserver
 import com.example.finances.feature.account.domain.repository.ExternalAccountRepo
+import com.example.finances.feature.account.domain.repository.ExternalTransactionsRepo
 import com.example.finances.feature.categories.domain.repository.CategoriesRepo
 import com.example.finances.feature.transactions.api.TransactionsDatabase
 import com.example.finances.feature.transactions.data.database.TransactionsApi
@@ -20,6 +21,7 @@ import com.example.finances.feature.transactions.di.TransactionsScope
 import com.example.finances.feature.transactions.domain.DateTimeFormatters
 import com.example.finances.feature.transactions.domain.models.ShortTransaction
 import com.example.finances.feature.transactions.domain.repository.TransactionsRepo
+import com.example.finances.feature.transactions.domain.usecases.GetCurrentMonthDifferencesUseCase
 import com.example.finances.feature.transactions.navigation.ScreenType
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -34,8 +36,9 @@ class TransactionsRepoImpl @Inject constructor(
     private val categoriesRepo: CategoriesRepo,
     private val transactionsApi: TransactionsApi,
     private val database: TransactionsDatabase,
-    private val networkObserver: NetworkConnectionObserver
-) : TransactionsRepo {
+    private val networkObserver: NetworkConnectionObserver,
+    private val getCurrentMonthDifferencesUseCase: GetCurrentMonthDifferencesUseCase
+) : TransactionsRepo, ExternalTransactionsRepo {
     override suspend fun getCurrency() = repoTryCatchBlock {
         accountRepo.getAccount().let { response ->
             if (response is Response.Success)
@@ -163,5 +166,9 @@ class TransactionsRepoImpl @Inject constructor(
         } else {
             localSaving(transaction, transactionId, screenType)
         }
+    }
+
+    override suspend fun getCurrentMonthDifferences(): List<Double> {
+        return getCurrentMonthDifferencesUseCase()
     }
 }

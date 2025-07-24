@@ -6,6 +6,7 @@ val LightGreen = Color(0xFFD4FAE6)
 val Green = Color(0xFF2AE881)
 
 val Red = Color(0xFFE46962)
+val Orange = Color(0xFFFF5F00)
 
 val LightestGray = Color(0xFFF3EDF7)
 val LightGray = Color(0xFFECE6F0)
