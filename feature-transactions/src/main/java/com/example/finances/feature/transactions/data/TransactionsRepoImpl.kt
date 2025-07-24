@@ -169,6 +169,6 @@ class TransactionsRepoImpl @Inject constructor(
     }
 
     override suspend fun getCurrentMonthDifferences(): List<Double> {
-        return getCurrentMonthDifferencesUseCase()
+        return getCurrentMonthDifferencesUseCase(this)
     }
 }

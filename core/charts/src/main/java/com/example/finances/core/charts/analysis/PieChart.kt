@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.finances.core.charts.analysis.models.AnalysisRecord
@@ -31,35 +30,30 @@ import kotlin.math.roundToInt
 fun PieChart(
     data: List<ShortAnalysisRecord>,
     modifier: Modifier = Modifier,
-    maxItemsInLegend: Int = 8
+    maxItemsInLegend: Int = 6
 ) {
     val sortedData = data.sortedByDescending { it.percent }
     val total = sortedData.sumOf { it.percent }
 
-    val displayData = remember {
-        val displayed = mutableListOf<AnalysisRecord>()
-        var sumOthers = 0.0
-        sortedData.forEachIndexed { index, (name, percent) ->
-            if (sortedData.size <= maxItemsInLegend || index < maxItemsInLegend - 1) {
-                displayed.add(AnalysisRecord(name, percent, colorFromName(name)))
-            } else {
-                sumOthers += percent
-            }
-        }
-        displayed.apply {
-            if (sumOthers > 0)
-                add(AnalysisRecord("Другое", sumOthers, colorFromName("Другое")))
+    val displayData = mutableListOf<AnalysisRecord>()
+    var sumOthers = 0.0
+    sortedData.forEachIndexed { index, (name, percent) ->
+        if (sortedData.size <= maxItemsInLegend || index < maxItemsInLegend - 1) {
+            displayData.add(AnalysisRecord(name, percent, colorFromName(name)))
+        } else {
+            sumOthers += percent
         }
     }
+    if (sumOthers > 0)
+        displayData.add(AnalysisRecord("Другое", sumOthers, colorFromName("Другое")))
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val strokeWidth = 8.dp.toPx()
-            val style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-            val diameter = size.minDimension - strokeWidth
+            val style = Stroke(width = 8.dp.toPx())
+            val diameter = size.minDimension
             val size = Size(diameter, diameter)
             val centerOffset = Offset((size.width - diameter) / 2, (size.height - diameter) / 2)
 
@@ -82,17 +76,17 @@ fun PieChart(
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
-                .fillMaxSize(0.7f)
+                .fillMaxWidth(0.75f)
                 .padding(4.dp)
         ) {
             displayData.forEach { (name, percent, color) ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(3.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(6.dp)
+                            .size(8.dp)
                             .background(color, shape = CircleShape)
                     )
                     Text(

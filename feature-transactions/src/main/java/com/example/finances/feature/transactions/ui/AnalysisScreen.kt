@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -124,9 +123,9 @@ fun AnalysisScreen(
                 PieChart(
                     data = vm.state.value.pieChartData,
                     modifier = Modifier
-                        .width(140.dp)
+                        .width(168.dp)
                         .fillMaxHeight()
-                        .padding(vertical = 30.dp)
+                        .padding(vertical = 16.dp)
                 )
                 HorizontalDivider(
                     modifier = Modifier

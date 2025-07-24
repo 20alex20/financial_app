@@ -10,14 +10,13 @@ import java.time.YearMonth
 import javax.inject.Inject
 
 @TransactionsScope
-class GetCurrentMonthDifferencesUseCase @Inject constructor(
-    private val transactionsRepo: TransactionsRepo
-) {
-    suspend operator fun invoke(): List<Double> {
+class GetCurrentMonthDifferencesUseCase @Inject constructor() {
+    suspend operator fun invoke(transactionsRepo: TransactionsRepo): List<Double> {
         val today = LocalDate.now()
         val daysInMonth = YearMonth.from(today).lengthOfMonth()
         val firstDayOfMonth = today.withDayOfMonth(1)
         val lastDayOfMonth = today.withDayOfMonth(daysInMonth)
+
         val income = transactionsRepo.getTransactions(
             firstDayOfMonth,
             lastDayOfMonth,
