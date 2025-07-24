@@ -23,7 +23,7 @@ dependencyResolutionManagement {
 rootProject.name = "finances"
 include(":app")
 include(":core")
+include(":core:charts")
 include(":feature-account")
 include(":feature-categories")
 include(":feature-transactions")
-include(":core:charts")

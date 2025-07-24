@@ -29,14 +29,17 @@ fun BarChart(
     val maxAbsValue = values.maxOf { abs(it) }
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+        modifier = modifier.fillMaxWidth()
     ) {
+        val colors = listOf(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.tertiary,
+            averageColor(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
+        )
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
+                .height(200.dp)
         ) {
             val barWidth = 6.dp.toPx()
             val cornerRadius = CornerRadius(barWidth / 2, barWidth / 2)
@@ -52,9 +55,9 @@ fun BarChart(
                     size = Size(barWidth, barHeight),
                     cornerRadius = cornerRadius,
                     color = when {
-                        value > 0 -> Color(0xFF00D26A)
-                        value < 0 -> Color(0xFFFF5C00)
-                        else -> Color(0xFFFFD600)
+                        value > 0.0 -> colors[0]
+                        value < 0.0 -> colors[1]
+                        else -> colors[2]
                     }
                 )
             }
@@ -82,3 +85,10 @@ fun BarChart(
         }
     }
 }
+
+fun averageColor(color1: Color, color2: Color) = Color(
+    red = (color1.red + color2.red) / 2f,
+    green = (color1.green + color2.green) / 2f,
+    blue = (color1.blue + color2.blue) / 2f,
+    alpha = (color1.alpha + color2.alpha) / 2f
+)

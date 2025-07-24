@@ -11,4 +11,6 @@ interface AccountRepo: ExternalAccountRepo {
     override suspend fun getAccount(): Response<Account>
 
     suspend fun updateAccount(account: ShortAccount, accountId: Int?): Response<Account>
+
+    suspend fun getCurrentMonthDifferences(): List<Double>
 }

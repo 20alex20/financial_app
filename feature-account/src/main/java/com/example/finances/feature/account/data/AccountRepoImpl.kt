@@ -14,6 +14,9 @@ import com.example.finances.feature.account.di.AccountScope
 import com.example.finances.feature.account.domain.models.Account
 import com.example.finances.feature.account.domain.models.ShortAccount
 import com.example.finances.feature.account.domain.repository.AccountRepo
+import com.example.finances.feature.account.domain.repository.ExternalTransactionsRepo
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -26,6 +29,7 @@ import javax.inject.Inject
 class AccountRepoImpl @Inject constructor(
     private val accountApi: AccountApi,
     private val database: AccountDatabase,
+    private val externalTransactionsRepo: MutableStateFlow<ExternalTransactionsRepo?>,
     private val networkObserver: NetworkConnectionObserver
 ) : AccountRepo {
     private val mutex = Mutex()
@@ -61,5 +65,9 @@ class AccountRepoImpl @Inject constructor(
             cachedAccount = it
             database.accountDao().updateAccount(it.toAccountEntity())
         }
+    }
+
+    override suspend fun getCurrentMonthDifferences(): List<Double> {
+        return externalTransactionsRepo.filterNotNull().first().getCurrentMonthDifferences()
     }
 }

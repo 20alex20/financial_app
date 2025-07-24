@@ -6,6 +6,7 @@ import com.example.finances.app.di.TransactionsNavigation
 import com.example.finances.app.managers.FinanceDatabase
 import com.example.finances.core.navigation.FeatureNavigation
 import com.example.finances.core.utils.viewmodel.ViewModelMapProvider
+import com.example.finances.feature.account.domain.repository.ExternalTransactionsRepo
 import com.example.finances.feature.transactions.api.TransactionsComponentFactory
 import com.example.finances.feature.transactions.api.TransactionsDatabase
 import com.example.finances.feature.transactions.api.TransactionsDependencies
@@ -14,6 +15,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Module
 interface TransactionsModule {
@@ -31,9 +33,12 @@ interface TransactionsModule {
         @Provides
         @ActivityScope
         fun providesTransactionsFeature(
-            dependencies: TransactionsDependencies
+            dependencies: TransactionsDependencies,
+            externalTransactionsRepo: MutableStateFlow<ExternalTransactionsRepo?>
         ): TransactionsFeature {
-            return TransactionsComponentFactory.create(dependencies)
+            return TransactionsComponentFactory.create(dependencies).apply {
+                externalTransactionsRepo.value = getExternalTransactionsRepo()
+            }
         }
 
         @Provides

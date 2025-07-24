@@ -2,6 +2,7 @@ package com.example.finances.feature.transactions.di.modules
 
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.core.utils.viewmodel.ViewModelKey
+import com.example.finances.feature.account.domain.repository.ExternalTransactionsRepo
 import com.example.finances.feature.transactions.data.TransactionsRepoImpl
 import com.example.finances.feature.transactions.data.database.TransactionsApi
 import com.example.finances.feature.transactions.di.TransactionsScope
@@ -43,6 +44,11 @@ interface TransactionsModule {
     @Binds
     @TransactionsScope
     fun bindsTransactionsRepo(transactionsRepoImpl: TransactionsRepoImpl): TransactionsRepo
+
+    @Binds
+    fun bindsExternalTransactionsRepo(
+        transactionsRepoImpl: TransactionsRepoImpl
+    ): ExternalTransactionsRepo
 
     companion object {
         @Provides

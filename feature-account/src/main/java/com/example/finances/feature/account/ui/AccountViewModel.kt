@@ -10,6 +10,7 @@ import com.example.finances.feature.account.domain.repository.AccountRepo
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.feature.account.ui.models.AccountViewModelState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -22,7 +23,11 @@ class AccountViewModel @Inject constructor(
     private val _state = mutableStateOf(AccountViewModelState("Мой счет", "0 ₽", "₽"))
     val state: State<AccountViewModelState> = _state
 
+    private val _currentMonthDifferences = mutableStateOf(emptyList<Double>())
+    val currentMonthDifferences: State<List<Double>> = _currentMonthDifferences
+
     override suspend fun loadData(scope: CoroutineScope) {
+        scope.launch { _currentMonthDifferences.value = accountRepo.getCurrentMonthDifferences() }
         when (val response = accountRepo.getAccount()) {
             is Response.Failure -> setError()
             is Response.Success -> {

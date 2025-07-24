@@ -11,10 +11,12 @@ import com.example.finances.feature.account.api.AccountDatabase
 import com.example.finances.feature.account.api.AccountDependencies
 import com.example.finances.feature.account.api.AccountFeature
 import com.example.finances.feature.account.domain.repository.ExternalAccountRepo
+import com.example.finances.feature.account.domain.repository.ExternalTransactionsRepo
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Module
 interface AccountModule {
@@ -31,8 +33,11 @@ interface AccountModule {
     companion object {
         @Provides
         @ActivityScope
-        fun providesAccountFeature(dependencies: AccountDependencies): AccountFeature {
-            return AccountComponentFactory.create(dependencies)
+        fun providesAccountFeature(
+            dependencies: AccountDependencies,
+            externalTransactionsRepo: MutableStateFlow<ExternalTransactionsRepo?>
+        ): AccountFeature {
+            return AccountComponentFactory.create(dependencies, externalTransactionsRepo)
         }
 
         @Provides

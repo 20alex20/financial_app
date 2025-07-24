@@ -9,9 +9,11 @@ import com.example.finances.app.managers.DaggerViewModelFactory
 import com.example.finances.core.di.ActivityContext
 import com.example.finances.core.utils.viewmodel.BaseViewModel
 import com.example.finances.core.utils.viewmodel.ViewModelMapProvider
+import com.example.finances.feature.account.domain.repository.ExternalTransactionsRepo
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Provider
 
 @Module
@@ -30,6 +32,12 @@ interface ActivityModule {
             providers: Set<@JvmSuppressWildcards ViewModelMapProvider>
         ): Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<BaseViewModel>> {
             return providers.flatMap { it.provide().entries }.associate { it.toPair() }
+        }
+
+        @Provides
+        @ActivityScope
+        fun providesExternalTransactionsRepo(): MutableStateFlow<ExternalTransactionsRepo?> {
+            return MutableStateFlow(null)
         }
     }
 }
