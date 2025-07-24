@@ -7,13 +7,17 @@ import com.example.finances.core.navigation.NavBarRoutes
 import com.example.finances.core.Feature
 import com.example.finances.core.utils.viewmodel.ViewModelMapProvider
 import com.example.finances.feature.categories.di.CategoriesViewModelMapProvider
+import com.example.finances.feature.categories.domain.repository.CategoriesRepo
 import com.example.finances.feature.categories.ui.CategoriesScreen
 import javax.inject.Inject
 
 class CategoriesFeature @Inject constructor(
-    private val categoriesViewModelMapProvider: CategoriesViewModelMapProvider
+    private val categoriesViewModelMapProvider: CategoriesViewModelMapProvider,
+    private val categoriesRepo: CategoriesRepo
 ) : Feature {
     override fun getViewModelMapProvider(): ViewModelMapProvider = categoriesViewModelMapProvider
+
+    fun getCategoriesRepo() = categoriesRepo
 
     override fun registerGraph(navGraphBuilder: NavGraphBuilder, navController: NavHostController) {
         navGraphBuilder.apply {

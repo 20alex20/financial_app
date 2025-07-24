@@ -24,4 +24,4 @@ fun LoadingCircular(modifier: Modifier = Modifier) {
     ) {
         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
     }
-} 
+}

@@ -14,7 +14,6 @@ import com.example.finances.feature.account.di.AccountScope
 import com.example.finances.feature.account.domain.models.Account
 import com.example.finances.feature.account.domain.models.ShortAccount
 import com.example.finances.feature.account.domain.repository.AccountRepo
-import com.example.finances.feature.account.domain.repository.ExternalAccountRepo
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -28,7 +27,7 @@ class AccountRepoImpl @Inject constructor(
     private val accountApi: AccountApi,
     private val database: AccountDatabase,
     private val networkObserver: NetworkConnectionObserver
-) : AccountRepo, ExternalAccountRepo {
+) : AccountRepo {
     private val mutex = Mutex()
     private var cachedAccount: Account? = null
 

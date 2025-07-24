@@ -49,6 +49,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":feature-categories"))
     implementation(project(":feature-account"))
+    implementation(project(":feature-transactions"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
