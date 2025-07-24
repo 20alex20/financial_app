@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.finances.core"
+    namespace = "com.example.finances.core.charts"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -24,12 +24,12 @@ android {
             )
         }
     }
-    
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    
+
     kotlinOptions {
         jvmTarget = "11"
     }

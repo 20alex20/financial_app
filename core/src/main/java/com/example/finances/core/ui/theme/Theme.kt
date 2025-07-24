@@ -67,4 +67,4 @@ fun FinancesTheme(
         typography = Typography,
         content = content
     )
-} 
+}
