@@ -19,7 +19,7 @@ fun AppNavigation(
     Column(modifier = modifier) {
         NavHost(
             navController = navController,
-            startDestination = NavBarRoutes.Categories,
+            startDestination = NavBarRoutes.Expenses,
             modifier = Modifier.weight(1f)
         ) {
             appNavigationCoordinator.registerGraph(this, navController)
