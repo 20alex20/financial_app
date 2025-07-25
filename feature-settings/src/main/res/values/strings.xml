@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="my_categories">Мои статьи</string>
-    <string name="search">Поиск</string>
-    <string name="search_placeholder">Найти статью</string>
-</resources> 
+    <string name="settings">Настройки</string>
+    <string name="dark_theme">Тёмная тема</string>
+    <string name="primary_color">Основной цвет</string>
+    <string name="haptics">Хаптики</string>
+    <string name="code_password">Код пароль</string>
+    <string name="about_app">О программе</string>
+    <string name="green">Светло зеленый</string>
+    <string name="purple">Пурпурный</string>
+    <string name="blue">Голубой</string>
+    <string name="disabled">Отключена</string>
+    <string name="short_duration">Короткая</string>
+    <string name="normal_duration">Нормальная</string>
+    <string name="long_duration">Длинная</string>
+    <string name="vibration">Вибрация</string>
+    <string name="update_saving_error">Ошибка сохранения изменений</string>
+    <string name="app_version">Версия приложения</string>
+    <string name="last_update">Последнее обновление</string>
+</resources>
