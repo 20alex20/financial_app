@@ -1,5 +1,6 @@
 package com.example.finances.feature.settings.domain.repository
 
+import com.example.finances.feature.settings.domain.models.AppInfo
 import com.example.finances.feature.settings.domain.models.VibrationDuration
 import com.example.finances.feature.settings.domain.models.PrimaryColor
 import com.example.finances.feature.settings.domain.models.ThemeMode
@@ -20,4 +21,6 @@ interface SettingsRepo {
     fun saveUserPin(userPin: String?): Boolean
 
     fun loadUserPin(): String?
+
+    fun loadAppInfo(): AppInfo
 }
