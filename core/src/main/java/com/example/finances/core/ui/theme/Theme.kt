@@ -10,10 +10,12 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.example.finances.core.utils.models.ThemeParameters
 
 private val LightColorScheme = lightColorScheme(
     primary = Green,
@@ -64,17 +66,19 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 @Composable
-fun FinancesTheme(content: @Composable () -> Unit) {
-    val themeController = LocalThemeController.current
-    val primaryContainer = lightenColor(themeController.primaryColor, 0.7f)
+fun FinancesTheme(
+    themeParameters: State<ThemeParameters>,
+    content: @Composable () -> Unit
+) {
+    val primaryContainer = lightenColor(themeParameters.value.primaryColor, 0.7f)
     MaterialTheme(
         content = content,
         typography = Typography,
-        colorScheme = if (themeController.darkTheme) DarkColorScheme.copy(
-            primary = themeController.primaryColor,
+        colorScheme = if (themeParameters.value.darkTheme) DarkColorScheme.copy(
+            primary = themeParameters.value.primaryColor,
             primaryContainer = primaryContainer
         ) else LightColorScheme.copy(
-            primary = themeController.primaryColor,
+            primary = themeParameters.value.primaryColor,
             primaryContainer = primaryContainer
         )
     )
@@ -84,7 +88,7 @@ fun FinancesTheme(content: @Composable () -> Unit) {
         WindowCompat.getInsetsController(
             (view.context as Activity).window,
             view
-        ).isAppearanceLightStatusBars = !themeController.darkTheme
+        ).isAppearanceLightStatusBars = !themeParameters.value.darkTheme
     }
 }
 

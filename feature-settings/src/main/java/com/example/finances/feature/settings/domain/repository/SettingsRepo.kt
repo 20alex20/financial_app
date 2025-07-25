@@ -1,13 +1,10 @@
 package com.example.finances.feature.settings.domain.repository
 
-import com.example.finances.core.ui.theme.ThemeController
-import com.example.finances.feature.settings.data.enums.VibrationDuration
-import com.example.finances.feature.settings.data.enums.PrimaryColor
-import com.example.finances.feature.settings.data.enums.ThemeMode
+import com.example.finances.feature.settings.domain.models.VibrationDuration
+import com.example.finances.feature.settings.domain.models.PrimaryColor
+import com.example.finances.feature.settings.domain.models.ThemeMode
 
-interface SettingsRepo: ExternalSettingsRepo {
-    override val themeController: ThemeController
-
+interface SettingsRepo {
     fun saveTheme(mode: ThemeMode): Boolean
 
     fun loadTheme(): ThemeMode
@@ -22,5 +19,5 @@ interface SettingsRepo: ExternalSettingsRepo {
 
     fun saveUserPin(userPin: String?): Boolean
 
-    override fun loadUserPin(): String?
+    fun loadUserPin(): String?
 }

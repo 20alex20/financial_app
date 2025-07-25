@@ -1,5 +1,7 @@
 package com.example.finances.app.navigation
 
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -11,6 +13,7 @@ import com.example.finances.core.managers.VibrateUseCase
 import com.example.finances.core.navigation.NavBarRoutes
 import com.example.finances.core.ui.components.BottomNavigationBar
 
+@RequiresPermission(Manifest.permission.VIBRATE)
 @Composable
 fun AppNavigation(
     appNavigationCoordinator: AppNavigationCoordinator,
@@ -18,7 +21,7 @@ fun AppNavigation(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
-    Column(modifier = modifier) {
+    Column(modifier = modifier)  {
         NavHost(
             navController = navController,
             startDestination = NavBarRoutes.Expenses,

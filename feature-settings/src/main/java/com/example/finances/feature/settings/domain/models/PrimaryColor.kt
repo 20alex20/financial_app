@@ -1,4 +1,4 @@
-package com.example.finances.feature.settings.data.enums
+package com.example.finances.feature.settings.domain.models
 
 import androidx.compose.ui.graphics.Color
 import com.example.finances.core.ui.theme.Blue

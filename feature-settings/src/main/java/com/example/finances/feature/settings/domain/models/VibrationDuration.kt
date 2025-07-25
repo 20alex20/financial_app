@@ -1,4 +1,4 @@
-package com.example.finances.feature.settings.data.enums
+package com.example.finances.feature.settings.domain.models
 
 enum class VibrationDuration(val duration: Long) {
     DISABLED(0),
