@@ -1,9 +1,10 @@
 package com.example.finances.feature.settings.domain.repository
 
-import com.example.finances.core.ui.theme.ThemeController
+import androidx.compose.runtime.State
+import com.example.finances.core.utils.models.ThemeParameters
 
 interface ExternalSettingsRepo {
-    val themeController: ThemeController
+    val themeParameters: State<ThemeParameters>
 
     fun loadUserPin(): String?
 }
