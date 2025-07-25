@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,7 +39,8 @@ fun UserPinScreen(
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(0.5f)
         ) {
             TextInput(
                 text = inputUserPin,
@@ -49,7 +51,13 @@ fun UserPinScreen(
                         inputUserPin = newInputUserPin
                         showError = false
                     }
-                }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        RoundedCornerShape(12.dp)
+                    )
             )
             Button(
                 colors = ButtonDefaults.buttonColors(
@@ -71,7 +79,7 @@ fun UserPinScreen(
                 )
             }
             if (showError) Text(
-                text = stringResource(R.string.error_data_loading),
+                text = stringResource(R.string.invalid_pin_code),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.secondaryContainer
             )
