@@ -13,6 +13,7 @@ import com.example.finances.feature.settings.domain.models.ThemeMode
 import com.example.finances.feature.settings.di.EncryptedPreferences
 import com.example.finances.feature.settings.di.Preferences
 import com.example.finances.feature.settings.di.SettingsScope
+import com.example.finances.feature.settings.domain.models.AppInfo
 import com.example.finances.feature.settings.domain.repository.ExternalSettingsRepo
 import com.example.finances.feature.settings.domain.repository.SettingsRepo
 
@@ -20,6 +21,7 @@ import com.example.finances.feature.settings.domain.repository.SettingsRepo
 class SettingsRepoImpl @Inject constructor(
     @Preferences private val preferences: SharedPreferences,
     @EncryptedPreferences private val encryptedPreferences: SharedPreferences,
+    private val appInfo: AppInfo,
     private val vibrateUseCase: VibrateUseCase
 ) : SettingsRepo, ExternalSettingsRepo {
     private val _themeParameters = mutableStateOf(
@@ -89,6 +91,10 @@ class SettingsRepoImpl @Inject constructor(
 
     override fun loadUserPin(): String? {
         return encryptedPreferences.getString(USER_PIN, null)
+    }
+
+    override fun loadAppInfo(): AppInfo {
+        return appInfo
     }
 
     companion object {

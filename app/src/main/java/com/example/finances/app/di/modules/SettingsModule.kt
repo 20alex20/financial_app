@@ -1,10 +1,10 @@
 package com.example.finances.app.di.modules
 
+import com.example.finances.BuildConfig
 import com.example.finances.app.di.ActivityComponent
 import com.example.finances.app.di.ActivityScope
 import com.example.finances.app.di.SettingsNavigation
 import com.example.finances.core.navigation.FeatureNavigation
-import com.example.finances.core.utils.models.ThemeParameters
 import com.example.finances.core.utils.viewmodel.ViewModelMapProvider
 import com.example.finances.feature.settings.api.SettingsComponentFactory
 import com.example.finances.feature.settings.api.SettingsDependencies
@@ -28,7 +28,7 @@ interface SettingsModule {
         @Provides
         @ActivityScope
         fun providesSettingsFeature(dependencies: SettingsDependencies): SettingsFeature {
-            return SettingsComponentFactory.create(dependencies)
+            return SettingsComponentFactory.create(dependencies, BuildConfig.VERSION_NAME)
         }
 
         @Provides

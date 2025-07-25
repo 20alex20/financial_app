@@ -4,6 +4,7 @@ import com.example.finances.feature.settings.api.SettingsDependencies
 import com.example.finances.feature.settings.api.SettingsFeature
 import com.example.finances.feature.settings.di.modules.PreferencesModule
 import com.example.finances.feature.settings.di.modules.SettingsModule
+import dagger.BindsInstance
 import dagger.Component
 
 @SettingsScope
@@ -19,12 +20,15 @@ interface SettingsComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: SettingsDependencies): SettingsComponent
+        fun create(
+            @BindsInstance appVersion: String,
+            dependencies: SettingsDependencies
+        ): SettingsComponent
     }
 
     companion object {
-        fun create(dependencies: SettingsDependencies): SettingsComponent {
-            return DaggerSettingsComponent.factory().create(dependencies)
+        fun create(dependencies: SettingsDependencies, appVersion: String): SettingsComponent {
+            return DaggerSettingsComponent.factory().create(appVersion, dependencies)
         }
     }
 }
