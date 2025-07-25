@@ -1,5 +1,7 @@
 package com.example.finances.core.ui.components
 
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -25,12 +27,15 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.finances.core.managers.VibrateUseCase
 import com.example.finances.core.navigation.models.NavBarItem
 
+@RequiresPermission(Manifest.permission.VIBRATE)
 @Composable
 fun BottomNavigationBar(
     navController: NavController,
     navBarItems: List<NavBarItem>,
+    vibrateUseCase: VibrateUseCase,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
@@ -47,6 +52,7 @@ fun BottomNavigationBar(
                     it.hasRoute(navBarItem.route::class)
                 } ?: false,
                 onClick = {
+                    vibrateUseCase()
                     navController.navigate(navBarItem.route) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true

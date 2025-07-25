@@ -8,8 +8,11 @@ import com.example.finances.app.di.modules.CategoriesModule
 import com.example.finances.app.di.modules.TransactionsModule
 import com.example.finances.app.managers.SplashScreenAnimator
 import com.example.finances.app.navigation.AppNavigationCoordinator
+import com.example.finances.core.managers.VibrateUseCase
+import com.example.finances.core.ui.theme.ThemeController
 import com.example.finances.feature.account.api.AccountDependencies
 import com.example.finances.feature.categories.api.CategoriesDependencies
+import com.example.finances.feature.settings.api.SettingsDependencies
 import com.example.finances.feature.transactions.api.TransactionsDependencies
 import dagger.BindsInstance
 import dagger.Component
@@ -25,9 +28,10 @@ import dagger.Component
     ]
 )
 interface ActivityComponent
-    : CategoriesDependencies, AccountDependencies, TransactionsDependencies {
+    : CategoriesDependencies, AccountDependencies, TransactionsDependencies, SettingsDependencies {
     fun splashScreenAnimator(): SplashScreenAnimator
     fun viewModelFactory(): ViewModelProvider.Factory
+    fun themeController(): ThemeController
     fun appNavigationCoordinator(): AppNavigationCoordinator
 
     @Component.Factory

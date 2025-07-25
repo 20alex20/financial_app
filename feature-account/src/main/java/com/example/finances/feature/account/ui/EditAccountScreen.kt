@@ -101,7 +101,7 @@ fun EditAccountScreen(navController: NavController) {
                             .focusRequester(balanceFocus)
                     )
                 },
-                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)
             )
 
             val accountNameFocus = remember { FocusRequester() }
@@ -120,7 +120,7 @@ fun EditAccountScreen(navController: NavController) {
                             .focusRequester(accountNameFocus)
                     )
                 },
-                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)
             )
 
             ListItem(
@@ -131,7 +131,7 @@ fun EditAccountScreen(navController: NavController) {
                     focusManager.clearFocus()
                     isSheetOpen.value = true
                 },
-                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainerLow)
             )
 
             Box(

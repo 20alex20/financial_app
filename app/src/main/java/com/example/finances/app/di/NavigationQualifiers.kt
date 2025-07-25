@@ -13,3 +13,7 @@ annotation class CategoriesNavigation
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 annotation class TransactionsNavigation
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class SettingsNavigation

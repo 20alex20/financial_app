@@ -7,12 +7,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.finances.core.managers.VibrateUseCase
 import com.example.finances.core.navigation.NavBarRoutes
 import com.example.finances.core.ui.components.BottomNavigationBar
 
 @Composable
 fun AppNavigation(
     appNavigationCoordinator: AppNavigationCoordinator,
+    vibrateUseCase: VibrateUseCase,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
@@ -28,6 +30,7 @@ fun AppNavigation(
         BottomNavigationBar(
             navController = navController,
             navBarItems = navBarItems(),
+            vibrateUseCase = vibrateUseCase,
             modifier = Modifier.height(80.dp)
         )
     }
