@@ -7,6 +7,7 @@ import com.example.finances.app.managers.FinanceDatabase
 import com.example.finances.core.api.CoreDependencies
 import com.example.finances.core.managers.NetworkConnectionObserver
 import com.example.finances.core.managers.ConvertAmountUseCase
+import com.example.finances.core.managers.VibrateUseCase
 import dagger.BindsInstance
 import dagger.Component
 import retrofit2.Retrofit
@@ -23,6 +24,7 @@ interface AppComponent : CoreDependencies {
     fun retrofit(): Retrofit
     fun networkConnectionObserver(): NetworkConnectionObserver
     fun convertAmountUseCase(): ConvertAmountUseCase
+    fun vibrateUseCase(): VibrateUseCase
     fun financeDatabase(): FinanceDatabase
 
     @Component.Factory
