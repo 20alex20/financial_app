@@ -1,0 +1,90 @@
+package com.example.finances.feature.settings.ui
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.finances.core.ui.components.Header
+import com.example.finances.core.ui.components.HeaderButton
+import com.example.finances.core.ui.components.ListItem
+import com.example.finances.core.ui.components.ModalSheet
+import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
+import com.example.finances.feature.settings.R
+import com.example.finances.feature.settings.domain.models.VibrationDuration
+import com.example.finances.feature.settings.domain.vibrationDurationsSheetItems
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VibrationScreen(navController: NavController) {
+    val vm: VibrationViewModel = viewModel(factory = LocalViewModelFactory.current)
+
+    val coroutineScope = rememberCoroutineScope()
+    val isSheetOpen = remember { mutableStateOf(false) }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Header(
+                title = stringResource(R.string.settings),
+                leftButton = HeaderButton(
+                    icon = painterResource(R.drawable.cancel),
+                    onClick = {
+                        navController.popBackStack()
+                    }
+                ),
+                rightButton = HeaderButton(
+                    icon = painterResource(R.drawable.apply),
+                    onClick = {
+                        if (vm.saveVibrationDuration())
+                            navController.popBackStack()
+                    }
+                )
+            )
+
+            ListItem(
+                mainText = stringResource(R.string.vibration),
+                rightText = vibrationDurationsSheetItems().find {
+                    it.obj == vm.vibrationDuration.value
+                }?.name ?: "",
+                onClick = {
+                    vm.resetError()
+                    isSheetOpen.value = true
+                }
+            )
+        }
+
+        if (vm.error.value) Text(
+            text = stringResource(R.string.update_saving_error),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondaryContainer
+        )
+
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        if (isSheetOpen.value) ModalSheet(
+            sheetState = sheetState,
+            sheetItems = vibrationDurationsSheetItems(),
+            closeSheet = { obj ->
+                if (obj is VibrationDuration)
+                    vm.setVibrationDuration(obj)
+                coroutineScope.launch {
+                    sheetState.hide()
+                }.invokeOnCompletion { isSheetOpen.value = false }
+            }
+        ).also { coroutineScope.launch { sheetState.show() } }
+    }
+}

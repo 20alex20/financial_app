@@ -1,0 +1,34 @@
+package com.example.finances.app.di
+
+import android.app.Application
+import com.example.finances.app.di.modules.AppModule
+import com.example.finances.app.di.modules.CoreModule
+import com.example.finances.app.managers.FinanceDatabase
+import com.example.finances.core.api.CoreDependencies
+import com.example.finances.core.managers.NetworkConnectionObserver
+import com.example.finances.core.managers.ConvertAmountUseCase
+import com.example.finances.core.managers.VibrateUseCase
+import dagger.BindsInstance
+import dagger.Component
+import retrofit2.Retrofit
+import javax.inject.Singleton
+
+@Singleton
+@Component(
+    modules = [
+        AppModule::class,
+        CoreModule::class
+    ]
+)
+interface AppComponent : CoreDependencies {
+    fun retrofit(): Retrofit
+    fun networkConnectionObserver(): NetworkConnectionObserver
+    fun convertAmountUseCase(): ConvertAmountUseCase
+    fun vibrateUseCase(): VibrateUseCase
+    fun financeDatabase(): FinanceDatabase
+
+    @Component.Factory
+    interface Factory {
+        fun create(@BindsInstance application: Application): AppComponent
+    }
+}

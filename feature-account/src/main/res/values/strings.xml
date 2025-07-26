@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="my_account">Мой счет</string>
+    <string name="error_sending_data">Ошибка отправки данных</string>
+    <string name="account_name">Название счета</string>
+    <string name="balance">Баланс</string>
+    <string name="currency">Валюта</string>
+    <string name="money_bag">💰</string>
+    <string name="ruble">Российский рубль ₽</string>
+    <string name="dollar">Американский доллар $</string>
+    <string name="euro">Евро</string>
+</resources>

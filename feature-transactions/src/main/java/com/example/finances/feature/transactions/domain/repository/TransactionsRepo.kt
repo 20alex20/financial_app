@@ -1,0 +1,32 @@
+package com.example.finances.feature.transactions.domain.repository
+
+import com.example.finances.core.utils.repository.Response
+import com.example.finances.core.utils.models.Currency
+import com.example.finances.feature.transactions.domain.models.ShortCategory
+import com.example.finances.feature.transactions.domain.models.ShortTransaction
+import com.example.finances.feature.transactions.domain.models.Transaction
+import com.example.finances.feature.transactions.navigation.ScreenType
+import java.time.LocalDate
+
+/**
+ * Интерфейс репозитория транзакций
+ */
+interface TransactionsRepo {
+    suspend fun getCurrency(): Response<Currency>
+
+    suspend fun getCategories(screenType: ScreenType): Response<List<ShortCategory>>
+
+    suspend fun getTransactions(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        screenType: ScreenType
+    ): Response<List<Transaction>>
+
+    suspend fun getTransaction(transactionId: Int): Response<Transaction>
+
+    suspend fun createUpdateTransaction(
+        transaction: ShortTransaction,
+        transactionId: Int?,
+        screenType: ScreenType
+    ): Response<ShortTransaction>
+}

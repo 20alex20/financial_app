@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="date_picker_ok">OK</string>
+    <string name="date_picker_cancel">Cancel</string>
+    <string name="error_data_loading">Ошибка загрузки данных</string>
+    <string name="cancel">Отмена</string>
+    <string name="login">Войти</string>
+    <string name="pin_code">Пин-код</string>
+    <string name="invalid_pin_code">Неверный пин-код</string>
+</resources>
