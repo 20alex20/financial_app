@@ -7,6 +7,7 @@ import com.example.finances.feature.categories.data.database.CategoriesApi
 import com.example.finances.feature.categories.data.extensions.NoLocalDatabaseCategoriesException
 import com.example.finances.feature.categories.data.mappers.toCategory
 import com.example.finances.feature.categories.data.mappers.toCategoryEntity
+import com.example.finances.feature.categories.di.CategoriesScope
 import com.example.finances.feature.categories.domain.models.Category
 import com.example.finances.feature.categories.domain.repository.CategoriesRepo
 import kotlinx.coroutines.flow.first
@@ -14,6 +15,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
+@CategoriesScope
 class CategoriesRepoImpl @Inject constructor(
     private val categoriesApi: CategoriesApi,
     private val database: CategoriesDatabase,

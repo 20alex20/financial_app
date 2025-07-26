@@ -12,6 +12,7 @@ import com.example.finances.app.navigation.AppNavigationCoordinator
 import com.example.finances.feature.account.api.AccountDependencies
 import com.example.finances.feature.categories.api.CategoriesDependencies
 import com.example.finances.feature.settings.api.SettingsDependencies
+import com.example.finances.feature.settings.domain.repository.ExternalSettingsRepo
 import com.example.finances.feature.transactions.api.TransactionsDependencies
 import dagger.BindsInstance
 import dagger.Component
@@ -32,6 +33,7 @@ interface ActivityComponent
     fun splashScreenAnimator(): SplashScreenAnimator
     fun viewModelFactory(): ViewModelProvider.Factory
     fun appNavigationCoordinator(): AppNavigationCoordinator
+    fun externalSettingsRepo(): ExternalSettingsRepo
 
     @Component.Factory
     interface Factory {
