@@ -1,7 +1,6 @@
 package com.example.finances.feature.categories.api
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.finances.core.navigation.NavBarRoutes
 import com.example.finances.core.Feature
@@ -19,7 +18,7 @@ class CategoriesFeature @Inject constructor(
 
     fun getCategoriesRepo() = categoriesRepo
 
-    override fun registerGraph(navGraphBuilder: NavGraphBuilder, navController: NavHostController) {
+    override fun registerGraph(navGraphBuilder: NavGraphBuilder) {
         navGraphBuilder.apply {
             composable<NavBarRoutes.Categories> {
                 CategoriesScreen()

@@ -27,7 +27,7 @@ fun AppNavigation(
             startDestination = NavBarRoutes.Expenses,
             modifier = Modifier.weight(1f)
         ) {
-            appNavigationCoordinator.registerGraph(this, navController)
+            appNavigationCoordinator.registerGraph(this)
         }
 
         BottomNavigationBar(

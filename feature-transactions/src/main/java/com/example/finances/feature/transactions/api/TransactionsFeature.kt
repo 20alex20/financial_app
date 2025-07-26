@@ -1,15 +1,15 @@
 package com.example.finances.feature.transactions.api
 
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.finances.core.Feature
 import com.example.finances.core.navigation.NavBarRoutes
 import com.example.finances.core.utils.viewmodel.ViewModelMapProvider
 import com.example.finances.feature.account.di.AccountViewModelMapProvider
 import com.example.finances.feature.account.domain.repository.ExternalTransactionsRepo
-import com.example.finances.feature.transactions.navigation.TransactionsNavRoutes
-import com.example.finances.feature.transactions.navigation.transactionsNavigation
+import com.example.finances.feature.transactions.navigation.ScreenType
+import com.example.finances.feature.transactions.navigation.TransactionsNavigation
 import javax.inject.Inject
 
 class TransactionsFeature @Inject constructor(
@@ -20,19 +20,13 @@ class TransactionsFeature @Inject constructor(
 
     fun getExternalTransactionsRepo() = externalTransactionsRepo
 
-    override fun registerGraph(navGraphBuilder: NavGraphBuilder, navController: NavHostController) {
+    override fun registerGraph(navGraphBuilder: NavGraphBuilder) {
         navGraphBuilder.apply {
-            navigation<NavBarRoutes.Expenses>(
-                startDestination = TransactionsNavRoutes.ExpensesIncome(isIncome = false)
-            ) {
-                transactionsNavigation(this, navController)
+            composable<NavBarRoutes.Expenses> {
+                TransactionsNavigation(ScreenType.Expenses)
             }
-        }
-        navGraphBuilder.apply {
-            navigation<NavBarRoutes.Income>(
-                startDestination = TransactionsNavRoutes.ExpensesIncome(isIncome = true)
-            ) {
-                transactionsNavigation(this, navController)
+            composable<NavBarRoutes.Income> {
+                TransactionsNavigation(ScreenType.Income)
             }
         }
     }
