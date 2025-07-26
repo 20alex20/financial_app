@@ -31,4 +31,8 @@ class PrimaryColorViewModel @Inject constructor(
     override suspend fun loadData(scope: CoroutineScope) = resetLoadingAndError()
 
     override fun setViewModelParams(extras: CreationExtras) {}
+
+    init {
+        reloadData()
+    }
 }

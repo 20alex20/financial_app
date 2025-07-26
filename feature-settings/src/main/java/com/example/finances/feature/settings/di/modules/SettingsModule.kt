@@ -19,17 +19,17 @@ interface SettingsModule {
     @Binds
     @IntoMap
     @ViewModelKey(SettingsViewModel::class)
-    fun bindsSettingsViewModel(categoriesViewModel: SettingsViewModel): BaseViewModel
+    fun bindsSettingsViewModel(settingsViewModel: SettingsViewModel): BaseViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(PrimaryColorViewModel::class)
-    fun bindsPrimaryColorViewModel(categoriesViewModel: PrimaryColorViewModel): BaseViewModel
+    fun bindsPrimaryColorViewModel(primaryColorViewModel: PrimaryColorViewModel): BaseViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(VibrationViewModel::class)
-    fun bindsVibrationViewModel(categoriesViewModel: VibrationViewModel): BaseViewModel
+    fun bindsVibrationViewModel(vibrationViewModel: VibrationViewModel): BaseViewModel
 
 //    @Binds
 //    @IntoMap
@@ -39,13 +39,13 @@ interface SettingsModule {
     @Binds
     @IntoMap
     @ViewModelKey(AboutViewModel::class)
-    fun bindsAboutViewModel(categoriesViewModel: AboutViewModel): BaseViewModel
+    fun bindsAboutViewModel(aboutViewModel: AboutViewModel): BaseViewModel
 
     @Binds
     @SettingsScope
-    fun bindsSettingsRepo(categoriesRepoImpl: SettingsRepoImpl): SettingsRepo
+    fun bindsSettingsRepo(settingsRepoImpl: SettingsRepoImpl): SettingsRepo
 
     @Binds
     @SettingsScope
-    fun bindsExternalSettingsRepo(categoriesRepoImpl: SettingsRepoImpl): ExternalSettingsRepo
+    fun bindsExternalSettingsRepo(settingsRepoImpl: SettingsRepoImpl): ExternalSettingsRepo
 }

@@ -40,7 +40,7 @@ interface SettingsModule {
         }
 
         @Provides
-        fun providesThemeController(settingsFeature: SettingsFeature): ExternalSettingsRepo {
+        fun providesExternalSettingsRepo(settingsFeature: SettingsFeature): ExternalSettingsRepo {
             return settingsFeature.getExternalSettingsRepo()
         }
     }

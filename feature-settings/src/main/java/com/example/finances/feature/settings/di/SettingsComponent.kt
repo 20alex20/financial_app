@@ -9,7 +9,7 @@ import dagger.Component
 
 @SettingsScope
 @Component(
-    dependencies = [SettingsComponent::class],
+    dependencies = [SettingsDependencies::class],
     modules = [
         SettingsModule::class,
         PreferencesModule::class
