@@ -6,6 +6,7 @@ import com.example.finances.core.api.CoreComponentFactory
 import com.example.finances.core.api.CoreDependencies
 import com.example.finances.core.managers.NetworkConnectionObserver
 import com.example.finances.core.managers.ConvertAmountUseCase
+import com.example.finances.core.managers.VibrateUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -37,6 +38,12 @@ interface CoreModule {
         @Provides
         fun providesConvertAmountUseCase(coreAdapter: CoreAdapter): ConvertAmountUseCase {
             return coreAdapter.convertAmountUseCase
+        }
+
+        @Provides
+        @Singleton
+        fun providesVibrateUseCase(coreAdapter: CoreAdapter): VibrateUseCase {
+            return coreAdapter.vibrateUseCase
         }
     }
 }
