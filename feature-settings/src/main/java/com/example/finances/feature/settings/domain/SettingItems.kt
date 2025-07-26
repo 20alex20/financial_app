@@ -21,7 +21,7 @@ fun settingsItems() = listOf(
         goTo = SettingsRoutes.UserPin
     ),
     SettingsItem(
-        name = stringResource(R.string.primary_color),
+        name = stringResource(R.string.about_app),
         goTo = SettingsRoutes.About
     )
 )

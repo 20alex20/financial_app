@@ -75,7 +75,7 @@ fun VibrationScreen(navController: NavController) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         if (isSheetOpen.value) ModalSheet(
             sheetState = sheetState,
-            sheetItems = primaryColorsSheetItems(),
+            sheetItems = vibrationDurationsSheetItems(),
             closeSheet = { obj ->
                 vm.resetError()
                 if (obj is VibrationDuration)
