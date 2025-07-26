@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 
 @Composable
@@ -19,13 +20,15 @@ fun TextInput(
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Start,
     placeholderText: String? = null,
-    keyboardType: KeyboardType = KeyboardType.Unspecified
+    keyboardType: KeyboardType = KeyboardType.Unspecified,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     TextField(
         value = text,
         textStyle = MaterialTheme.typography.bodyLarge.copy(textAlign = textAlign),
         onValueChange = { updateText(it) },
         singleLine = true,
+        visualTransformation = visualTransformation,
         placeholder = {
             if (placeholderText != null) Text(
                 text = placeholderText,

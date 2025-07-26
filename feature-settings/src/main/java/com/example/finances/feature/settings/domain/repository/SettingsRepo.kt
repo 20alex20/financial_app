@@ -20,7 +20,5 @@ interface SettingsRepo {
 
     fun saveUserPin(userPin: String?): Boolean
 
-    fun loadUserPin(): String?
-
     fun loadAppInfo(): AppInfo
 }

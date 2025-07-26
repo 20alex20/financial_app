@@ -17,4 +17,9 @@
     <string name="update_saving_error">Ошибка сохранения изменений</string>
     <string name="app_version">Версия приложения</string>
     <string name="last_update">Последнее обновление</string>
+    <string name="login_with_pin_code">Вход по пин-коду</string>
+    <string name="pin_code">Пин-код</string>
+    <string name="confirm">Подтверждение</string>
+    <string name="short_pin_code_error">Пин-код должен состоять из 4 цифр</string>
+    <string name="unequal_pin_codes">Пин-коды не совпадают</string>
 </resources>

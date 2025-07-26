@@ -6,6 +6,7 @@ import androidx.navigation.compose.composable
 import com.example.finances.feature.settings.ui.AboutScreen
 import com.example.finances.feature.settings.ui.PrimaryColorScreen
 import com.example.finances.feature.settings.ui.SettingsScreen
+import com.example.finances.feature.settings.ui.UserPinScreen
 import com.example.finances.feature.settings.ui.VibrationScreen
 
 fun settingsNavigation(
@@ -22,7 +23,7 @@ fun settingsNavigation(
         VibrationScreen(navController)
     }
     composable<SettingsRoutes.UserPin> {
-        VibrationScreen(navController)
+        UserPinScreen(navController)
     }
     composable<SettingsRoutes.About> {
         AboutScreen(navController)

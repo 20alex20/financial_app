@@ -52,12 +52,12 @@ fun BottomNavigationBar(
                     it.hasRoute(navBarItem.route::class)
                 } ?: false,
                 onClick = {
-                    vibrateUseCase()
                     navController.navigate(navBarItem.route) {
                         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
                     }
+                    vibrateUseCase()
                 },
                 icon = {
                     Icon(

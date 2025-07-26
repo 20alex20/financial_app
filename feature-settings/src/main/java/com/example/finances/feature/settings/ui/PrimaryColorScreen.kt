@@ -61,7 +61,10 @@ fun PrimaryColorScreen(navController: NavController) {
                 rightText = primaryColorsSheetItems().find {
                     it.obj == vm.primaryColor.value
                 }?.name ?: "",
-                onClick = { isSheetOpen.value = true }
+                onClick = {
+                    vm.resetError()
+                    isSheetOpen.value = true
+                }
             )
         }
 
@@ -76,7 +79,6 @@ fun PrimaryColorScreen(navController: NavController) {
             sheetState = sheetState,
             sheetItems = primaryColorsSheetItems(),
             closeSheet = { obj ->
-                vm.resetError()
                 if (obj is PrimaryColor)
                     vm.setPrimaryColor(obj)
                 coroutineScope.launch {

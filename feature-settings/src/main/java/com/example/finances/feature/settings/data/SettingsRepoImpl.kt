@@ -98,6 +98,10 @@ class SettingsRepoImpl @Inject constructor(
         return appInfo
     }
 
+    init {
+        vibrateUseCase.setDuration(loadVibrationDuration().duration)
+    }
+
     companion object {
         private const val DARK_THEME = "darkTheme"
         private const val PRIVATE_COLOR = "primaryColor"

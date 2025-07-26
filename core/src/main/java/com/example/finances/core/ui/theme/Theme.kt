@@ -70,7 +70,11 @@ fun FinancesTheme(
     themeParameters: State<ThemeParameters>,
     content: @Composable () -> Unit
 ) {
-    val primaryContainer = lightenColor(themeParameters.value.primaryColor, 0.7f)
+    val primaryContainer = if (themeParameters.value.darkTheme) {
+        darkenColor(themeParameters.value.primaryColor, 0.7f)
+    } else {
+        lightenColor(themeParameters.value.primaryColor, 0.7f)
+    }
     MaterialTheme(
         content = content,
         typography = Typography,
@@ -96,5 +100,12 @@ fun lightenColor(color: Color, factor: Float): Color {
     val r = (color.red + (1 - color.red) * factor).coerceIn(0f, 1f)
     val g = (color.green + (1 - color.green) * factor).coerceIn(0f, 1f)
     val b = (color.blue + (1 - color.blue) * factor).coerceIn(0f, 1f)
+    return Color(r, g, b, color.alpha)
+}
+
+fun darkenColor(color: Color, factor: Float): Color {
+    val r = (color.red * (1 - factor)).coerceIn(0f, 1f)
+    val g = (color.green * (1 - factor)).coerceIn(0f, 1f)
+    val b = (color.blue * (1 - factor)).coerceIn(0f, 1f)
     return Color(r, g, b, color.alpha)
 }

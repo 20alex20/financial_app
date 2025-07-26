@@ -9,6 +9,7 @@ import com.example.finances.feature.settings.domain.repository.SettingsRepo
 import com.example.finances.feature.settings.ui.AboutViewModel
 import com.example.finances.feature.settings.ui.PrimaryColorViewModel
 import com.example.finances.feature.settings.ui.SettingsViewModel
+import com.example.finances.feature.settings.ui.UserPinViewModel
 import com.example.finances.feature.settings.ui.VibrationViewModel
 import dagger.Binds
 import dagger.Module
@@ -31,10 +32,10 @@ interface SettingsModule {
     @ViewModelKey(VibrationViewModel::class)
     fun bindsVibrationViewModel(vibrationViewModel: VibrationViewModel): BaseViewModel
 
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(UserPinViewModel::class)
-//    fun bindsUserPinViewModel(categoriesViewModel: UserPinViewModel): BaseViewModel
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserPinViewModel::class)
+    fun bindsUserPinViewModel(userPinViewModel: UserPinViewModel): BaseViewModel
 
     @Binds
     @IntoMap

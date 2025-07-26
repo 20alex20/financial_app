@@ -62,7 +62,10 @@ fun VibrationScreen(navController: NavController) {
                 rightText = vibrationDurationsSheetItems().find {
                     it.obj == vm.vibrationDuration.value
                 }?.name ?: "",
-                onClick = { isSheetOpen.value = true }
+                onClick = {
+                    vm.resetError()
+                    isSheetOpen.value = true
+                }
             )
         }
 
@@ -77,7 +80,6 @@ fun VibrationScreen(navController: NavController) {
             sheetState = sheetState,
             sheetItems = vibrationDurationsSheetItems(),
             closeSheet = { obj ->
-                vm.resetError()
                 if (obj is VibrationDuration)
                     vm.setVibrationDuration(obj)
                 coroutineScope.launch {
