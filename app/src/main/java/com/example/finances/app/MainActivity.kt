@@ -20,14 +20,10 @@ class MainActivity : ComponentActivity() {
         activityComponent = DaggerActivityComponent.factory().create(this, appComponent)
         activityComponent.splashScreenAnimator()
 
-        val externalSettingsRepo = SettingsModule.providesExternalSettingsRepo(
-            SettingsModule.providesSettingsFeature(activityComponent)
-        )
-
         enableEdgeToEdge()
         setContent {
             MainScreen(
-                externalSettingsRepo,
+                activityComponent.externalSettingsRepo(),
                 activityComponent.viewModelFactory(),
                 activityComponent.appNavigationCoordinator(),
                 activityComponent.vibrateUseCase()

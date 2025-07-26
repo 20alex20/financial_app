@@ -24,15 +24,16 @@ class SettingsRepoImpl @Inject constructor(
     private val appInfo: AppInfo,
     private val vibrateUseCase: VibrateUseCase
 ) : SettingsRepo, ExternalSettingsRepo {
-    private val _themeParameters = mutableStateOf(
+    private val themeParameters = mutableStateOf(
         ThemeParameters(loadTheme().darkTheme, loadPrimaryColor().color)
     )
-    override val themeParameters: State<ThemeParameters> = _themeParameters
+
+    override fun getThemeParameters(): State<ThemeParameters> = themeParameters
 
     override fun saveTheme(themeMode: ThemeMode): Boolean {
         preferences.edit { putBoolean(DARK_THEME, themeMode.darkTheme) }
         return (themeMode == loadTheme()).also { success ->
-            if (success) _themeParameters.value = _themeParameters.value.copy(
+            if (success) themeParameters.value = themeParameters.value.copy(
                 darkTheme = themeMode.darkTheme
             )
         }
@@ -45,7 +46,7 @@ class SettingsRepoImpl @Inject constructor(
     override fun savePrimaryColor(primaryColor: PrimaryColor): Boolean {
         saveStringPreference(PRIVATE_COLOR, primaryColor)
         return (primaryColor == loadPrimaryColor()).also { success ->
-            if (success) _themeParameters.value = _themeParameters.value.copy(
+            if (success) themeParameters.value = themeParameters.value.copy(
                 primaryColor = primaryColor.color
             )
         }
