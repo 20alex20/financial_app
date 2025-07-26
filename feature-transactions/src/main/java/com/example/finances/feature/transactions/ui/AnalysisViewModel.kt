@@ -23,7 +23,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 /**
- * Вьюмодель экрана истории
+ * Вьюмодель экрана анализа
  */
 open class AnalysisViewModel @Inject constructor(
     private val transactionsRepo: TransactionsRepo,

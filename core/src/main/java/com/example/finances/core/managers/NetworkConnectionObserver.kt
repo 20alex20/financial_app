@@ -13,9 +13,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 
-/**
- * Responsible for subscribing to connection loss events and displaying corresponding messages
- */
 @CoreScope
 class NetworkConnectionObserver @Inject constructor(@ApplicationContext context: Context) {
     private val _isOnline = MutableSharedFlow<Boolean>(replay = 1)

@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresPermission
 import com.example.finances.app.di.ActivityComponent
 import com.example.finances.app.di.DaggerActivityComponent
-import com.example.finances.app.di.modules.SettingsModule
 
 class MainActivity : ComponentActivity() {
     private lateinit var activityComponent: ActivityComponent

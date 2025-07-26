@@ -17,8 +17,6 @@ import com.example.finances.app.navigation.AppNavigationCoordinator
 import com.example.finances.core.managers.VibrateUseCase
 import com.example.finances.core.ui.components.UserPinScreen
 import com.example.finances.core.ui.theme.FinancesTheme
-import com.example.finances.core.ui.theme.Green
-import com.example.finances.core.utils.models.ThemeParameters
 import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
 import com.example.finances.feature.settings.domain.repository.ExternalSettingsRepo
 

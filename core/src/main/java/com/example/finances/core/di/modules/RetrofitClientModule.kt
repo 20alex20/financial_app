@@ -17,9 +17,6 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.inject.Qualifier
 
-/**
- * Generates server request for a given API
- */
 @Module
 class RetrofitClientModule {
     @Provides

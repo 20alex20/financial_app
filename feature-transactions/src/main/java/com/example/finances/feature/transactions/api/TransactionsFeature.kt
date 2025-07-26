@@ -2,7 +2,6 @@ package com.example.finances.feature.transactions.api
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import com.example.finances.core.Feature
 import com.example.finances.core.navigation.NavBarRoutes
 import com.example.finances.core.utils.viewmodel.ViewModelMapProvider

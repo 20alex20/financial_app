@@ -5,10 +5,6 @@ import com.example.finances.core.api.CoreDependencies
 import com.example.finances.core.di.modules.RetrofitClientModule
 import dagger.Component
 
-/**
- * Core component that provides basic dependencies for the application.
- * This component is used as a dependency for feature-specific components.
- */
 @CoreScope
 @Component(
     dependencies = [CoreDependencies::class],

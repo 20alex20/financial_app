@@ -24,7 +24,6 @@ import com.example.finances.core.ui.components.ModalSheet
 import com.example.finances.core.utils.viewmodel.LocalViewModelFactory
 import com.example.finances.feature.settings.R
 import com.example.finances.feature.settings.domain.models.VibrationDuration
-import com.example.finances.feature.settings.domain.primaryColorsSheetItems
 import com.example.finances.feature.settings.domain.vibrationDurationsSheetItems
 import kotlinx.coroutines.launch
 

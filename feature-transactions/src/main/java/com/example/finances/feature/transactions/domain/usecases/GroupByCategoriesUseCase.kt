@@ -5,9 +5,6 @@ import com.example.finances.feature.transactions.domain.models.Transaction
 import com.example.finances.feature.transactions.domain.models.AnalysisGroup
 import javax.inject.Inject
 
-/**
- * Юзкейс для загрузки валюты счета
- */
 @TransactionsScope
 class GroupByCategoriesUseCase @Inject constructor() {
     operator fun invoke(

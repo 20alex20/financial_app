@@ -30,23 +30,14 @@ import androidx.compose.ui.unit.dp
 import com.example.finances.core.R
 import com.example.finances.core.ui.theme.LightArrowColor
 
-/**
- * Enumeration of available ListItem sizes (heights)
- */
 enum class ListItemHeight(val value: Dp) {
     HIGH(70.dp), LOW(56.dp)
 }
 
-/**
- * Enumeration of available color schemes
- */
 enum class ListItemColorScheme {
     SURFACE, PRIMARY
 }
 
-/**
- * Sealed interface with all trail types
- */
 sealed interface ListItemTrail {
     data object LightArrow : ListItemTrail
     data object DarkArrow : ListItemTrail

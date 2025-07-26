@@ -5,9 +5,6 @@ import com.example.finances.core.utils.models.Currency
 import javax.inject.Inject
 import kotlin.math.roundToLong
 
-/**
- * Use case for converting amount to a different format/type
- */
 @CoreScope
 class ConvertAmountUseCase @Inject constructor() {
     operator fun invoke(value: String): Double {
