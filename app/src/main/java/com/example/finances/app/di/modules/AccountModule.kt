@@ -10,6 +10,7 @@ import com.example.finances.feature.account.api.AccountComponentFactory
 import com.example.finances.feature.account.api.AccountDatabase
 import com.example.finances.feature.account.api.AccountDependencies
 import com.example.finances.feature.account.api.AccountFeature
+import com.example.finances.feature.account.domain.repository.AccountRepo
 import com.example.finances.feature.account.domain.repository.ExternalAccountRepo
 import com.example.finances.feature.account.domain.repository.ExternalTransactionsRepo
 import dagger.Binds
@@ -30,6 +31,9 @@ interface AccountModule {
     @AccountNavigation
     fun bindsAccountNavigation(accountFeature: AccountFeature): FeatureNavigation
 
+    @Binds
+    fun ExternalAccountRepo(accountRepo: AccountRepo): ExternalAccountRepo
+
     companion object {
         @Provides
         @ActivityScope
@@ -49,8 +53,8 @@ interface AccountModule {
         }
 
         @Provides
-        fun providesExternalAccountRepo(accountFeature: AccountFeature): ExternalAccountRepo {
-            return accountFeature.getExternalAccountRepo()
+        fun providesAccountRepo(accountFeature: AccountFeature): AccountRepo {
+            return accountFeature.getAccountRepo()
         }
     }
 }
