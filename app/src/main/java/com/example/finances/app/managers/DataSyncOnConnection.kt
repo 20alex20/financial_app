@@ -1,8 +1,6 @@
 package com.example.finances.app.managers
 
-import android.content.Context
 import com.example.finances.app.di.ActivityScope
-import com.example.finances.core.di.ActivityContext
 import com.example.finances.core.managers.NetworkConnectionObserver
 import com.example.finances.feature.account.data.mappers.toShortAccount
 import com.example.finances.feature.account.domain.repository.AccountRepo

@@ -6,7 +6,6 @@ import com.example.finances.feature.account.data.AccountRepoImpl
 import com.example.finances.feature.account.data.database.AccountApi
 import com.example.finances.feature.account.di.AccountScope
 import com.example.finances.feature.account.domain.repository.AccountRepo
-import com.example.finances.feature.account.domain.repository.ExternalAccountRepo
 import com.example.finances.feature.account.ui.AccountViewModel
 import com.example.finances.feature.account.ui.EditAccountViewModel
 import dagger.Binds
