@@ -11,6 +11,7 @@ import com.example.finances.feature.transactions.api.TransactionsComponentFactor
 import com.example.finances.feature.transactions.api.TransactionsDatabase
 import com.example.finances.feature.transactions.api.TransactionsDependencies
 import com.example.finances.feature.transactions.api.TransactionsFeature
+import com.example.finances.feature.transactions.domain.repository.TransactionsRepo
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -47,6 +48,11 @@ interface TransactionsModule {
             transactionsFeature: TransactionsFeature
         ): ViewModelMapProvider {
             return transactionsFeature.getViewModelMapProvider()
+        }
+
+        @Provides
+        fun providesTransactionsRepo(transactionsFeature: TransactionsFeature): TransactionsRepo {
+            return transactionsFeature.getTransactionsRepo()
         }
     }
 }

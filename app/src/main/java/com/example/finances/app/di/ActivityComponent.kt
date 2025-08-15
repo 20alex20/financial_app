@@ -7,6 +7,7 @@ import com.example.finances.app.di.modules.ActivityModule
 import com.example.finances.app.di.modules.CategoriesModule
 import com.example.finances.app.di.modules.SettingsModule
 import com.example.finances.app.di.modules.TransactionsModule
+import com.example.finances.app.managers.DataSyncOnConnection
 import com.example.finances.app.managers.SplashScreenAnimator
 import com.example.finances.app.navigation.AppNavigationCoordinator
 import com.example.finances.feature.account.api.AccountDependencies
@@ -34,6 +35,7 @@ interface ActivityComponent
     fun viewModelFactory(): ViewModelProvider.Factory
     fun appNavigationCoordinator(): AppNavigationCoordinator
     fun externalSettingsRepo(): ExternalSettingsRepo
+    fun dataSyncOnConnection(): DataSyncOnConnection
 
     @Component.Factory
     interface Factory {

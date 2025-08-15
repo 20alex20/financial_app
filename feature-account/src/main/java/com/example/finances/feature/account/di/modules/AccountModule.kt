@@ -31,10 +31,6 @@ interface AccountModule {
     @AccountScope
     fun bindsAccountRepo(accountRepoImpl: AccountRepoImpl): AccountRepo
 
-    @Binds
-    @AccountScope
-    fun bindsExternalAccountRepo(accountRepoImpl: AccountRepoImpl): ExternalAccountRepo
-
     companion object {
         @Provides
         @AccountScope

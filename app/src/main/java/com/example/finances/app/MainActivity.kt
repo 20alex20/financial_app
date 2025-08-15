@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
 
         activityComponent = DaggerActivityComponent.factory().create(this, appComponent)
         activityComponent.splashScreenAnimator()
+        activityComponent.dataSyncOnConnection()
 
         enableEdgeToEdge()
         setContent {
